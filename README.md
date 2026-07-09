@@ -2,6 +2,22 @@
 
 A coding-agent skill for creating stunning HTML presentations — from scratch or by converting PowerPoint files. It is packaged as a Claude Code plugin, and the core `SKILL.md` can also be read by other coding agents with filesystem and shell access.
 
+> **🔀 Fork notice** — The original repository lives at [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides), and all credit for the original skill goes to [@zarazhangrui](https://github.com/zarazhangrui). This fork extends the skill with **50 layout presets** — fixed, proven slide compositions — so that models *other than Claude* can also generate beautiful presentations.
+
+## The Problem This Fork Solves
+
+Here is the uncomfortable truth about AI-generated presentations:
+
+**Every model that isn't Claude fails at beautiful slides.** Ask GPT, Gemini, or a local model to build a deck and you get the same wreckage every time: text spilling off the stage, headings and body copy fighting for the same space, one slide centered and the next inexplicably left-aligned, a wall of bullets where a composition should be. These models can *write* the content just fine. They cannot *compose* it.
+
+**And Claude — the one model that gets it right — is too expensive to use for it.** A full deck means generating thousands of lines of hand-crafted HTML and CSS, slide after slide, with design reasoning on every one. At premium token prices, making presentations this way regularly is a luxury, not a workflow.
+
+So you're stuck: the models you can afford can't design, and the model that can design you can't afford.
+
+**The fix: stop asking models to design. Ask them to fill in a design.**
+
+That is what [`layout-presets/`](layout-presets/) does. It's a pack of 50 style-agnostic **structural blueprints** — opening, section, list, stats, quote, comparison, timeline, image, video, and closing slides — where each preset fixes *where everything sits and how big it is* on the 1920×1080 stage, while the design system (colors, fonts, decoration) stays swappable. The model no longer improvises layout; it slots content into a composition that already works. Cheaper, non-Claude models suddenly produce decks that look deliberate — and Claude burns far fewer tokens getting there.
+
 ## 📺 Watch the Walkthrough & Tutorial
 
 New here? This beginner-friendly video walks you through the whole thing, start to finish.
@@ -27,6 +43,7 @@ https://github.com/user-attachments/assets/ef57333e-f879-432a-afb9-180388982478
 - **PPT Conversion** — Convert existing PowerPoint files to web, preserving all images and content.
 - **Anti-AI-Slop** — Curated distinctive styles that avoid generic AI aesthetics (bye-bye, purple gradients on white).
 - **Bold Template Pack** — Optional design-forward templates from `beautiful-html-templates`, loaded progressively so safe presets still work as the default fallback.
+- **Layout Presets (this fork)** — 50 style-agnostic structural blueprints that fix slide composition, so any model — not just Claude — can generate beautiful, consistent decks cheaply.
 - **Production Quality** — Accessible, fixed 16:9, well-commented code you can customize.
 
 ## Installation
@@ -36,7 +53,7 @@ https://github.com/user-attachments/assets/ef57333e-f879-432a-afb9-180388982478
 Install directly from this public GitHub repo. Run these as two separate Claude Code messages; do not paste both lines into the prompt at once.
 
 ```text
-/plugin marketplace add https://github.com/zarazhangrui/frontend-slides
+/plugin marketplace add https://github.com/dreamid27/frontend-slides
 ```
 
 After that finishes, run:
@@ -45,7 +62,7 @@ After that finishes, run:
 /plugin install frontend-slides@frontend-slides
 ```
 
-Use the HTTPS URL. The shorter `zarazhangrui/frontend-slides` form may make Claude Code try SSH, which can fail if GitHub is not already in your `known_hosts` file.
+Use the HTTPS URL. The shorter `dreamid27/frontend-slides` form may make Claude Code try SSH, which can fail if GitHub is not already in your `known_hosts` file.
 
 Then use it by typing `/frontend-slides:frontend-slides` in Claude Code. Claude Code namespaces plugin-installed skills as `/plugin-name:skill-name`.
 
@@ -59,14 +76,14 @@ mkdir -p ~/.claude/skills/frontend-slides/scripts
 
 # Copy the user-facing skill files
 cp SKILL.md STYLE_PRESETS.md viewport-base.css html-template.md animation-patterns.md ~/.claude/skills/frontend-slides/
-cp -R bold-template-pack ~/.claude/skills/frontend-slides/
+cp -R bold-template-pack layout-presets ~/.claude/skills/frontend-slides/
 cp scripts/extract-pptx.py scripts/deploy.sh scripts/export-pdf.sh ~/.claude/skills/frontend-slides/scripts/
 ```
 
 Or clone directly:
 
 ```bash
-git clone https://github.com/zarazhangrui/frontend-slides.git ~/.claude/skills/frontend-slides
+git clone https://github.com/dreamid27/frontend-slides.git ~/.claude/skills/frontend-slides
 ```
 
 Then use it by typing `/frontend-slides` in Claude Code. Standalone skills are not namespaced.
@@ -76,7 +93,7 @@ Then use it by typing `/frontend-slides` in Claude Code. Standalone skills are n
 Agents such as Codex, Kimi Code, OpenCode, Gemini CLI, or other local coding assistants can use the same core skill. The simplest path is to send the agent this GitHub repo link and ask it to use the Frontend Slides skill:
 
 ```text
-https://github.com/zarazhangrui/frontend-slides
+https://github.com/dreamid27/frontend-slides
 ```
 
 If the agent can read GitHub repos or browse files, it should start from `SKILL.md` and load only the referenced support files it needs:
@@ -86,6 +103,7 @@ If the agent can read GitHub repos or browse files, it should start from `SKILL.
 - `html-template.md`
 - `animation-patterns.md`
 - `bold-template-pack/`
+- `layout-presets/`
 - `scripts/`
 
 Some agents can also install the skill for you if they have filesystem access and a known local skills directory. If not, they can still follow `SKILL.md` directly for the current session.
@@ -525,6 +543,7 @@ This skill uses **progressive disclosure** — the main `SKILL.md` is a workflow
 | `bold-template-pack/selection-index.json` | Compact bold template metadata for candidate selection | Phase 2 (style selection) |
 | `bold-template-pack/templates/*/preview.md` | Tiny style cards for shortlisted bold previews | Phase 2 after shortlisting |
 | `bold-template-pack/templates/*/design.md` | Full design system for the selected bold template | Phase 3 after user selection |
+| `layout-presets/**/layout.md` | 50 style-agnostic slide composition blueprints | Phase 3 (generation, per slide) |
 | `viewport-base.css`       | Mandatory fixed-stage CSS      | Phase 3 (generation)      |
 | `html-template.md`        | HTML structure and JS features | Phase 3 (generation)      |
 | `animation-patterns.md`   | CSS/JS animation reference     | Phase 3 (generation)      |
@@ -587,7 +606,9 @@ Uses [Playwright](https://playwright.dev) to screenshot each slide at 1920×1080
 
 ## Credits
 
-Created by [@zarazhangrui](https://github.com/zarazhangrui).
+Original skill created by [@zarazhangrui](https://github.com/zarazhangrui) — the original repository is [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides).
+
+This fork and its layout-presets pack are maintained by [@dreamid27](https://github.com/dreamid27).
 
 ## License
 

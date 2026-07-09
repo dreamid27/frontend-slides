@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Split Curtain — closing layout demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   =========================================== */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+img, video, canvas, svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   NEUTRAL TOKEN CONTRACT — remap per design system.
+   Demo defaults are grayscale placeholders only.
+   =========================================== */
+.slide.lp {
+    --lp-bg: #f1f0ee;
+    --lp-fg: #1a1a1a;
+    --lp-fg-muted: #6f6f6d;
+    --lp-fg-faint: rgba(26, 26, 26, 0.13);
+    --lp-accent: #8a8a88;
+    --lp-line: rgba(26, 26, 26, 0.22);
+    --lp-font-display: 'Archivo', sans-serif;
+    --lp-font-body: 'Archivo', sans-serif;
+    --lp-font-mono: 'IBM Plex Mono', monospace;
+    background: var(--lp-bg);
+    color: var(--lp-fg);
+}
+
+/* === CHROME === */
+.lp-kicker {
+    position: absolute;
+    left: 96px;
+    top: 96px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--lp-accent);
+}
+.lp-counter {
+    position: absolute;
+    right: 96px;
+    top: 96px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lp-fg-muted);
+}
+
+/* === STATEMENT (upper field) === */
+.lp-statement-block {
+    position: absolute;
+    left: 96px;
+    top: 230px;
+    max-width: 1500px;
+}
+.lp-statement {
+    margin: 0;
+    font-family: var(--lp-font-display);
+    font-size: 168px;
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+.lp-statement .lp-line {
+    display: block;
+}
+.lp-statement em {
+    font-style: normal;
+    color: var(--lp-accent);
+}
+.lp-sub {
+    margin: 32px 0 0;
+    max-width: 720px;
+    font-family: var(--lp-font-body);
+    font-size: 24px;
+    line-height: 1.5;
+    color: var(--lp-fg-muted);
+}
+
+/* === CURTAIN BAND (skin point: dual-surface systems use their alt surface) === */
+.lp-band {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 680px;
+    height: 400px;
+    background: var(--lp-fg);
+    color: var(--lp-bg);
+    z-index: 1;
+}
+.lp-band-grid {
+    position: absolute;
+    left: 96px;
+    right: 96px;
+    top: 140px; /* y:820 on stage */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.lp-cell + .lp-cell {
+    border-left: 1px solid rgba(255, 255, 255, 0.25);
+    padding-left: 48px;
+}
+.slide.lp .lp-cell + .lp-cell {
+    border-left-color: color-mix(in srgb, var(--lp-bg) 25%, transparent);
+}
+.lp-cell-label {
+    font-family: var(--lp-font-mono);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lp-bg);
+    opacity: 0.6;
+    margin-bottom: 12px;
+}
+.lp-cell-value {
+    font-family: var(--lp-font-body);
+    font-size: 24px;
+    color: var(--lp-bg);
+}
+
+/* === ACCENT STITCH (overlaps the seam) === */
+.lp-stitch {
+    position: absolute;
+    left: 96px;
+    top: 676px;
+    width: 160px;
+    height: 8px;
+    background: var(--lp-accent);
+    transform-origin: left center;
+    z-index: 2;
+}
+
+/* === CHOREOGRAPHY === */
+@keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lp-rise { from { opacity: 0; transform: translateY(56px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-rise-band { from { opacity: 0; transform: translateY(80px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-rise-sm { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.slide.active .lp-kicker,
+.slide.active .lp-counter { animation: lp-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0s both; }
+.slide.active .lp-statement .lp-line:nth-child(1) { animation: lp-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+.slide.active .lp-statement .lp-line:nth-child(2) { animation: lp-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both; }
+.slide.active .lp-sub { animation: lp-rise-sm 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
+.slide.active .lp-band { animation: lp-rise-band 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
+.slide.active .lp-stitch { animation: lp-wipe 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both; }
+.slide.active .lp-cell:nth-child(1) { animation: lp-rise-sm 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both; }
+.slide.active .lp-cell:nth-child(2) { animation: lp-rise-sm 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both; }
+.slide.active .lp-cell:nth-child(3) { animation: lp-rise-sm 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.05s both; }
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+    <div class="deck-stage">
+        <section class="slide lp active">
+            <!-- chrome -->
+            <div class="lp-kicker">Before You Go</div>
+            <div class="lp-counter">12 / 12</div>
+
+            <!-- statement -->
+            <div class="lp-statement-block">
+                <h1 class="lp-statement">
+                    <span class="lp-line">Build it</span>
+                    <span class="lp-line"><em>with us.</em></span>
+                </h1>
+                <p class="lp-sub">The roadmap is public — pick a lane and claim it this week.</p>
+            </div>
+
+            <!-- accent stitch on the seam -->
+            <div class="lp-stitch" aria-hidden="true"></div>
+
+            <!-- curtain band -->
+            <div class="lp-band">
+                <div class="lp-band-grid">
+                    <div class="lp-cell">
+                        <div class="lp-cell-label">Email</div>
+                        <div class="lp-cell-value">alfin@nodeflux.io</div>
+                    </div>
+                    <div class="lp-cell">
+                        <div class="lp-cell-label">Docs</div>
+                        <div class="lp-cell-value">nodeflux.io/roadmap</div>
+                    </div>
+                    <div class="lp-cell">
+                        <div class="lp-cell-label">Channel</div>
+                        <div class="lp-cell-value">#platform-roadmap</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+// Uniform fixed-stage scaler: scale the 1920×1080 stage to fit the viewport.
+(function () {
+    var stage = document.querySelector('.deck-stage');
+    function fit() {
+        var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        var x = (window.innerWidth - 1920 * s) / 2;
+        var y = (window.innerHeight - 1080 * s) / 2;
+        stage.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit);
+    fit();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Story — stats layout demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   =========================================== */
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+}
+
+/* ===========================================
+   NEUTRAL TOKEN CONTRACT — remap per design system.
+   =========================================== */
+.slide.lp {
+    --lp-bg: #151515;
+    --lp-fg: #ececea;
+    --lp-fg-muted: #969694;
+    --lp-fg-faint: rgba(255, 255, 255, 0.12);
+    --lp-accent: #b4b4b2;
+    --lp-line: rgba(255, 255, 255, 0.22);
+    --lp-font-display: 'Archivo', sans-serif;
+    --lp-font-body: 'Archivo', sans-serif;
+    --lp-font-mono: 'IBM Plex Mono', monospace;
+    background: var(--lp-bg);
+    color: var(--lp-fg);
+}
+
+/* === CHROME === */
+.lp-kicker {
+    position: absolute; left: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--lp-accent);
+}
+.lp-counter {
+    position: absolute; right: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--lp-fg-muted);
+}
+
+/* === THE SENTENCE ===
+   Words in --lp-fg at 600; figures step up to 1.22em / 800 / accent.
+   Vertically centered via top/transform — figures animate inline,
+   never the block. */
+.lp-sentence {
+    position: absolute; left: 96px; top: 50%;
+    transform: translateY(-52%);
+    margin: 0; max-width: 1650px;
+    font-family: var(--lp-font-display);
+    font-size: 88px; font-weight: 600;
+    line-height: 1.3; letter-spacing: -0.01em;
+    color: var(--lp-fg);
+}
+.lp-sentence .fig {
+    display: inline-block;
+    font-size: 1.22em; font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--lp-accent);
+}
+
+/* === SOURCE LINE === */
+.lp-source {
+    position: absolute; left: 96px; top: 940px;
+    font-family: var(--lp-font-mono);
+    font-size: 14px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--lp-fg-muted);
+}
+
+/* === CHOREOGRAPHY ===
+   Figures arrive camouflaged at word color, then step out of the
+   prose in reading order. */
+@keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lp-fig-in {
+    from { color: var(--lp-fg); transform: scale(0.92); }
+    to   { color: var(--lp-accent); transform: scale(1); }
+}
+
+.slide.active .lp-kicker,
+.slide.active .lp-counter { animation: lp-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0s both; }
+.slide.active .lp-sentence { animation: lp-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+.slide.active .lp-sentence .fig:nth-of-type(1) { animation: lp-fig-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both; }
+.slide.active .lp-sentence .fig:nth-of-type(2) { animation: lp-fig-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) 1.03s both; }
+.slide.active .lp-sentence .fig:nth-of-type(3) { animation: lp-fig-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) 1.21s both; }
+.slide.active .lp-source { animation: lp-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.6s both; }
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+    <div class="deck-stage">
+        <section class="slide lp active">
+            <!-- chrome -->
+            <div class="lp-kicker">The Quarter</div>
+            <div class="lp-counter">13 / 14</div>
+
+            <!-- the sentence -->
+            <p class="lp-sentence">We shipped <span class="fig">214</span> releases in <span class="fig">92</span> days — with <span class="fig">0</span> rollbacks.</p>
+
+            <!-- source line -->
+            <div class="lp-source">All figures: platform telemetry, Q2 FY26</div>
+        </section>
+    </div>
+</div>
+<script>
+(function () {
+    var stage = document.querySelector('.deck-stage');
+    function fit() {
+        var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        stage.style.transform = 'translate(' + (window.innerWidth - 1920 * s) / 2 + 'px,' + (window.innerHeight - 1080 * s) / 2 + 'px) scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit);
+    fit();
+})();
+</script>
+</body>
+</html>

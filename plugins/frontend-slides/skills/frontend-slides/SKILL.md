@@ -231,11 +231,16 @@ If the user selected a self-generated custom wildcard, treat that preview's CSS 
 - Design any missing slide layouts from that system rather than importing patterns from another style.
 - Keep the output fixed-stage, single-file, and visually verified like every other deck.
 
+**Slides in covered slots use layout presets.** Regardless of which design system was chosen, do not improvise the composition of slide types the layout-preset pack covers (opening, section dividers, lists, stats, quotes, comparisons, timelines, image features, video, closing — see the catalog). Read [layout-presets/README.md](layout-presets/README.md), pick a preset per slot, and read that preset's `layout.md`. The preset fixes the slide's structure — geometry, hierarchy, content limits, and entrance choreography — while the chosen design system supplies the skin: map the preset's neutral `--lp-*` tokens to the system's colors and fonts, and substitute the system's decorative vocabulary only at the preset's documented skin points. If preset structure and design-system decoration conflict, structure wins. A deck may use the same list/stats preset on several slides; vary content, not composition. Every preset documents an Image variant (recommended size as a `placehold.co` URL, `object-fit: cover` dimension fallback, CSS fill behind every image) — images are optional in all of them; pick the with- or without-image case per the user's assets.
+
+**Default every slide to a layout preset; only modify a preset or design a custom layout when no preset genuinely fits the content, and keep any customization within fixed-stage and density rules.** In each slide's HTML comment, state the layout used alongside the slide info — e.g. `<!-- Slide 5: Market Growth — layout: stats/big-number (modified: added third stat) -->` — using `layout: custom` for fully custom layouts.
+
 **Before generating, read these supporting files:**
 
 - [html-template.md](html-template.md) — HTML architecture and JS features
 - [viewport-base.css](viewport-base.css) — Mandatory CSS (include in full)
 - [animation-patterns.md](animation-patterns.md) — Animation reference for the chosen feeling
+- [layout-presets/README.md](layout-presets/README.md) — Structural layout presets (opening ×10, closing ×10, section/list/stats ×7 each, quote/comparison/timeline/image, video ×5) + token contract + image/video rules
 
 **Key requirements:**
 
@@ -372,6 +377,8 @@ This captures each slide as a screenshot and combines them into a PDF. Perfect f
 | [bold-template-pack/selection-index.json](bold-template-pack/selection-index.json) | Compact bold template metadata for candidate selection | Phase 2 (style selection) |
 | [bold-template-pack/templates/*/preview.md](bold-template-pack/templates/) | Lightweight style cards for shortlisted bold title previews | Phase 2 after shortlisting |
 | [bold-template-pack/templates/*/design.md](bold-template-pack/templates/) | Detailed design-system docs for the selected bold template only | Phase 3 after user selection |
+| [layout-presets/README.md](layout-presets/README.md) | Style-agnostic structural layouts + neutral token contract | Phase 3 (generation) |
+| [layout-presets/\*/\*/layout.md](layout-presets/) | Geometry, content limits, and choreography for the chosen slot preset | Phase 3 (generation) |
 | [viewport-base.css](viewport-base.css)             | Mandatory fixed-stage CSS — copy into every presentation             | Phase 3 (generation)      |
 | [html-template.md](html-template.md)               | HTML structure, JS features, code quality standards                  | Phase 3 (generation)      |
 | [animation-patterns.md](animation-patterns.md)     | CSS/JS animation snippets and effect-to-feeling guide                | Phase 3 (generation)      |

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cover Coda — closing layout demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   =========================================== */
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+}
+
+/* ===========================================
+   NEUTRAL TOKEN CONTRACT — remap per design system.
+   =========================================== */
+.slide.lp {
+    --lp-bg: #131313;
+    --lp-fg: #ececea;
+    --lp-fg-muted: #9a9a98;
+    --lp-fg-faint: rgba(255, 255, 255, 0.14);
+    --lp-accent: #979795;
+    --lp-line: rgba(255, 255, 255, 0.22);
+    --lp-font-display: 'Archivo', sans-serif;
+    --lp-font-body: 'Archivo', sans-serif;
+    --lp-font-mono: 'IBM Plex Mono', monospace;
+    background: var(--lp-bg);
+    color: var(--lp-fg);
+}
+
+/* === MEDIA LAYER ===
+   Recommended image size: 1920×1080 (https://placehold.co/1920x1080).
+   Fixed full-bleed frame + object-fit: cover absorbs any dimensions.
+   The dusk atmosphere beneath is the load-failure fallback AND the
+   no-image variant — delete the <img> and the slide still closes. */
+.lp-media {
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(1300px 800px at 20% 10%, rgba(255, 255, 255, 0.08), transparent 60%),
+        radial-gradient(1000px 700px at 85% 70%, rgba(255, 255, 255, 0.04), transparent 55%),
+        linear-gradient(15deg, #222222 0%, #131313 65%);
+}
+.lp-media img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    max-width: none; max-height: none;
+    object-fit: cover;
+}
+.lp-scrim {
+    position: absolute;
+    left: 0; right: 0; top: 460px; bottom: 0;
+    background: linear-gradient(to bottom, transparent, rgba(19, 19, 19, 0.94) 70%);
+}
+
+/* === CHROME === */
+.lp-kicker {
+    position: absolute; left: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--lp-accent);
+    z-index: 2;
+}
+.lp-counter {
+    position: absolute; right: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--lp-fg-muted);
+    z-index: 2;
+}
+
+/* === STATEMENT + CONTACT ROW (lower-left, on the scrim) === */
+.lp-close-block {
+    position: absolute;
+    left: 96px; bottom: 96px;
+    max-width: 1400px;
+    z-index: 2;
+}
+.lp-statement {
+    margin: 0;
+    font-family: var(--lp-font-display);
+    font-size: 148px; font-weight: 800;
+    line-height: 0.95; letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+.lp-statement .lp-line { display: block; }
+.lp-statement em { font-style: normal; color: var(--lp-accent); }
+.lp-contact-row {
+    margin: 32px 0 0;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; letter-spacing: 0.08em;
+    color: var(--lp-fg-muted);
+}
+.lp-contact-row .lp-dot { color: var(--lp-accent); margin: 0 16px; }
+
+/* === CHOREOGRAPHY === */
+@keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lp-settle { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
+@keyframes lp-rise { from { opacity: 0; transform: translateY(56px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-rise-sm { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide.active .lp-media { animation: lp-settle 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0s both; }
+.slide.active .lp-scrim { animation: lp-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+.slide.active .lp-statement .lp-line:nth-child(1) { animation: lp-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
+.slide.active .lp-statement .lp-line:nth-child(2) { animation: lp-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.57s both; }
+.slide.active .lp-contact-row { animation: lp-rise-sm 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both; }
+.slide.active .lp-kicker,
+.slide.active .lp-counter { animation: lp-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.05s both; }
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+    <div class="deck-stage">
+        <section class="slide lp active">
+            <!-- media layer + scrim: swap placeholder src for the real
+                 photo, or delete the <img> for the no-image variant -->
+            <div class="lp-media">
+                <img src="https://placehold.co/1920x1080/262626/6a6a68" alt="Site at dusk after commissioning">
+            </div>
+            <div class="lp-scrim" aria-hidden="true"></div>
+
+            <!-- chrome -->
+            <div class="lp-kicker">In Closing</div>
+            <div class="lp-counter">12 / 12</div>
+
+            <!-- statement + contact -->
+            <div class="lp-close-block">
+                <h1 class="lp-statement">
+                    <span class="lp-line">Until the</span>
+                    <span class="lp-line">next <em>site.</em></span>
+                </h1>
+                <div class="lp-contact-row">alfin@nodeflux.io<span class="lp-dot">·</span>nodeflux.io<span class="lp-dot">·</span>@nodeflux</div>
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+(function () {
+    var stage = document.querySelector('.deck-stage');
+    function fit() {
+        var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        stage.style.transform = 'translate(' + (window.innerWidth - 1920 * s) / 2 + 'px,' + (window.innerHeight - 1080 * s) / 2 + 'px) scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit);
+    fit();
+})();
+</script>
+</body>
+</html>

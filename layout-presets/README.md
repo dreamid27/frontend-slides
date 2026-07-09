@@ -1,0 +1,133 @@
+# Layout Presets
+
+Reusable, style-agnostic **structural blueprints** for individual slides. A layout preset defines *where things sit and how big they are* on the fixed 1920×1080 stage — composition, hierarchy, spacing, choreography — while staying completely neutral about colors, fonts, and decorative vocabulary. Those come from whichever design system the user picked (a preset from `STYLE_PRESETS.md`, a bold template from `bold-template-pack/`, or a custom wildcard).
+
+**Why this exists:** design systems answer "what does it look like?" but leave "how is the slide composed?" to improvisation, which produces inconsistent layouts. A layout preset removes that improvisation: the composition is fixed and proven; only the skin changes.
+
+## Catalog
+
+| Slot | Preset | Spec | Demo | Composition in one line |
+|------|--------|------|------|-------------------------|
+| Opening | Offset Marquee | [opening/offset-marquee/layout.md](opening/offset-marquee/layout.md) | [preview.html](opening/offset-marquee/preview.html) | Asymmetric left-anchored display title against a giant cropped ghost numeral, mono chrome top, presenter footer bottom |
+| Opening | Monolith | [opening/monolith/layout.md](opening/monolith/layout.md) | [preview.html](opening/monolith/preview.html) | Ceremonial symmetry: massive centered title under a plumb line from the top edge, metadata pinned to all four corners |
+| Opening | Split Ledger | [opening/split-ledger/layout.md](opening/split-ledger/layout.md) | [preview.html](opening/split-ledger/preview.html) | Hard vertical split with an inverted metadata panel left and title field right, stitched by a giant numeral straddling the seam |
+| Opening | Masthead | [opening/masthead/layout.md](opening/masthead/layout.md) | [preview.html](opening/masthead/preview.html) | Newspaper nameplate: full-width single-line title ruled off at the top, open field below balanced by a bottom-right lead and ghost drop-cap |
+| Opening | Half Plate | [opening/half-plate/layout.md](opening/half-plate/layout.md) | [preview.html](opening/half-plate/preview.html) | Image-led 50/50 split: full-bleed media plate with caption chip left, kicker/title/lead/footer right |
+| Opening | Horizon | [opening/horizon/layout.md](opening/horizon/layout.md) | [preview.html](opening/horizon/preview.html) | One full-bleed rule at y:560; the title stands on it like a skyline, lead and event meta below, optional image band as the sky |
+| Opening | Poster Stack | [opening/poster-stack/layout.md](opening/poster-stack/layout.md) | [preview.html](opening/poster-stack/preview.html) | The title as four stacked display rows — solid / outline / solid / accent — filling the stage like a gig poster; outline row swappable for an image band |
+| Opening | Corner Weight | [opening/corner-weight/layout.md](opening/corner-weight/layout.md) | [preview.html](opening/corner-weight/preview.html) | Diagonal counterweight: heavy title top-left, compact presenter (or photo) card bottom-right, empty diagonal between |
+| Opening | Spine | [opening/spine/layout.md](opening/spine/layout.md) | [preview.html](opening/spine/preview.html) | Book-spine: full-height rule at x:600, rotated series label in the spine column (or image strip), title field right |
+| Opening | Cover Caption | [opening/cover-caption/layout.md](opening/cover-caption/layout.md) | [preview.html](opening/cover-caption/preview.html) | Cinematic full-bleed image (or CSS atmosphere) under a bottom scrim, title lower-left with a mono caption line |
+| Closing | Terminal Frame | [closing/terminal-frame/layout.md](closing/terminal-frame/layout.md) | [preview.html](closing/terminal-frame/preview.html) | Inset hairline frame, bottom-left closing statement over a cropped ghost echo word, tri-column contact strip |
+| Closing | Echo Stack | [closing/echo-stack/layout.md](closing/echo-stack/layout.md) | [preview.html](closing/echo-stack/preview.html) | Typographic crescendo: the closing phrase repeated in five rows from near-invisible to full contrast, contacts in one footer line |
+| Closing | Split Curtain | [closing/split-curtain/layout.md](closing/split-curtain/layout.md) | [preview.html](closing/split-curtain/preview.html) | Horizontal split: statement in the open upper field, inverted "curtain" band across the bottom carrying three contact columns |
+| Closing | Center Seal | [closing/center-seal/layout.md](closing/center-seal/layout.md) | [preview.html](closing/center-seal/preview.html) | Fully symmetric ceremony: ring seal above a centered statement and coda, one centered contact line near the bottom |
+| Closing | Credits Roll | [closing/credits-roll/layout.md](closing/credits-roll/layout.md) | [preview.html](closing/credits-roll/preview.html) | Film credits: centered thank-you over a two-column role/name block around a center gutter, one contact line at the bottom |
+| Closing | Postscript | [closing/postscript/layout.md](closing/postscript/layout.md) | [preview.html](closing/postscript/preview.html) | Letter sign-off: statement, prose coda, accent rule + signature block (optional portrait), and a single-ask P.S. line |
+| Closing | Cover Coda | [closing/cover-coda/layout.md](closing/cover-coda/layout.md) | [preview.html](closing/cover-coda/preview.html) | Cinematic full-bleed image (or dusk atmosphere) under a bottom scrim; statement lower-left with one inline contact row |
+| Closing | Recap Rail | [closing/recap-rail/layout.md](closing/recap-rail/layout.md) | [preview.html](closing/recap-rail/preview.html) | The journey completed: statement above a full-width rail of all parts, every node filled and labeled, final node an open accent ring |
+| Closing | Whisper | [closing/whisper/layout.md](closing/whisper/layout.md) | [preview.html](closing/whisper/preview.html) | Anti-scale: one 44px centered line under a tiny accent mark (or 96px portrait), a quiet contact line, and nothing else |
+| Closing | Counterpoise | [closing/counterpoise/layout.md](closing/counterpoise/layout.md) | [preview.html](closing/counterpoise/preview.html) | Diagonal mirror of Corner Weight: right-aligned statement top-right, ruled contact stack (optional photo plate) bottom-left |
+| Section | Chapter Gate | [section/chapter-gate/layout.md](section/chapter-gate/layout.md) | [preview.html](section/chapter-gate/preview.html) | Giant solid-faint chapter numeral bleeding off the right, title lower-left, chapter rail along the bottom showing every part |
+| Section | Waypoint | [section/waypoint/layout.md](section/waypoint/layout.md) | [preview.html](section/waypoint/preview.html) | Centered title above a journey line — one node per part, travelled nodes filled, current node enlarged in accent and labeled |
+| Section | Inversion | [section/inversion/layout.md](section/inversion/layout.md) | [preview.html](section/inversion/preview.html) | The slide flips to the deck's alternate surface — outlined part tag, vertically centered title, progress segments; the surface swap is the divider |
+| Section | Index Ledger | [section/index-ledger/layout.md](section/index-ledger/layout.md) | [preview.html](section/index-ledger/preview.html) | The deck's table of contents reprinted at display scale, the current part at full contrast with an accent bar, the rest at 16% |
+| Section | Countdown Plate | [section/countdown-plate/layout.md](section/countdown-plate/layout.md) | [preview.html](section/countdown-plate/preview.html) | Monumental symmetry: an 880px solid-faint part numeral fills the stage with the one-word title seated at dead center |
+| Section | Bookmark | [section/bookmark/layout.md](section/bookmark/layout.md) | [preview.html](section/bookmark/preview.html) | A notched accent ribbon drops from the top edge carrying the part number; title mid-left beside it, part count bottom-right |
+| Section | Threshold | [section/threshold/layout.md](section/threshold/layout.md) | [preview.html](section/threshold/preview.html) | A full-width gate band between two hairlines; the title stands in the doorway with the part numeral at its far right |
+| List | Ledger List | [list/ledger-list/layout.md](list/ledger-list/layout.md) | [preview.html](list/ledger-list/preview.html) | Editorial index: numbered hairline rows with a numeral gutter, display titles, and a right-hand description column (3–5 items) |
+| List | Counter Cards | [list/counter-cards/layout.md](list/counter-cards/layout.md) | [preview.html](list/counter-cards/preview.html) | Headline column left, 2×2 grid of flat hairline-bordered cards right, each led by an oversized index numeral (exactly 4 items) |
+| List | Hanging Numerals | [list/hanging-numerals/layout.md](list/hanging-numerals/layout.md) | [preview.html](list/hanging-numerals/preview.html) | Marginalia: giant solid-faint numerals hang in the left gutter with titles and descriptions annotating them (exactly 3 items) |
+| List | Rule Columns | [list/rule-columns/layout.md](list/rule-columns/layout.md) | [preview.html](list/rule-columns/preview.html) | Three open columns, each opened by an accent tick and mono numeral — no borders, no cards; the gap is the divider (exactly 3 items) |
+| List | Staircase | [list/staircase/layout.md](list/staircase/layout.md) | [preview.html](list/staircase/preview.html) | Sequence made spatial: 3–4 items descend the stage in steps, each lower and further right — position replaces every arrow |
+| List | Spotlight | [list/spotlight/layout.md](list/spotlight/layout.md) | [preview.html](list/spotlight/preview.html) | Honest hierarchy: one featured item runs large above a hairline, the remaining three share a quiet compressed row (1 + 3 items) |
+| List | Manifesto | [list/manifesto/layout.md](list/manifesto/layout.md) | [preview.html](list/manifesto/preview.html) | The list as one flowing display sentence — connectives muted, 3–5 keywords at full contrast, one in accent, a mono footnote naming the count |
+| Stats | Keynote Figure | [stats/keynote-figure/layout.md](stats/keynote-figure/layout.md) | [preview.html](stats/keynote-figure/preview.html) | One hero number at display scale with label and reading, corroborated by a ruled rail of 2–3 secondary stats on the right |
+| Stats | Stat Strip | [stats/stat-strip/layout.md](stats/stat-strip/layout.md) | [preview.html](stats/stat-strip/preview.html) | Editorial header over three equal ruled stat tiles — value, label, mono footnote — with a data-source footer |
+| Stats | Ratio Split | [stats/ratio-split/layout.md](stats/ratio-split/layout.md) | [preview.html](stats/ratio-split/preview.html) | Before faces after: muted old figure left, bright new figure right, accent arrow and computed delta chip between (exactly one pair) |
+| Stats | Denominator | [stats/denominator/layout.md](stats/denominator/layout.md) | [preview.html](stats/denominator/preview.html) | The stat as a typeset fraction — huge numerator over an accent bar over its denominator phrase, ratio chip below, candid reading column right |
+| Stats | Ticker | [stats/ticker/layout.md](stats/ticker/layout.md) | [preview.html](stats/ticker/preview.html) | A dense ruled band of exactly four figures divided by hairlines — the broadsheet market strip; values and terse labels only |
+| Stats | Bar Ledger | [stats/bar-ledger/layout.md](stats/bar-ledger/layout.md) | [preview.html](stats/bar-ledger/preview.html) | 3–4 labeled horizontal bars in true proportion, one highlighted in accent — the pack's only chart, stripped to label / bar / value |
+| Stats | Number Story | [stats/number-story/layout.md](stats/number-story/layout.md) | [preview.html](stats/number-story/preview.html) | One display-scale sentence with its 2–4 figures oversized in accent, and a mono source line certifying them — statistics people can quote |
+| Quote | Testimony | [quote/testimony/layout.md](quote/testimony/layout.md) | [preview.html](quote/testimony/preview.html) | Giant accent quote glyph, the quotation at display scale across two-thirds of the stage, ruled attribution, optional 360px portrait |
+| Comparison | Ledger Versus | [comparison/ledger-versus/layout.md](comparison/ledger-versus/layout.md) | [preview.html](comparison/ledger-versus/preview.html) | Two columns split by one center hairline, baseline-aligned point pairs, the favored column's header carrying the accent — no checkmark tables |
+| Timeline | Meridian | [timeline/meridian/layout.md](timeline/meridian/layout.md) | [preview.html](timeline/meridian/preview.html) | Horizontal track with 3–5 dated entries alternating above/below on plain tick connectors; final "today" node in accent |
+| Image | Plate Caption | [image/plate-caption/layout.md](image/plate-caption/layout.md) | [preview.html](image/plate-caption/preview.html) | Museum-label grammar: framed image plate right, figure number + title + interpretive reading left, literal caption strip below the plate |
+| Video | Screening Room | [video/screening-room/layout.md](video/screening-room/layout.md) | [preview.html](video/screening-room/preview.html) | Centered cinema: one bordered 1280×720 player on a dark stage, film title and runtime as a program line on its lower edge |
+| Video | Side Reel | [video/side-reel/layout.md](video/side-reel/layout.md) | [preview.html](video/side-reel/preview.html) | Annotated player: title, reading, and a mono timestamped chapter list left; 1088×612 player with caption right |
+| Video | Backdrop | [video/backdrop/layout.md](video/backdrop/layout.md) | [preview.html](video/backdrop/preview.html) | Ambient muted loop full-bleed under a heavy scrim; statement lower-left and one outlined "watch the full film" chip — the pack's only autoplay, muted by contract |
+| Video | Filmstrip | [video/filmstrip/layout.md](video/filmstrip/layout.md) | [preview.html](video/filmstrip/preview.html) | Playlist grammar: editorial header, main 960×540 player, and an "up next" rail of 2–3 thumbnail rows with durations |
+| Video | Letterbox | [video/letterbox/layout.md](video/letterbox/layout.md) | [preview.html](video/letterbox/preview.html) | Cinemascope band: full-bleed-width 1920×560 video crop between hairline edges, title above, caption and runtime below |
+
+**Choosing between presets in a slot:** match the deck's register. Offset Marquee / Terminal Frame are the versatile editorial defaults; Monolith / Center Seal / Whisper suit ceremonial or high-stakes decks; Split Ledger / Split Curtain / Spine suit structured, systems-minded decks and dual-surface design systems; Masthead / Poster Stack / Echo Stack / Credits Roll are the most expressive — use them when the deck can carry personality; Half Plate / Cover Caption / Cover Coda are image-led — pick them when a strong photograph exists; Corner Weight / Counterpoise / Horizon are the quiet asymmetric pair-ups (Corner Weight ↔ Counterpoise mirror as a deck frame, as do Cover Caption ↔ Cover Coda and Waypoint ↔ Recap Rail); Postscript is the personal sign-off with a single-ask P.S. Presets from different slots mix freely; they do not need to come from the same "family."
+
+Within the content slots — **sections** by register: **Chapter Gate** is the asymmetric workhorse (takes a framing sentence), **Waypoint** the symmetric map, **Inversion** the surface-flip for decks with a firm home surface, **Index Ledger** the recurring contents page (reprint it at every divider with the highlight moved), **Countdown Plate** the monumental beat, **Bookmark** the warm editorial marker, **Threshold** the formal gate (rhymes with a Horizon opening).
+
+**Lists** by item count and intent: **Ledger List** for 3–5 narrated items in reading order; **Counter Cards** for exactly 4 equals; **Hanging Numerals** for 3 items worth slow reading; **Rule Columns** for a triad without boxes; **Staircase** when order IS the meaning; **Spotlight** when one item honestly leads (1+3); **Manifesto** when the list should be spoken as a sentence.
+
+**Stats** by the number's shape: **Keynote Figure** for one hero number; **Stat Strip** for three equals; **Ticker** for four terse figures; **Ratio Split** for one before/after pair; **Denominator** for a proportion with an honest total; **Bar Ledger** when magnitudes should be compared by eye (true proportions, no chart chrome); **Number Story** when 2–4 figures share one causal sentence. **Testimony** carries one attributed quote; **Ledger Versus** one two-option decision; **Meridian** one chronology; **Plate Caption** one framed exhibit.
+
+Within the video slot, pick by how the clip is meant to be consumed: **Screening Room** for full-attention viewing (demo films, launch clips), **Side Reel** for walkthroughs discussed while paused (its chapter list is the device), **Backdrop** for footage that is atmosphere rather than content (muted loop, statement over it), **Filmstrip** when several clips exist and one leads, **Letterbox** for footage with strong horizontals that earns a cinemascope crop.
+
+## Images in presets
+
+Every preset documents an **Image variant** section in its `layout.md`. The rules are uniform:
+
+- **Images are always optional.** Each spec defines both cases; the no-image case is first-class, not a fallback. An image slot may be removed, filled with the deck's main image, pushed to a background treatment, or substituted with the design system's texture/glyph device — whatever the spec's variant section names.
+- **Recommended size via placeholder URL.** Each image slot states its size as `https://placehold.co/{W}x{H}`. Use that URL while drafting — it makes crops honest and tells the generator the intended dimensions — then swap the `src` for the real asset.
+- **Dimension fallback is structural.** Every image sits inside a fixed-geometry frame with `object-fit: cover` (or a spec-noted `contain` where exact pixels matter), so an image of any delivered aspect ratio fills the slot without moving the layout.
+- **Load fallback is structural too.** Keep a token-built CSS fill (gradient/texture in `--lp-*` tones) *behind* every `<img>`, so a missing or failed image degrades to a designed surface instead of a hole. Image-led presets (Half Plate, Cover Caption, Cover Coda, Plate Caption) design that fill to double as their documented no-image variant.
+
+## Video in presets
+
+The `video` slot presets follow the image rules plus a media contract, spelled out per preset in a **Video embed & fallbacks** section:
+
+- **Embed options:** a local `<video controls preload="metadata" poster="...">` is preferred (self-contained, exports cleanly); a hosted `<iframe>` (YouTube/Vimeo, `allowfullscreen`) is accepted at the same frame geometry. Note that iframes cannot be cropped by `object-fit` — Letterbox documents its matting rule for that case.
+- **Sound is opt-in, always.** No preset autoplays with audio. Backdrop is the only preset allowed to autoplay at all, and only `muted loop playsinline`; under `prefers-reduced-motion` it shows its poster instead.
+- **Posters are required** and use the same `placehold.co/{W}x{H}` drafting convention at the frame's size. The demos render the pre-play poster state — which is also exactly what PDF export captures.
+- **Videos are optional** like images: every video preset documents a no-video variant (poster-as-still or dropping the slide) so decks degrade gracefully when footage isn't ready.
+
+## Slot taxonomy
+
+Slots covered: `opening` (10), `closing` (10), `section` (7), `list` (7), `stats` (7), `quote` (1), `comparison` (1), `timeline` (1), `image` (1), `video` (5). Remaining candidates for future presets: editorial two-column read, process/cycle, agenda. A deck's remaining slide types are designed freely within the chosen design system; where a preset slot exists, use a preset.
+
+## How to use a preset
+
+1. **Pick the preset for the slot** (opening, closing, …) and read its `layout.md`. Treat every geometry value in the spec as authoritative at the 1920×1080 stage — positions, sizes, max line counts, spacing.
+2. **Map the neutral tokens to the active design system.** Every preset styles itself exclusively through the `--lp-*` custom properties listed below. Point each token at the design system's equivalent role — never at the demo's neutral grays.
+3. **Apply the design system's decorative vocabulary on top.** The spec marks explicit *skin points* — places where the design system may substitute its own signature element (e.g., its kicker treatment, its rule/divider style, its texture overlay) without moving or resizing anything.
+4. **Keep the structure.** Do not re-center an asymmetric layout, shrink a display size below its stated minimum, add panels, or exceed the stated line/character limits. If content doesn't fit the limits, shorten the content — not the layout.
+
+## Neutral token contract
+
+Every layout preset consumes exactly these tokens. Demos ship grayscale defaults; real decks must remap all of them.
+
+```css
+.slide.lp {
+    /* surfaces & text */
+    --lp-bg:        /* slide surface */;
+    --lp-fg:        /* primary text on that surface */;
+    --lp-fg-muted:  /* secondary text — leads, meta */;
+    --lp-fg-faint:  /* ghost/outline elements — must stay low-contrast */;
+    --lp-accent:    /* the design system's single accent */;
+    --lp-line:      /* hairline borders & dividers */;
+
+    /* type roles */
+    --lp-font-display: /* design system's display face */;
+    --lp-font-body:    /* design system's body face */;
+    --lp-font-mono:    /* metadata face — mono if the system has one,
+                          otherwise its caps/label treatment face */;
+}
+```
+
+Mapping rules:
+
+- **Dark and light systems both work.** The tokens are role-based, not lightness-based. For a dark system, `--lp-bg` is the dark surface and `--lp-fg-faint` becomes a low-opacity light value; for a light system, the reverse.
+- **`--lp-accent` maps to the system's one hot color.** If the system is monochrome, map it to `--lp-fg` — accents degrade gracefully to weight/contrast.
+- **`--lp-fg-faint` must stay quiet.** Ghost elements are atmosphere, not content: keep them at roughly 8–18% contrast against `--lp-bg`. If the design system has a texture fingerprint (grids, halftone), it may replace a ghost element entirely — that is a documented skin point.
+- **Inverted regions.** Some presets (Split Ledger, Split Curtain) fill a panel or band by swapping `--lp-bg`/`--lp-fg`. Dual-surface design systems should map that region to their alternate surface (e.g., navy panel on cream field) instead of a literal swap; single-surface systems keep the inversion. Text on the inverted region uses the region's surface colors.
+- **Font metrics differ between systems.** After remapping fonts, re-verify the line-count and overflow limits in the spec; a wider face may need the display size stepped down within the spec's allowed range.
+
+## Authoring new presets
+
+One directory per preset: `layout-presets/<slot>/<preset-name>/` containing `layout.md` (frontmatter + structural spec) and `preview.html` (self-contained fixed-stage demo in neutral grayscale). Demos follow the same authenticity rules as style previews: they must read as a real slide — plausible content, no meta labels like "preset" or "layout" rendered on the slide.

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spotlight — list layout demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   =========================================== */
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+}
+
+/* ===========================================
+   NEUTRAL TOKEN CONTRACT — remap per design system.
+   =========================================== */
+.slide.lp {
+    --lp-bg: #161616;
+    --lp-fg: #ececea;
+    --lp-fg-muted: #969694;
+    --lp-fg-faint: rgba(255, 255, 255, 0.12);
+    --lp-accent: #929290;
+    --lp-line: rgba(255, 255, 255, 0.24);
+    --lp-font-display: 'Archivo', sans-serif;
+    --lp-font-body: 'Archivo', sans-serif;
+    --lp-font-mono: 'IBM Plex Mono', monospace;
+    background: var(--lp-bg);
+    color: var(--lp-fg);
+}
+
+/* === HEADER === */
+.lp-kicker {
+    position: absolute; left: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--lp-accent);
+}
+.lp-counter {
+    position: absolute; right: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--lp-fg-muted);
+}
+.lp-headline {
+    position: absolute; left: 96px; top: 118px;
+    margin: 0;
+    font-family: var(--lp-font-display);
+    font-size: 84px; font-weight: 800;
+    line-height: 1.02; letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+.lp-headline em { font-style: normal; color: var(--lp-accent); }
+
+/* === FEATURED ITEM ===
+   Image variant: 560×280 bordered plate at x:1264, y:330
+   (placehold.co/560x280); description caps at 900px. */
+.lp-feat-num {
+    position: absolute; left: 96px; top: 330px;
+    font-family: var(--lp-font-display);
+    font-size: 72px; font-weight: 800;
+    line-height: 1;
+    color: var(--lp-accent);
+}
+.lp-feat-title {
+    position: absolute; left: 260px; top: 330px;
+    margin: 0; max-width: 1450px;
+    font-family: var(--lp-font-display);
+    font-size: 56px; font-weight: 700;
+    line-height: 1.08;
+    color: var(--lp-fg);
+}
+.lp-feat-desc {
+    position: absolute; left: 260px; top: 420px;
+    margin: 0; max-width: 1100px;
+    font-family: var(--lp-font-body);
+    font-size: 22px; line-height: 1.6;
+    color: var(--lp-fg-muted);
+}
+
+/* === DIVIDER + FOLLOWERS === */
+.lp-divider {
+    position: absolute; left: 96px; right: 96px; top: 640px;
+    height: 1px; background: var(--lp-line);
+    transform-origin: left center;
+}
+.lp-followers {
+    position: absolute; left: 96px; right: 96px; top: 696px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 64px;
+}
+.lp-fol-head { display: flex; align-items: baseline; gap: 16px; }
+.lp-fol-num {
+    font-family: var(--lp-font-mono);
+    font-size: 16px;
+    color: var(--lp-fg-muted);
+    flex: none;
+}
+.lp-fol-title {
+    font-family: var(--lp-font-display);
+    font-size: 28px; font-weight: 700;
+    color: var(--lp-fg);
+}
+.lp-fol-desc {
+    margin: 10px 0 0;
+    font-family: var(--lp-font-body);
+    font-size: 17px; line-height: 1.5;
+    color: var(--lp-fg-muted);
+}
+
+/* === CHOREOGRAPHY === */
+@keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-rise-sm { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes lp-wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.slide.active .lp-kicker,
+.slide.active .lp-counter { animation: lp-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0s both; }
+.slide.active .lp-headline { animation: lp-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+.slide.active .lp-feat-num { animation: lp-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both; }
+.slide.active .lp-feat-title,
+.slide.active .lp-feat-desc { animation: lp-rise-sm 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
+.slide.active .lp-divider { animation: lp-wipe 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both; }
+.slide.active .lp-fol:nth-child(1) { animation: lp-rise-sm 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.90s both; }
+.slide.active .lp-fol:nth-child(2) { animation: lp-rise-sm 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.00s both; }
+.slide.active .lp-fol:nth-child(3) { animation: lp-rise-sm 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.10s both; }
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+    <div class="deck-stage">
+        <section class="slide lp active">
+            <!-- header -->
+            <div class="lp-kicker">Roadmap</div>
+            <div class="lp-counter">10 / 14</div>
+            <h2 class="lp-headline">This quarter's <em>focus</em></h2>
+
+            <!-- featured item -->
+            <div class="lp-feat-num">01</div>
+            <h3 class="lp-feat-title">Edge inference everywhere</h3>
+            <p class="lp-feat-desc">Every other line on this slide gets easier once models run on site. Latency budgets become trivial, the console gets a live feed worth showing, and partners integrate against hardware they already own. This is the domino.</p>
+
+            <!-- divider + followers -->
+            <div class="lp-divider"></div>
+            <div class="lp-followers">
+                <div class="lp-fol">
+                    <div class="lp-fol-head"><span class="lp-fol-num">02</span><span class="lp-fol-title">Console v3</span></div>
+                    <p class="lp-fol-desc">The live-feed release, riding on edge.</p>
+                </div>
+                <div class="lp-fol">
+                    <div class="lp-fol-head"><span class="lp-fol-num">03</span><span class="lp-fol-title">Partner APIs</span></div>
+                    <p class="lp-fol-desc">Stable contract, versioned from day one.</p>
+                </div>
+                <div class="lp-fol">
+                    <div class="lp-fol-head"><span class="lp-fol-num">04</span><span class="lp-fol-title">Latency budgets</span></div>
+                    <p class="lp-fol-desc">Enforced in CI once edge lands.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+(function () {
+    var stage = document.querySelector('.deck-stage');
+    function fit() {
+        var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        stage.style.transform = 'translate(' + (window.innerWidth - 1920 * s) / 2 + 'px,' + (window.innerHeight - 1080 * s) / 2 + 'px) scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit);
+    fit();
+})();
+</script>
+</body>
+</html>

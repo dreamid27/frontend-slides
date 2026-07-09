@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger Versus — comparison layout demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   =========================================== */
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+}
+
+/* ===========================================
+   NEUTRAL TOKEN CONTRACT — remap per design system.
+   =========================================== */
+.slide.lp {
+    --lp-bg: #171717;
+    --lp-fg: #ebebe9;
+    --lp-fg-muted: #979795;
+    --lp-fg-faint: rgba(255, 255, 255, 0.12);
+    --lp-accent: #8f8f8d;
+    --lp-line: rgba(255, 255, 255, 0.22);
+    --lp-font-display: 'Archivo', sans-serif;
+    --lp-font-body: 'Archivo', sans-serif;
+    --lp-font-mono: 'IBM Plex Mono', monospace;
+    background: var(--lp-bg);
+    color: var(--lp-fg);
+}
+
+/* === HEADER === */
+.lp-kicker {
+    position: absolute; left: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--lp-accent);
+}
+.lp-counter {
+    position: absolute; right: 96px; top: 72px;
+    font-family: var(--lp-font-mono);
+    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--lp-fg-muted);
+}
+.lp-headline {
+    position: absolute; left: 96px; top: 118px;
+    margin: 0; max-width: 1200px;
+    font-family: var(--lp-font-display);
+    font-size: 84px; font-weight: 800;
+    line-height: 1.02; letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+.lp-headline em { font-style: normal; color: var(--lp-accent); }
+
+/* === CENTER DIVIDER === */
+.lp-divider {
+    position: absolute; left: 960px; top: 300px;
+    width: 1px; height: 660px;
+    background: var(--lp-line);
+    transform-origin: center top;
+}
+
+/* === COLUMNS ===
+   Image variant: a 768×160 banner (https://placehold.co/768x160,
+   object-fit cover, CSS fill behind) may sit under each header —
+   both columns or neither; rows then shift down 200px, max 2 rows. */
+.lp-col { position: absolute; top: 310px; width: 768px; }
+.lp-col.left { left: 96px; }
+.lp-col.right { left: 1056px; }
+.lp-col-header {
+    font-family: var(--lp-font-mono);
+    font-size: 17px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--lp-fg-muted);
+}
+.lp-col.is-favored .lp-col-header { color: var(--lp-accent); }
+.lp-fav-bar {
+    position: absolute; /* out of flow so both column headers share a baseline */
+    top: -20px; left: 0;
+    width: 32px; height: 4px;
+    background: var(--lp-accent);
+    transform-origin: left center;
+}
+.lp-row { position: absolute; left: 0; width: 768px; }
+.lp-row.r1 { top: 110px; }
+.lp-row.r2 { top: 290px; }
+.lp-row.r3 { top: 470px; }
+.lp-row-title {
+    font-family: var(--lp-font-display);
+    font-size: 32px; font-weight: 700;
+    color: var(--lp-fg);
+}
+.lp-row-desc {
+    margin-top: 10px;
+    font-family: var(--lp-font-body);
+    font-size: 19px; line-height: 1.5;
+    color: var(--lp-fg-muted);
+}
+
+/* === CHOREOGRAPHY === */
+@keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-rise-sm { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-draw { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes lp-wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.slide.active .lp-kicker,
+.slide.active .lp-counter { animation: lp-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0s both; }
+.slide.active .lp-headline { animation: lp-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+.slide.active .lp-divider { animation: lp-draw 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+.slide.active .lp-col-header { animation: lp-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
+.slide.active .lp-fav-bar { animation: lp-wipe 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both; }
+.slide.active .lp-row.r1 { animation: lp-rise-sm 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.70s both; }
+.slide.active .lp-row.r2 { animation: lp-rise-sm 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both; }
+.slide.active .lp-row.r3 { animation: lp-rise-sm 0.55s cubic-bezier(0.16, 1, 0.3, 1) 1.00s both; }
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+    <div class="deck-stage">
+        <section class="slide lp active">
+            <!-- header -->
+            <div class="lp-kicker">Platform Decision</div>
+            <div class="lp-counter">09 / 14</div>
+            <h2 class="lp-headline">Build or <em>buy</em></h2>
+
+            <!-- center divider -->
+            <div class="lp-divider" aria-hidden="true"></div>
+
+            <!-- left column -->
+            <div class="lp-col left">
+                <div class="lp-col-header">Build in-house</div>
+                <div class="lp-row r1">
+                    <div class="lp-row-title">Time to first site</div>
+                    <p class="lp-row-desc">Nine to twelve months before the first production deployment.</p>
+                </div>
+                <div class="lp-row r2">
+                    <div class="lp-row-title">Total control</div>
+                    <p class="lp-row-desc">Every layer ours to shape — and ours to patch at 3 a.m.</p>
+                </div>
+                <div class="lp-row r3">
+                    <div class="lp-row-title">Team cost</div>
+                    <p class="lp-row-desc">Six engineers, permanently, before a single feature ships.</p>
+                </div>
+            </div>
+
+            <!-- right column (favored) -->
+            <div class="lp-col right is-favored">
+                <div class="lp-fav-bar"></div>
+                <div class="lp-col-header">Partner platform</div>
+                <div class="lp-row r1">
+                    <div class="lp-row-title">Time to first site</div>
+                    <p class="lp-row-desc">Six weeks, using the rollout playbook we already run.</p>
+                </div>
+                <div class="lp-row r2">
+                    <div class="lp-row-title">Focused control</div>
+                    <p class="lp-row-desc">We own the models and the data; the plumbing is their pager.</p>
+                </div>
+                <div class="lp-row r3">
+                    <div class="lp-row-title">Team cost</div>
+                    <p class="lp-row-desc">Two engineers on integration, redeployable after launch.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+(function () {
+    var stage = document.querySelector('.deck-stage');
+    function fit() {
+        var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        stage.style.transform = 'translate(' + (window.innerWidth - 1920 * s) / 2 + 'px,' + (window.innerHeight - 1080 * s) / 2 + 'px) scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit);
+    fit();
+})();
+</script>
+</body>
+</html>
