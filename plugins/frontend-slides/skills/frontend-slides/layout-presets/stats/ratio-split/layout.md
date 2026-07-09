@@ -43,7 +43,7 @@ theatrical stat.
 │   Q1 BASELINE   ← labels →         Q2, AFTER THE REWRITE       │
 │                                                                │
 │  ──────────────────────────────────────────────────────────    │
-│  SOURCE / PERIOD                                     NODEFLUX  │
+│  SOURCE / PERIOD                                      VANTAGE  │
 └────────────────────────────────────────────────────────────────┘
 ```
 

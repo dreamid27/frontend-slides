@@ -43,7 +43,7 @@ sentence's subject.
 │  Incidents         ███░░  ← accent (the story)      118 h     │
 │                                                                │
 │  ──────────────────────────────────────────────────────────    │
-│  SOURCE / PERIOD                                     NODEFLUX  │
+│  SOURCE / PERIOD                                       CINDER  │
 └────────────────────────────────────────────────────────────────┘
 ```
 

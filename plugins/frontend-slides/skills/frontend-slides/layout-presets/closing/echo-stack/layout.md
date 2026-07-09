@@ -42,7 +42,7 @@ beat, so all practical details compress into one footer line.
 │  Thank you.       ← row 5, 100%, period in accent              │
 │                                                                │
 │  ──────────────────────────────────────────────────────────    │
-│  EMAIL · SITE · HANDLE                              NODEFLUX   │
+│  EMAIL · SITE · HANDLE                                FATHOM   │
 └────────────────────────────────────────────────────────────────┘
 ```
 

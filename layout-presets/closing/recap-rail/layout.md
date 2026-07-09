@@ -43,7 +43,7 @@ comprehension aid a closing can offer.
 │  One line drawing the moral of the journey.   ← coda           │
 │                                                                │
 │  ──────────────────────────────────────────────────────────    │
-│  EMAIL · SITE · HANDLE                              NODEFLUX   │
+│  EMAIL · SITE · HANDLE                             NORTHBEAM   │
 └────────────────────────────────────────────────────────────────┘
 ```
 

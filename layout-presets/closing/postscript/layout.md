@@ -44,7 +44,7 @@ Put the single most important ask there.
 │                                                                │
 │  ▮▮▮▮                                                          │
 │  A. Rahman           ← signature block      [portrait]         │
-│  HEAD OF PLATFORM — NODEFLUX                                   │
+│  HEAD OF PLATFORM —  HALCYON                                   │
 │                                                                │
 │  P.S. One ask: read the roadmap before Friday's review.        │
 └────────────────────────────────────────────────────────────────┘

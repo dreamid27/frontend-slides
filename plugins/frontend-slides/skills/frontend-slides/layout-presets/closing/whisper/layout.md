@@ -41,7 +41,7 @@ it only works when the room's attention is already yours.
 │                                                                │
 │                                                                │
 │                                                                │
-│                 alfin@nodeflux.io · @nodeflux                  │
+│                 alfin@auric.io · @auric                  │
 └────────────────────────────────────────────────────────────────┘
 ```
 

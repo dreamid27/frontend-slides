@@ -44,7 +44,7 @@ what the two missing units are, which is usually the honest part.
 │   ▮▮ 95% COMPLETE ← ratio chip                                 │
 │                                                                │
 │  ──────────────────────────────────────────────────────────    │
-│  SOURCE / PERIOD                                     NODEFLUX  │
+│  SOURCE / PERIOD                                         ARKA  │
 └────────────────────────────────────────────────────────────────┘
 ```
 

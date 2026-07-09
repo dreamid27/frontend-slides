@@ -43,7 +43,7 @@ board decks that must feel unhurried.
 │                                        ▮▮▮▮                    │
 │                                        A. Rahman               │
 │                                        HEAD OF PLATFORM        │
-│                                        NODEFLUX — 08 JUL 2026  │
+│                                          FATHOM — 08 JUL 2026  │
 └────────────────────────────────────────────────────────────────┘
 ```
 

@@ -44,7 +44,7 @@ should dominate, use Keynote Figure instead.
 │  UP 3.1× YOY         DOWN FROM 91MS     TRAILING 12 MONTHS     │
 │                                                                │
 │  ──────────────────────────────────────────────────────────    │
-│  SOURCE / PERIOD                                     NODEFLUX  │
+│  SOURCE / PERIOD                                     SOLSTICE  │
 └────────────────────────────────────────────────────────────────┘
 ```
 
