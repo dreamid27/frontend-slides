@@ -42,10 +42,10 @@ body {
     background: var(--slide-bg, #fff);
 }
 
-/* 4. Slides stack inside the fixed stage.
-   Content must be laid out at 1920×1080, not reflowed per device. */
+/* 4. Slides stack inside the fixed stage; author content at 1920×1080, never reflowed per device.
+   position needs !important: the Tailwind CDN injects utilities after this block, so a stray `relative` on a slide would win the cascade and blank every slide after the first. */
 .slide {
-    position: absolute;
+    position: absolute !important;
     inset: 0;
     width: 1920px;
     height: 1080px;
@@ -108,7 +108,8 @@ svg {
     }
 
     .slide {
-        position: relative;
+        /* !important to beat the screen rule's hardened position */
+        position: relative !important;
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;

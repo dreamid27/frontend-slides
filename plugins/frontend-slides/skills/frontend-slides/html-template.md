@@ -76,6 +76,9 @@ Reference architecture for generated decks. Every presentation is a fixed 16:9 s
 <body>
     <div class="deck-viewport">
         <main class="deck-stage" id="deckStage">
+            <!-- Slides get ONLY: slide [active] + bg/text utilities.
+                 NO position utilities (relative/absolute/...) on <section> —
+                 .slide is already position:absolute; adding one breaks the deck. -->
             <!-- Slide 1: Title — layout: opening/offset-marquee -->
             <section class="slide active bg-primary text-ink">
                 <h1 class="reveal absolute left-[96px] bottom-[380px] font-display text-[112px] font-bold leading-[0.95]">Presentation Title</h1>
@@ -102,7 +105,19 @@ Reference architecture for generated decks. Every presentation is a fixed 16:9 s
                 this.setupStageScale();
                 this.setupKeyboardNav();
                 this.setupTouchNav();
+                this.assertStageInvariants();
                 this.showSlide(0);
+            }
+
+            assertStageInvariants() {
+                // Slides outside position:absolute fall into normal flow and
+                // get clipped below the 1080px stage — fail loudly, not blank.
+                this.slides.forEach((slide, i) => {
+                    const pos = getComputedStyle(slide).position;
+                    if (pos !== 'absolute') console.error(
+                        `Slide ${i + 1}: computed position is "${pos}" (must be absolute). ` +
+                        'Remove position utilities from the <section class="slide"> element.');
+                });
             }
 
             setupStageScale() {
@@ -137,6 +152,7 @@ Reference architecture for generated decks. Every presentation is a fixed 16:9 s
 ## Tailwind Rules for Decks
 
 - All layout, spacing, typography, color, border, and effect styling goes in utility classes on the markup.
+- **Never put a position utility (`relative`/`absolute`/`fixed`/`static`/`sticky`) on `<section class="slide">`** — it is already `position: absolute` and the containing block for its children; a stray `relative` drops the slide into normal flow and blanks every slide after the first. For a positioning context, put `relative` on an inner wrapper `<div>`.
 - Stage geometry uses arbitrary pixel values at the 1920×1080 design size: `left-[96px]`, `text-[168px]`, `w-[560px]`, `tracking-[0.18em]`.
 - Token-based colors/fonts come from `tailwind.config` names (`bg-primary`, `text-accent`, `font-display`) — never hardcode a hex twice.
 - Keep one semantic hook class per animated/JS-targeted element (`reveal`, `slide`); it carries zero visual styling.

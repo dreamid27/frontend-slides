@@ -63,7 +63,7 @@ body {
     background: var(--slide-bg, #fff);
 }
 .slide {
-    position: absolute;
+    position: absolute !important; /* Tailwind CDN injects later; a stray `relative` utility must not win */
     inset: 0;
     width: 1920px;
     height: 1080px;
