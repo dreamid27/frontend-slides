@@ -202,16 +202,15 @@ components:
     description: "Small white dots at the bottom of the viewport indicating slide position. The fixed counter (#slide-counter) is intentionally disabled — the slide-foot already shows NN / TT."
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -481,15 +480,17 @@ The system has no `@media print` rule. Print export will inherit the horizontal-
 
 ### Mixed-Content Strategy
 
-Use **Strategy C** — keep Playfair Display as the Latin serif and let CJK glyphs fall through to LXGW WenKai. Playfair Display weight 400 (never bold) is the system's most important typographic commitment; replacing it with a CJK serif wholesale would break the monograph / boutique-brand-book register that defines Grove. The system already loads Noto Serif SC / Noto Sans SC as fallbacks per its existing font stack — the change is to add LXGW WenKai as the preferred CJK display face ahead of Noto Serif SC:
+Use **Strategy C** — keep Playfair Display as the Latin serif and let CJK glyphs fall through to LXGW WenKai. Playfair Display weight 400 (never bold) is the system's most important typographic commitment; replacing it with a CJK serif wholesale would break the monograph / boutique-brand-book register that defines Grove. The system already loads Noto Serif SC / Noto Sans SC as fallbacks per its existing font stack — the change is to add LXGW WenKai as the preferred CJK display face ahead of Noto Serif SC in the `fontFamily` tokens of the inline tailwind.config:
 
-```css
-/* Playfair roles (display, h1, h2, h3, quote, stat, watermark) */
-font-family: 'Playfair Display', 'LXGW WenKai TC', 'Noto Serif SC', Georgia, serif;
-/* Jost roles (lead, body, caption) */
-font-family: 'Jost', 'Noto Serif SC', system-ui, sans-serif;
-/* JetBrains Mono roles (label, kicker, chapter-num, stat-label) */
-font-family: 'JetBrains Mono', 'Noto Sans Mono CJK SC', monospace;
+```js
+fontFamily: {
+  // Playfair roles (display, h1, h2, h3, quote, stat, watermark)
+  display: "'Playfair Display', 'LXGW WenKai TC', 'Noto Serif SC', Georgia, serif",
+  // Jost roles (lead, body, caption)
+  body:    "'Jost', 'Noto Serif SC', system-ui, sans-serif",
+  // JetBrains Mono roles (label, kicker, chapter-num, stat-label)
+  mono:    "'JetBrains Mono', 'Noto Sans Mono CJK SC', monospace",
+}
 ```
 
 (Note: the system currently lists `'Noto Sans SC'` in the Jost stack — for Grove's literary register, swap to `'Noto Serif SC'` instead. The Mincho body voice is closer to Jost weight 300's "good paper" feel than the Hei sans face.)
@@ -530,16 +531,13 @@ The watermark numeral (18vw, 6% opacity) is particularly effective in Chinese �
 
 ### Known CJK Gap
 
-The system's signature `<em>` italic-coral treatment is the hardest piece to translate: **Chinese has no italic concept** — slanted Han glyphs read as broken, not as emphasis. The current Grove CSS depends on the browser's default `<em>` styling (italic) plus a CSS color rule for the coral. In Chinese, the italic does nothing visually, so the emphasis collapses to "just coral text inside a headline." That's not bad — coral inside an LXGW WenKai headline still reads as a deliberate accent — but the system loses one of its two emphasis dimensions (color + slant) and is left with only color.
+The system's signature `<em>` italic-coral treatment is the hardest piece to translate: **Chinese has no italic concept** — slanted Han glyphs read as broken, not as emphasis. The current Grove styling depends on the browser's default `<em>` styling (italic) plus a coral text-color utility. In Chinese, the italic does nothing visually, so the emphasis collapses to "just coral text inside a headline." That's not bad — coral inside an LXGW WenKai headline still reads as a deliberate accent — but the system loses one of its two emphasis dimensions (color + slant) and is left with only color.
 
-To compensate, two options: (1) accept color-only emphasis on Chinese headlines and let the coral carry the weight, or (2) switch the `<em>` portion to a different face inside Chinese headlines — e.g., **站酷小薇体 (ZCOOL XiaoWei)** — to provide a face-based contrast that approximates the slant contrast of Latin italic. Add to the CSS:
+To compensate, two options: (1) accept color-only emphasis on Chinese headlines and let the coral carry the weight, or (2) switch the `<em>` portion to a different face inside Chinese headlines — e.g., **站酷小薇体 (ZCOOL XiaoWei)** — to provide a face-based contrast that approximates the slant contrast of Latin italic. Add the equivalent utilities on every `<em>` inside `.h1`, `.h2`, `.h3`, and `.quote-text`:
 
-```css
-.h1 em, .h2 em, .h3 em, .quote-text em {
-  color: var(--c-accent);
-  font-family: 'Playfair Display', 'ZCOOL XiaoWei', 'LXGW WenKai TC', serif;
-  font-style: italic; /* Latin renders italic; CJK ignores */
-}
+```html
+<!-- italic renders for Latin only; CJK ignores font-style -->
+<em class="text-accent italic font-['Playfair_Display','ZCOOL_XiaoWei','LXGW_WenKai_TC',serif]">…</em>
 ```
 
 This gives the Latin portion italic-coral and the CJK portion face-shift-coral. Test on a per-deck basis — for many Grove decks, color-only emphasis is sufficient.
@@ -561,7 +559,7 @@ This gives the Latin portion italic-coral and the CJK portion face-shift-coral. 
 
 - The four Google Fonts (Playfair Display, Jost, JetBrains Mono, Noto Serif SC / Noto Sans SC) are loaded via `<link>`. Offline rendering will fall back to Georgia, system-ui, monospace, and system serif/sans for the Noto roles — which preserves the rough character but loses the typographic identity. Self-hosting recommended for offline / print reliability.
 - The system loads Playfair weight 500 and Jost weights 200/400/500 — these are not used in the published CSS but are available. Using them would break the system's single-weight commitment.
-- The `<em>` italic-coral treatment relies on the CSS rule `.h1 em, .h2 em, .h3 em { color: var(--c-accent); }` — note that the actual italic property is NOT set in the rule (the comment block is empty). The italic comes from the browser's default `<em>` styling. If a stylesheet override removes the default italic, the coral accent will lose its italic character.
+- The `<em>` italic-coral treatment relies on a `text-accent` color utility applied to `<em>` inside `.h1`, `.h2`, and `.h3` — note that the actual italic property is NOT set explicitly. The italic comes from the browser's default `<em>` styling. If a stylesheet override removes the default italic, the coral accent will lose its italic character.
 - The grove-num watermark uses 18vw font-size — on extremely wide viewports (3000px+) this becomes very large and may push the slide-foot area. The CSS positions it at `bottom: -0.15em` to absorb some overflow, but very tall numerals at very wide viewports may need adjustment.
 - The vertical sidebar component (`.grove-sidebar`) is loaded in the CSS but explicitly disabled (`display: none !important`). It was a chapter-tab decoration that read as clutter; the slide-chrome bar provides the section name already.
 - The fixed slide-counter (`#slide-counter`) is also disabled — the slide-foot bar already shows "NN / TT" so the fixed counter was a duplicate.

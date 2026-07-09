@@ -80,7 +80,7 @@ rows leave that field empty, so the strip becomes the counterweight.
 Choose a quiet vertical crop; the strip must not out-shout row 5.
 
 **Recommended size / placeholder:** `https://placehold.co/424x740`.
-**Dimension fallback:** fixed 424×740 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 424×740 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional — the empty
 right field is the default and is equally correct.
 

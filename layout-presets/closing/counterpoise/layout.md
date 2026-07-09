@@ -76,7 +76,7 @@ and a mono caption line beneath. Use for a team photo or the shipped
 thing — the ending's proof.
 
 **Recommended size / placeholder:** `https://placehold.co/480x360`.
-**Dimension fallback:** fixed 480×360 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 480×360 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional.
 
 **Without an image:** the type-only stack above.

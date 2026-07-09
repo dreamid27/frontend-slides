@@ -79,8 +79,8 @@ under its header (y:360 → 520); point rows shift down 200px and cap at
 rigs the comparison visually.
 
 **Recommended size / placeholder:** `https://placehold.co/768x160`.
-**Dimension fallback:** fixed 768×160 letterbox frames, `object-fit:
-cover`, token CSS fill behind each `<img>`. Banners are optional.
+**Dimension fallback:** fixed 768×160 letterbox frames, `object-cover`,
+token CSS fill behind each `<img>`. Banners are optional.
 
 ## Choreography
 

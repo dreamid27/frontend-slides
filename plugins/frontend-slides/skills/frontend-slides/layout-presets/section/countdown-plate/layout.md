@@ -71,7 +71,7 @@ because its drama *is* the number.
 (`--lp-bg` at ≥ 90%); the numeral must remain the strongest shape on
 the slide. **Recommended size / placeholder:**
 `https://placehold.co/1920x1080`. **Dimension fallback:** full-bleed
-frame, `object-fit: cover`, flat `--lp-bg` behind the `<img>`. The
+frame, `object-cover`, flat `--lp-bg` behind the `<img>`. The
 image is optional and usually omitted.
 
 ## Choreography

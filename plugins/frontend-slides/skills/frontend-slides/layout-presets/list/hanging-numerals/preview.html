@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,66 +73,15 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADER === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-headline {
-    position: absolute; left: 96px; top: 118px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 84px; font-weight: 800;
-    line-height: 1.02; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-headline em { font-style: normal; color: var(--lp-accent); }
-
-/* === ITEMS ===
-   Image variant: a 420×760 bordered plate at x:1404, y:340
-   (placehold.co/420x760); descriptions then cap at 900px. */
-.lp-item { position: absolute; left: 96px; }
-.lp-item.i1 { top: 340px; }
-.lp-item.i2 { top: 560px; }
-.lp-item.i3 { top: 780px; }
-.lp-num {
-    position: absolute; left: 0; top: 0;
-    font-family: var(--lp-font-display);
-    font-size: 190px; font-weight: 800;
-    line-height: 0.85;
-    color: var(--lp-fg-faint);
-    pointer-events: none;
-}
-.lp-item-body { position: absolute; left: 304px; top: 18px; width: 1100px; }
-.lp-item-title {
-    font-family: var(--lp-font-display);
-    font-size: 42px; font-weight: 700;
-    line-height: 1.1;
-    color: var(--lp-fg);
-}
-.lp-item-desc {
-    margin-top: 12px;
-    font-family: var(--lp-font-body);
-    font-size: 20px; line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY ===
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
    Numerals fade to their faint resting state (no `to` keyframe —
-   each lands on its own computed color/opacity). */
+   each lands on its own computed color/opacity).
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-fade-in-place { from { opacity: 0; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
@@ -124,32 +101,34 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- header -->
-            <div class="lp-kicker">Strategy</div>
-            <div class="lp-counter">07 / 14</div>
-            <h2 class="lp-headline">Three <em>bets</em></h2>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Strategy</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">07 / 14</div>
+            <h2 class="lp-headline absolute left-[96px] top-[118px] m-0 font-display text-[84px] font-extrabold leading-[1.02] tracking-[-0.02em] uppercase">Three <em class="not-italic text-lp-accent">bets</em></h2>
 
-            <!-- items -->
-            <div class="lp-item i1">
-                <div class="lp-num" aria-hidden="true">01</div>
-                <div class="lp-item-body">
-                    <div class="lp-item-title">Edge first</div>
-                    <p class="lp-item-desc">Inference moves to customer hardware; the cloud becomes the audit trail, not the bottleneck.</p>
+            <!-- items
+                 Image variant: a 420×760 bordered plate at x:1404, y:340
+                 (placehold.co/420x760); descriptions then cap at 900px. -->
+            <div class="lp-item i1 absolute left-[96px] top-[340px]">
+                <div class="lp-num absolute left-0 top-0 font-display text-[190px] font-extrabold leading-[0.85] text-lp-faint pointer-events-none" aria-hidden="true">01</div>
+                <div class="lp-item-body absolute left-[304px] top-[18px] w-[1100px]">
+                    <div class="font-display text-[42px] font-bold leading-[1.1] text-lp-fg">Edge first</div>
+                    <p class="mt-[12px] font-body text-[20px] leading-[1.5] text-lp-muted">Inference moves to customer hardware; the cloud becomes the audit trail, not the bottleneck.</p>
                 </div>
             </div>
-            <div class="lp-item i2">
-                <div class="lp-num" aria-hidden="true">02</div>
-                <div class="lp-item-body">
-                    <div class="lp-item-title">One console</div>
-                    <p class="lp-item-desc">Every operational surface collapses into a single view — provisioning to audit in one place.</p>
+            <div class="lp-item i2 absolute left-[96px] top-[560px]">
+                <div class="lp-num absolute left-0 top-0 font-display text-[190px] font-extrabold leading-[0.85] text-lp-faint pointer-events-none" aria-hidden="true">02</div>
+                <div class="lp-item-body absolute left-[304px] top-[18px] w-[1100px]">
+                    <div class="font-display text-[42px] font-bold leading-[1.1] text-lp-fg">One console</div>
+                    <p class="mt-[12px] font-body text-[20px] leading-[1.5] text-lp-muted">Every operational surface collapses into a single view — provisioning to audit in one place.</p>
                 </div>
             </div>
-            <div class="lp-item i3">
-                <div class="lp-num" aria-hidden="true">03</div>
-                <div class="lp-item-body">
-                    <div class="lp-item-title">Latency as law</div>
-                    <p class="lp-item-desc">Speed budgets enter the definition of done; a slow feature is an unfinished feature.</p>
+            <div class="lp-item i3 absolute left-[96px] top-[780px]">
+                <div class="lp-num absolute left-0 top-0 font-display text-[190px] font-extrabold leading-[0.85] text-lp-faint pointer-events-none" aria-hidden="true">03</div>
+                <div class="lp-item-body absolute left-[304px] top-[18px] w-[1100px]">
+                    <div class="font-display text-[42px] font-bold leading-[1.1] text-lp-fg">Latency as law</div>
+                    <p class="mt-[12px] font-body text-[20px] leading-[1.5] text-lp-muted">Speed budgets enter the definition of done; a slow feature is an unfinished feature.</p>
                 </div>
             </div>
         </section>

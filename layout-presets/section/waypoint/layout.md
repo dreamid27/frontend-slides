@@ -85,7 +85,7 @@ itself does not change. Use only quiet, symmetric-tolerant crops
 (sky, texture, architecture straight-on).
 
 **Recommended size / placeholder:** `https://placehold.co/1920x1080`.
-**Dimension fallback:** full-bleed frame, `object-fit: cover`, flat
+**Dimension fallback:** full-bleed frame, `object-cover`, flat
 `--lp-bg` behind the `<img>`. The image is optional and usually
 omitted — Waypoint is at its best bare.
 

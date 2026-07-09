@@ -193,16 +193,15 @@ components:
     transition: "background 0.15s"
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -437,9 +436,11 @@ The system uniquely has interactive hover states baked into the design — list 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;700;800;900&display=swap" rel="stylesheet">
 ```
 
-Then append `'Noto Sans SC'` after the Latin stack in every font-family token:
-```css
-font-family: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, 'Noto Sans SC', sans-serif;
+Then append `'Noto Sans SC'` after the Latin stack in every fontFamily token in the inline tailwind.config:
+```js
+fontFamily: {
+  sans: "'Segoe UI', system-ui, -apple-system, Helvetica, Arial, 'Noto Sans SC', sans-serif",
+}
 ```
 
 ### Universal CJK Adjustments
@@ -478,7 +479,7 @@ Raw Grid's whole aesthetic argument is "this is the user's actual system font, n
 
 ## Known Gaps
 
-- The `--darkgray` (#333333) CSS variable is defined but not actively used in any rule. It is available as a reserved tertiary text color but not deployed anywhere in the source.
+- The `darkgray` (#333333) design token in the inline tailwind.config is defined but not actively used by any utility class. It is available as a reserved tertiary text color but not deployed anywhere in the source.
 - The system loads no external fonts — the rendered letterforms will differ between operating systems. macOS renders system-ui as San Francisco, Windows renders Segoe UI, Linux renders whatever sans-serif is configured. This visual inconsistency is by design but is worth noting.
 - Hover states (list items → green, table rows → green) are interactive web behaviors that have no analog in print or static export. Treat them as bonus interactivity, not core design system.
 - The slide navigation JavaScript is embedded inline — it handles keyboard, touch, and the active-class system. Any new slide must follow the `<div class="slide sN">` pattern and respect the `current` index.

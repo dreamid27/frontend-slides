@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,98 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === MEDIA PLATE (left half) ===
-   Recommended image size: 960×1080 (https://placehold.co/960x1080).
-   The frame is fixed and the <img> uses object-fit: cover, so any
-   delivered dimensions fill it without breaking the layout. The CSS
-   gradient beneath is the fallback if the image is missing or fails. */
-.lp-plate {
-    position: absolute;
-    left: 0; top: 0;
-    width: 960px; height: 1080px;
-    overflow: hidden;
-    background:
-        radial-gradient(1100px 700px at 25% 20%, rgba(255,255,255,0.35), transparent 60%),
-        radial-gradient(900px 900px at 85% 85%, rgba(0,0,0,0.28), transparent 55%),
-        linear-gradient(160deg, #cfcecb 0%, #b4b3b0 45%, #8e8d8a 100%);
-}
-.lp-plate img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    max-width: none; max-height: none;
-    object-fit: cover;
-}
-.lp-caption {
-    position: absolute;
-    left: 48px; bottom: 48px;
-    padding: 10px 16px;
-    background: rgba(242, 241, 239, 0.82);
-    font-family: var(--lp-font-mono);
-    font-size: 13px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-    z-index: 2;
-}
-
-/* === RIGHT FIELD === */
-.lp-kicker {
-    position: absolute;
-    left: 1056px; top: 96px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-title-block {
-    position: absolute;
-    left: 1056px; top: 296px;
-    max-width: 720px;
-}
-.lp-accent-bar {
-    width: 72px; height: 8px;
-    background: var(--lp-accent);
-    margin-bottom: 44px;
-    transform-origin: left center;
-}
-.lp-title {
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 120px; font-weight: 800;
-    line-height: 0.97; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title .lp-line { display: block; }
-.lp-title em { font-style: normal; color: var(--lp-accent); }
-.lp-lead {
-    margin: 36px 0 0;
-    max-width: 620px;
-    font-family: var(--lp-font-body);
-    font-size: 22px; line-height: 1.55;
-    color: var(--lp-fg-muted);
-}
-
-/* === FOOTER (right half only) === */
-.lp-foot-rule {
-    position: absolute;
-    left: 1056px; right: 96px; top: 940px;
-    height: 1px; background: var(--lp-line);
-}
-.lp-foot-left, .lp-foot-right {
-    position: absolute; top: 962px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 1056px; }
-.lp-foot-right { right: 96px; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-settle { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: scale(1); } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(44px); } to { opacity: 1; transform: translateY(0); } }
@@ -158,29 +101,32 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
-            <!-- media plate: swap the placeholder src for the real photo;
-                 the gradient behind it is the load-failure fallback -->
-            <div class="lp-plate">
-                <img src="https://placehold.co/960x1080/b7b6b3/76756f" alt="Deployment site photograph">
-                <div class="lp-caption">Site 07 — Tanjung Priok, June 2026</div>
+        <section class="slide lp active bg-lp-bg text-lp-fg">
+            <!-- media plate (left half): swap the placeholder src for the real photo.
+                 Recommended image size: 960×1080 (https://placehold.co/960x1080).
+                 The frame is fixed and the <img> uses object-cover, so any
+                 delivered dimensions fill it without breaking the layout. The
+                 gradient beneath is the fallback if the image is missing or fails -->
+            <div class="lp-plate absolute left-0 top-0 w-[960px] h-[1080px] overflow-hidden bg-[radial-gradient(1100px_700px_at_25%_20%,rgba(255,255,255,0.35),transparent_60%),radial-gradient(900px_900px_at_85%_85%,rgba(0,0,0,0.28),transparent_55%),linear-gradient(160deg,#cfcecb_0%,#b4b3b0_45%,#8e8d8a_100%)]">
+                <img class="absolute inset-0 w-full h-full max-w-none max-h-none object-cover" src="https://placehold.co/960x1080/b7b6b3/76756f" alt="Deployment site photograph">
+                <div class="lp-caption absolute left-[48px] bottom-[48px] z-[2] py-[10px] px-[16px] bg-[rgba(242,241,239,0.82)] font-mono text-[13px] uppercase tracking-[0.14em] text-lp-muted">Site 07 — Tanjung Priok, June 2026</div>
             </div>
 
             <!-- right field -->
-            <div class="lp-kicker">Deployment Review</div>
-            <div class="lp-title-block">
-                <div class="lp-accent-bar"></div>
-                <h1 class="lp-title">
-                    <span class="lp-line">Field</span>
-                    <span class="lp-line"><em>notes</em></span>
+            <div class="lp-kicker absolute left-[1056px] top-[96px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Deployment Review</div>
+            <div class="absolute left-[1056px] top-[296px] max-w-[720px]">
+                <div class="lp-accent-bar w-[72px] h-[8px] mb-[44px] origin-left bg-lp-accent"></div>
+                <h1 class="lp-title m-0 font-display text-[120px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">
+                    <span class="lp-line block">Field</span>
+                    <span class="lp-line block"><em class="not-italic text-lp-accent">notes</em></span>
                 </h1>
-                <p class="lp-lead">Six weeks across twelve sites — what held up, what broke, and what the next rollout inherits.</p>
+                <p class="lp-lead mt-[36px] mb-0 max-w-[620px] font-body text-[22px] leading-[1.55] text-lp-muted">Six weeks across twelve sites — what held up, what broke, and what the next rollout inherits.</p>
             </div>
 
-            <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">A. Rahman — Nodeflux</div>
-            <div class="lp-foot-right">01 / 12</div>
+            <!-- footer (right half only) -->
+            <div class="lp-foot-rule absolute left-[1056px] right-[96px] top-[940px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[1056px] top-[962px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">A. Rahman — Nodeflux</div>
+            <div class="lp-foot-right absolute right-[96px] top-[962px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">01 / 12</div>
         </section>
     </div>
 </div>

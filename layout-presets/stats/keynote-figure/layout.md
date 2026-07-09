@@ -86,7 +86,7 @@ the hero number (the hardware, the dashboard, the site), captioned by
 its first rail label.
 
 **Recommended size / placeholder:** `https://placehold.co/464x260`.
-**Dimension fallback:** fixed 464×260 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 464×260 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional — the
 3-entry rail is the default.
 

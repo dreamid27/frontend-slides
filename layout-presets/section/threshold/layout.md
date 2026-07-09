@@ -77,7 +77,7 @@ as the opening (the band rhymes with the horizon line).
 strip between the rules under a scrim of `--lp-bg` at ~78% so the
 title stays legible on it. The doorway gains a view. **Recommended
 size / placeholder:** `https://placehold.co/1920x240`. **Dimension
-fallback:** fixed 1920×240 letterbox frame, `object-fit: cover` (a
+fallback:** fixed 1920×240 letterbox frame, `object-cover` (a
 16:9 source shows its center strip), token CSS fill behind the
 `<img>`. The image is optional.
 

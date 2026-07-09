@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    (Dark neutral here to show the tokens are role-based,
    not lightness-based — light systems remap the same tokens.)
    =========================================== */
@@ -81,122 +108,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === FRAME (skin point: system's border vocabulary, same inset) === */
-.lp-frame {
-    position: absolute;
-    inset: 48px;
-    border: 1px solid var(--lp-line);
-    overflow: hidden; /* clips the ghost echo word — structural */
-}
-
-/* === CHROME (inside frame) === */
-.lp-kicker {
-    position: absolute;
-    left: 72px;
-    top: 64px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute;
-    right: 72px;
-    top: 64px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === GHOST ECHO (must bleed past the frame's right edge) === */
-.lp-ghost {
-    position: absolute;
-    right: -140px;
-    top: 210px;
-    font-family: var(--lp-font-display);
-    font-weight: 800;
-    font-size: 380px;
-    line-height: 0.85;
-    text-transform: uppercase;
-    color: transparent;
-    -webkit-text-stroke: 2px var(--lp-fg-faint);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* === CLOSING STATEMENT (lower-left anchor) === */
-.lp-statement-block {
-    position: absolute;
-    left: 72px;
-    bottom: 232px; /* statement bottom edge ≈ y:690 on stage incl. coda */
-    max-width: 1400px;
-    z-index: 1;
-}
-.lp-statement {
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 176px;
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-statement .lp-line {
-    display: block;
-}
-.lp-statement em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-.lp-coda {
-    margin: 36px 0 0;
-    max-width: 760px;
-    font-family: var(--lp-font-body);
-    font-size: 24px;
-    line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === CONTACT STRIP (pinned to frame bottom) === */
-.lp-contact {
-    position: absolute;
-    left: 72px;
-    right: 72px;
-    bottom: 64px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    border-top: 1px solid var(--lp-line);
-}
-.lp-cell {
-    padding: 32px 0 0;
-}
-.lp-cell + .lp-cell {
-    border-left: 1px solid var(--lp-line);
-    padding-left: 48px;
-}
-.lp-cell-label {
-    font-family: var(--lp-font-mono);
-    font-size: 13px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-    margin-bottom: 12px;
-}
-.lp-cell-value {
-    font-family: var(--lp-font-body);
-    font-size: 24px;
-    color: var(--lp-fg);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(56px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
@@ -217,36 +135,38 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
-            <div class="lp-frame">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
+            <!-- frame (skin point: system's border vocabulary, same inset);
+                 overflow-hidden clips the ghost echo word — structural -->
+            <div class="lp-frame absolute inset-[48px] border border-lp-line overflow-hidden">
                 <!-- chrome -->
-                <div class="lp-kicker">In Closing</div>
-                <div class="lp-counter">12 / 12</div>
+                <div class="lp-kicker absolute left-[72px] top-[64px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">In Closing</div>
+                <div class="lp-counter absolute right-[72px] top-[64px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 12</div>
 
-                <!-- ghost echo (clipped by frame) -->
-                <div class="lp-ghost" aria-hidden="true">Next</div>
+                <!-- ghost echo (must bleed past the frame's right edge; clipped by frame) -->
+                <div class="lp-ghost absolute right-[-140px] top-[210px] z-0 pointer-events-none font-display font-extrabold text-[380px] leading-[0.85] uppercase text-transparent [-webkit-text-stroke:2px_var(--lp-fg-faint)]" aria-hidden="true">Next</div>
 
-                <!-- closing statement -->
-                <div class="lp-statement-block">
-                    <h1 class="lp-statement">
-                        <span class="lp-line">Thank <em>you.</em></span>
+                <!-- closing statement (statement bottom edge ≈ y:690 on stage incl. coda) -->
+                <div class="absolute left-[72px] bottom-[232px] z-[1] max-w-[1400px]">
+                    <h1 class="lp-statement m-0 font-display text-[176px] font-extrabold leading-[0.95] tracking-[-0.02em] uppercase">
+                        <span class="lp-line block">Thank <em class="not-italic text-lp-accent">you.</em></span>
                     </h1>
-                    <p class="lp-coda">The full report and the roadmap discussed today are linked below — questions welcome anytime.</p>
+                    <p class="lp-coda mt-[36px] mb-0 max-w-[760px] font-body text-[24px] leading-[1.5] text-lp-muted">The full report and the roadmap discussed today are linked below — questions welcome anytime.</p>
                 </div>
 
-                <!-- contact strip -->
-                <div class="lp-contact">
-                    <div class="lp-cell">
-                        <div class="lp-cell-label">Email</div>
-                        <div class="lp-cell-value">alfin@nodeflux.io</div>
+                <!-- contact strip (pinned to frame bottom) -->
+                <div class="absolute left-[72px] right-[72px] bottom-[64px] grid grid-cols-3 border-t border-lp-line">
+                    <div class="lp-cell pt-[32px]">
+                        <div class="mb-[12px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-muted">Email</div>
+                        <div class="font-body text-[24px] text-lp-fg">alfin@nodeflux.io</div>
                     </div>
-                    <div class="lp-cell">
-                        <div class="lp-cell-label">Site</div>
-                        <div class="lp-cell-value">nodeflux.io</div>
+                    <div class="lp-cell pt-[32px] pl-[48px] border-l border-lp-line">
+                        <div class="mb-[12px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-muted">Site</div>
+                        <div class="font-body text-[24px] text-lp-fg">nodeflux.io</div>
                     </div>
-                    <div class="lp-cell">
-                        <div class="lp-cell-label">Handle</div>
-                        <div class="lp-cell-value">@nodeflux</div>
+                    <div class="lp-cell pt-[32px] pl-[48px] border-l border-lp-line">
+                        <div class="mb-[12px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-muted">Handle</div>
+                        <div class="font-body text-[24px] text-lp-fg">@nodeflux</div>
                     </div>
                 </div>
             </div>

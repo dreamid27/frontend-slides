@@ -1,7 +1,14 @@
 /* ===========================================
    FIXED 16:9 STAGE: MANDATORY BASE STYLES
-   Include this ENTIRE file in every presentation.
+   Include this ENTIRE file in every presentation
+   (the "stage mechanics" style block).
    Slides are authored at 1920×1080 and scaled as a whole.
+
+   This is deliberately raw CSS, not Tailwind utilities:
+   the transform is set by JS, slide switching is state-
+   driven (.active/.visible), and print + reduced-motion
+   need media-query rules. Everything OUTSIDE this block
+   is styled with Tailwind utility classes.
    =========================================== */
 
 /* 1. Lock the browser viewport */

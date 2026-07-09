@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,89 +73,15 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADER === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-headline {
-    position: absolute; left: 96px; top: 118px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 84px; font-weight: 800;
-    line-height: 1.02; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-headline em { font-style: normal; color: var(--lp-accent); }
-
-/* === BAR ROWS ===
-   Bar widths are TRUE PROPORTIONS of the max value (1240h = 100%).
-   Image variant: 96×96 chips left of labels (placehold.co/192x192),
-   all rows or none. */
-.lp-rows {
-    position: absolute; left: 96px; right: 96px; top: 400px;
-}
-.lp-row {
-    display: grid;
-    grid-template-columns: 380px 1fr 180px;
-    align-items: center;
-    height: 130px;
-}
-.lp-row-label {
-    font-family: var(--lp-font-body);
-    font-size: 22px;
-    color: var(--lp-fg);
-}
-.lp-bar-track { position: relative; height: 20px; }
-.lp-bar {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    background: color-mix(in srgb, var(--lp-fg-muted) 45%, transparent);
-    transform-origin: left center;
-}
-/* true proportions: value / 1240 */
-.lp-row.r1 .lp-bar { width: 100%; }    /* 1240 h */
-.lp-row.r2 .lp-bar { width: 61.3%; }   /*  760 h */
-.lp-row.r3 .lp-bar { width: 33.9%; }   /*  420 h */
-.lp-row.r4 .lp-bar { width: 9.5%; }    /*  118 h */
-.lp-row.is-highlight .lp-bar { background: var(--lp-accent); }
-.lp-row-value {
-    text-align: right;
-    font-family: var(--lp-font-mono);
-    font-size: 20px; letter-spacing: 0.04em;
-    color: var(--lp-fg);
-}
-.lp-row.is-highlight .lp-row-value { color: var(--lp-accent); font-weight: 500; }
-
-/* === FOOTER === */
-.lp-foot-rule {
-    position: absolute; left: 96px; right: 96px; top: 962px;
-    height: 1px; background: var(--lp-line);
-}
-.lp-foot-left, .lp-foot-right {
-    position: absolute; top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; }
-.lp-foot-right { right: 96px; }
-
-/* === CHOREOGRAPHY ===
-   Bars grow to their true width — the growth is the reading moment.
-   The highlighted bar lands last. */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   Bars grow to their true width — the growth is the
+   reading moment. The highlighted bar lands last.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
@@ -151,40 +105,41 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- header -->
-            <div class="lp-kicker">Engineering Time</div>
-            <div class="lp-counter">13 / 14</div>
-            <h2 class="lp-headline">Where the hours <em>went</em></h2>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Engineering Time</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">13 / 14</div>
+            <h2 class="lp-headline absolute left-[96px] top-[118px] m-0 font-display text-[84px] font-extrabold leading-[1.02] tracking-[-0.02em] uppercase">Where the hours <em class="not-italic text-lp-accent">went</em></h2>
 
-            <!-- bar rows (max = 1,240 h) -->
-            <div class="lp-rows">
-                <div class="lp-row r1">
-                    <div class="lp-row-label">Site rollout</div>
-                    <div class="lp-bar-track"><div class="lp-bar"></div></div>
-                    <div class="lp-row-value">1,240 h</div>
+            <!-- bar rows (max = 1,240 h). Bar widths are TRUE PROPORTIONS of the max value (1240h = 100%).
+                 Image variant: 96×96 chips left of labels (placehold.co/192x192), all rows or none. -->
+            <div class="absolute left-[96px] right-[96px] top-[400px]">
+                <div class="lp-row r1 grid grid-cols-[380px_1fr_180px] items-center h-[130px]">
+                    <div class="lp-row-label font-body text-[22px] text-lp-fg">Site rollout</div>
+                    <div class="relative h-[20px]"><div class="lp-bar absolute left-0 top-0 bottom-0 w-full origin-left bg-[color-mix(in_srgb,var(--lp-fg-muted)_45%,transparent)]"></div></div>
+                    <div class="lp-row-value text-right font-mono text-[20px] tracking-[0.04em] text-lp-fg">1,240 h</div>
                 </div>
-                <div class="lp-row r2">
-                    <div class="lp-row-label">Edge models</div>
-                    <div class="lp-bar-track"><div class="lp-bar"></div></div>
-                    <div class="lp-row-value">760 h</div>
+                <div class="lp-row r2 grid grid-cols-[380px_1fr_180px] items-center h-[130px]">
+                    <div class="lp-row-label font-body text-[22px] text-lp-fg">Edge models</div>
+                    <div class="relative h-[20px]"><div class="lp-bar absolute left-0 top-0 bottom-0 w-[61.3%] origin-left bg-[color-mix(in_srgb,var(--lp-fg-muted)_45%,transparent)]"></div></div>
+                    <div class="lp-row-value text-right font-mono text-[20px] tracking-[0.04em] text-lp-fg">760 h</div>
                 </div>
-                <div class="lp-row r3">
-                    <div class="lp-row-label">Console</div>
-                    <div class="lp-bar-track"><div class="lp-bar"></div></div>
-                    <div class="lp-row-value">420 h</div>
+                <div class="lp-row r3 grid grid-cols-[380px_1fr_180px] items-center h-[130px]">
+                    <div class="lp-row-label font-body text-[22px] text-lp-fg">Console</div>
+                    <div class="relative h-[20px]"><div class="lp-bar absolute left-0 top-0 bottom-0 w-[33.9%] origin-left bg-[color-mix(in_srgb,var(--lp-fg-muted)_45%,transparent)]"></div></div>
+                    <div class="lp-row-value text-right font-mono text-[20px] tracking-[0.04em] text-lp-fg">420 h</div>
                 </div>
-                <div class="lp-row r4 is-highlight">
-                    <div class="lp-row-label">Incident response</div>
-                    <div class="lp-bar-track"><div class="lp-bar"></div></div>
-                    <div class="lp-row-value">118 h</div>
+                <div class="lp-row r4 grid grid-cols-[380px_1fr_180px] items-center h-[130px]">
+                    <div class="lp-row-label font-body text-[22px] text-lp-fg">Incident response</div>
+                    <div class="relative h-[20px]"><div class="lp-bar absolute left-0 top-0 bottom-0 w-[9.5%] origin-left bg-lp-accent"></div></div>
+                    <div class="lp-row-value text-right font-mono text-[20px] tracking-[0.04em] text-lp-accent font-medium">118 h</div>
                 </div>
             </div>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">Time tracking — Q2 FY26</div>
-            <div class="lp-foot-right">Nodeflux</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[962px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[984px] font-mono text-[14px] uppercase tracking-[0.12em] text-lp-muted">Time tracking — Q2 FY26</div>
+            <div class="lp-foot-right absolute right-[96px] top-[984px] font-mono text-[14px] uppercase tracking-[0.12em] text-lp-muted">Nodeflux</div>
         </section>
     </div>
 </div>

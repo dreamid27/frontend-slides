@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #171717;
@@ -45,66 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-deck-title, .lp-counter {
-    position: absolute; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-deck-title { left: 96px; }
-.lp-counter { right: 96px; }
-
-/* === PART INDEX (above the band) === */
-.lp-part-index {
-    position: absolute; right: 96px; top: 372px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.14em;
-    color: var(--lp-fg-muted);
-}
-.lp-part-index .cur { color: var(--lp-accent); font-weight: 500; }
-.lp-part-index .fut { opacity: 0.5; }
-
-/* === GATE BAND ===
-   Image variant: a 1920×240 image strip fills the band between the
-   rules under a ~78% --lp-bg scrim (placehold.co/1920x240). */
-.lp-rule {
-    position: absolute; left: 0; right: 0;
-    height: 1px; background: var(--lp-line);
-}
-.lp-rule.top { top: 420px; transform-origin: left center; }
-.lp-rule.bottom { top: 660px; transform-origin: right center; }
-.lp-band-title {
-    position: absolute; left: 96px; top: 480px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 120px; font-weight: 800;
-    line-height: 1; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-band-title em { font-style: normal; color: var(--lp-accent); }
-.lp-band-num {
-    position: absolute; right: 96px; top: 512px;
-    font-family: var(--lp-font-mono);
-    font-size: 48px; font-weight: 500;
-    letter-spacing: 0.06em;
-    color: var(--lp-accent);
-}
-
-/* === FRAMING === */
-.lp-framing {
-    position: absolute; left: 96px; top: 708px;
-    margin: 0; max-width: 800px;
-    font-family: var(--lp-font-body);
-    font-size: 22px; line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
@@ -122,22 +97,22 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-deck-title">The Quiet Quarter</div>
-            <div class="lp-counter">06 / 14</div>
+            <div class="lp-deck-title absolute left-[96px] top-[72px] font-mono text-[15px] tracking-[0.12em] uppercase text-lp-muted">The Quiet Quarter</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] tracking-[0.12em] uppercase text-lp-muted">06 / 14</div>
 
             <!-- part index -->
-            <div class="lp-part-index">01 · 02 · <span class="cur">03</span> · <span class="fut">04</span> · <span class="fut">05</span></div>
+            <div class="lp-part-index absolute right-[96px] top-[372px] font-mono text-[15px] tracking-[0.14em] text-lp-muted">01 · 02 · <span class="text-lp-accent font-medium">03</span> · <span class="opacity-50">04</span> · <span class="opacity-50">05</span></div>
 
             <!-- gate band -->
-            <div class="lp-rule top" aria-hidden="true"></div>
-            <div class="lp-rule bottom" aria-hidden="true"></div>
-            <h1 class="lp-band-title">Execution</h1>
-            <div class="lp-band-num">03</div>
+            <div class="lp-rule top absolute left-0 right-0 top-[420px] h-px bg-lp-line origin-left" aria-hidden="true"></div>
+            <div class="lp-rule bottom absolute left-0 right-0 top-[660px] h-px bg-lp-line origin-right" aria-hidden="true"></div>
+            <h1 class="lp-band-title absolute left-[96px] top-[480px] m-0 font-display text-[120px] font-extrabold leading-[1] tracking-[-0.02em] uppercase">Execution</h1>
+            <div class="lp-band-num absolute right-[96px] top-[512px] font-mono text-[48px] font-medium tracking-[0.06em] text-lp-accent">03</div>
 
             <!-- framing -->
-            <p class="lp-framing">Sixty days, two products, one promise kept.</p>
+            <p class="lp-framing absolute left-[96px] top-[708px] m-0 max-w-[800px] font-body text-[22px] leading-[1.5] text-lp-muted">Sixty days, two products, one promise kept.</p>
         </section>
     </div>
 </div>

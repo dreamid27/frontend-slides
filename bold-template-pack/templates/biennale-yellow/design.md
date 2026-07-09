@@ -223,16 +223,15 @@ components:
     description: "Large serif date or date-range stacked at top-right of cover surfaces. Uses an en-dash to indicate spans."
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -264,7 +263,7 @@ Depth is **atmospheric, not structural**. There are no drop shadows anywhere in 
 
 - **Paper** (`{colors.paper}` — `#E9E5DB`): The warm parchment canvas. The default and near-universal background. Reads as a softened off-white with strong warmth — never neutral, never cold.
 - **Paper-deep** (`{colors.paper-deep}` — `#DCD6C4`): A slightly darker parchment tone, available as a secondary surface or to suggest a shadow band without using actual shadow. Reserved for moments that need surface differentiation while staying within the warm-paper family.
-- **Ink** (`{colors.ink}` — `#1B2566`): The single text and line color across the entire system. A deep indigo navy that reads as confident editorial black-with-blue-bias. Used for headlines, body, micro-labels, monos, hairline rules, and ink-bar fills. The `--line` CSS variable resolves to this same color.
+- **Ink** (`{colors.ink}` — `#1B2566`): The single text and line color across the entire system. A deep indigo navy that reads as confident editorial black-with-blue-bias. Used for headlines, body, micro-labels, monos, hairline rules, and ink-bar fills. The `line` design token in the inline tailwind.config resolves to this same color.
 - **Sun** (`{colors.sun}` — `#F1EE2E`): The system's signature solar yellow. Highly saturated, slightly green-leaning. Used three ways: as a flooded full-bleed or column-bleed panel, as the core of soft radial blooms, and as 40-70% opacity geometric tile blocks.
 - **Sun-soft** (`{colors.sun-soft}` — `#F8F39B`): A paler buttery yellow used in the middle stops of sun-bloom gradients to soften the transition from saturated sun to paper.
 - **Haze** (`{colors.haze}` — `#F0DA7C`): A warmer mustard-leaning yellow used in the outermost stops of sun-bloom gradients to extend the bloom into the paper without a hard edge.

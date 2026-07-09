@@ -74,7 +74,7 @@ and any list the presenter would rather *say* than enumerate.
 **With an image:** full-bleed behind the paragraph under a heavy
 uniform scrim (`--lp-bg` at ≥ 88%) — texture only, as with Waypoint.
 **Recommended size / placeholder:** `https://placehold.co/1920x1080`.
-**Dimension fallback:** full-bleed frame, `object-fit: cover`, flat
+**Dimension fallback:** full-bleed frame, `object-cover`, flat
 `--lp-bg` behind the `<img>`. The image is optional and usually
 omitted — the words are the picture.
 

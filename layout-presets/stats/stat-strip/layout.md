@@ -88,8 +88,7 @@ tightens to 1100px. Use for context, not another number — the period's
 setting, the thing that was measured.
 
 **Recommended size / placeholder:** `https://placehold.co/520x220`.
-**Dimension fallback:** fixed 520×220 letterbox frame, `object-fit:
-cover`, token CSS fill behind the `<img>`. The image is optional.
+**Dimension fallback:** fixed 520×220 letterbox frame, `object-cover`, token CSS fill behind the `<img>`. The image is optional.
 
 ## Choreography
 

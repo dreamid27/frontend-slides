@@ -79,7 +79,7 @@ what the two missing units are, which is usually the honest part.
 tops the right column at y:300, the reading flowing beneath it from
 y:640 (then ≤ 4 lines). **Recommended size / placeholder:**
 `https://placehold.co/624x300`. **Dimension fallback:** fixed frame,
-`object-fit: cover`, token CSS fill behind the `<img>`. The image is
+`object-cover`, token CSS fill behind the `<img>`. The image is
 optional.
 
 ## Choreography

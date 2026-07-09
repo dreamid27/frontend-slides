@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,71 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADER === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-headline {
-    position: absolute; left: 96px; top: 118px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 84px; font-weight: 800;
-    line-height: 1.02; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-headline em { font-style: normal; color: var(--lp-accent); }
-
-/* === STEPS — each lower and further right than the last ===
-   Image variant: 200×112 thumbs left of each numeral
-   (placehold.co/400x224 at 2×), all or none, max 3 steps. */
-.lp-step { position: absolute; }
-.lp-step.s1 { left: 96px;  top: 340px; }
-.lp-step.s2 { left: 316px; top: 500px; }
-.lp-step.s3 { left: 536px; top: 660px; }
-.lp-step.s4 { left: 756px; top: 820px; }
-.lp-step-head { display: flex; align-items: baseline; gap: 24px; }
-.lp-step-num {
-    font-family: var(--lp-font-mono);
-    font-size: 20px; font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--lp-accent);
-    flex: none;
-}
-.lp-step-title {
-    font-family: var(--lp-font-display);
-    font-size: 40px; font-weight: 700;
-    line-height: 1.1;
-    color: var(--lp-fg);
-}
-.lp-step-desc {
-    margin: 10px 0 0 66px; /* indent to the title's x */
-    max-width: 560px;
-    font-family: var(--lp-font-body);
-    font-size: 19px; line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-.lp-riser {
-    position: absolute; left: 8px; top: 64px;
-    width: 1px; height: 56px;
-    background: var(--lp-line);
-    transform-origin: center top;
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
@@ -130,31 +100,33 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- header -->
-            <div class="lp-kicker">Rollout Plan</div>
-            <div class="lp-counter">09 / 14</div>
-            <h2 class="lp-headline">Rollout, in <em>order</em></h2>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Rollout Plan</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">09 / 14</div>
+            <h2 class="lp-headline absolute left-[96px] top-[118px] m-0 font-display text-[84px] font-extrabold leading-[1.02] tracking-[-0.02em] uppercase">Rollout, in <em class="not-italic text-lp-accent">order</em></h2>
 
-            <!-- steps -->
-            <div class="lp-step s1">
-                <div class="lp-step-head"><span class="lp-step-num">01</span><span class="lp-step-title">Pilot site</span></div>
-                <p class="lp-step-desc">One harbor, full instrumentation, weekly review with the operator.</p>
-                <div class="lp-riser" aria-hidden="true"></div>
+            <!-- steps — each lower and further right than the last
+                 Image variant: 200×112 thumbs left of each numeral
+                 (placehold.co/400x224 at 2×), all or none, max 3 steps. -->
+            <div class="lp-step s1 absolute left-[96px] top-[340px]">
+                <div class="flex items-baseline gap-[24px]"><span class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent flex-none">01</span><span class="font-display text-[40px] font-bold leading-[1.1] text-lp-fg">Pilot site</span></div>
+                <p class="mt-[10px] mr-0 mb-0 ml-[66px] max-w-[560px] font-body text-[19px] leading-[1.5] text-lp-muted">One harbor, full instrumentation, weekly review with the operator.</p>
+                <div class="lp-riser absolute left-[8px] top-[64px] w-px h-[56px] bg-lp-line origin-top" aria-hidden="true"></div>
             </div>
-            <div class="lp-step s2">
-                <div class="lp-step-head"><span class="lp-step-num">02</span><span class="lp-step-title">Corridor of five</span></div>
-                <p class="lp-step-desc">The playbook hardens across five sites on one supply route.</p>
-                <div class="lp-riser" aria-hidden="true"></div>
+            <div class="lp-step s2 absolute left-[316px] top-[500px]">
+                <div class="flex items-baseline gap-[24px]"><span class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent flex-none">02</span><span class="font-display text-[40px] font-bold leading-[1.1] text-lp-fg">Corridor of five</span></div>
+                <p class="mt-[10px] mr-0 mb-0 ml-[66px] max-w-[560px] font-body text-[19px] leading-[1.5] text-lp-muted">The playbook hardens across five sites on one supply route.</p>
+                <div class="lp-riser absolute left-[8px] top-[64px] w-px h-[56px] bg-lp-line origin-top" aria-hidden="true"></div>
             </div>
-            <div class="lp-step s3">
-                <div class="lp-step-head"><span class="lp-step-num">03</span><span class="lp-step-title">Regional fleet</span></div>
-                <p class="lp-step-desc">Twenty sites, remote-first operations, local spares on shelf.</p>
-                <div class="lp-riser" aria-hidden="true"></div>
+            <div class="lp-step s3 absolute left-[536px] top-[660px]">
+                <div class="flex items-baseline gap-[24px]"><span class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent flex-none">03</span><span class="font-display text-[40px] font-bold leading-[1.1] text-lp-fg">Regional fleet</span></div>
+                <p class="mt-[10px] mr-0 mb-0 ml-[66px] max-w-[560px] font-body text-[19px] leading-[1.5] text-lp-muted">Twenty sites, remote-first operations, local spares on shelf.</p>
+                <div class="lp-riser absolute left-[8px] top-[64px] w-px h-[56px] bg-lp-line origin-top" aria-hidden="true"></div>
             </div>
-            <div class="lp-step s4">
-                <div class="lp-step-head"><span class="lp-step-num">04</span><span class="lp-step-title">Everything else</span></div>
-                <p class="lp-step-desc">Self-serve onboarding takes over.</p>
+            <div class="lp-step s4 absolute left-[756px] top-[820px]">
+                <div class="flex items-baseline gap-[24px]"><span class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent flex-none">04</span><span class="font-display text-[40px] font-bold leading-[1.1] text-lp-fg">Everything else</span></div>
+                <p class="mt-[10px] mr-0 mb-0 ml-[66px] max-w-[560px] font-body text-[19px] leading-[1.5] text-lp-muted">Self-serve onboarding takes over.</p>
             </div>
         </section>
     </div>

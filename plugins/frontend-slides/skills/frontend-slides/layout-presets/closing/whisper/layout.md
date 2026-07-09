@@ -67,11 +67,11 @@ it only works when the room's attention is already yours.
 
 **With an image:** a single 96×96 circular portrait (the presenter)
 replaces the accent mark, centered at the same coordinates —
-`border-radius: 50%`, 1px `--lp-line` ring, `object-fit: cover`.
+`rounded-full`, 1px `--lp-line` ring, `object-cover`.
 
 **Recommended size / placeholder:** `https://placehold.co/192x192`
 (2× for sharpness at 96px). **Dimension fallback:** fixed 96×96
-circular frame, `object-fit: cover`, token CSS fill behind the
+circular frame, `object-cover`, token CSS fill behind the
 `<img>`. The portrait is optional — the accent mark is the default.
 
 **Without an image:** the accent mark as specified.

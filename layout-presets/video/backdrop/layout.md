@@ -49,7 +49,7 @@ pack where autoplay is correct, and only because it is muted.
 
 | Element | Position & size | Type spec | Color role |
 |---|---|---|---|
-| Video layer | full bleed, `object-fit: cover`, muted loop | — | — |
+| Video layer | full bleed, `object-cover`, muted loop | — | — |
 | Scrim | full bleed: uniform `--lp-bg` at 45% plus a bottom gradient to `--lp-bg` at 94% from y:480 down | — | — |
 | Kicker (top-left) | x:96, y:72 | `--lp-font-mono`, 15px, uppercase, ls 0.18em | `--lp-accent` |
 | Counter (top-right) | right-aligned x:1824, y:72 | `--lp-font-mono`, 15px, uppercase, ls 0.12em | `--lp-fg-muted` |
@@ -77,7 +77,7 @@ pack where autoplay is correct, and only because it is muted.
 - **Poster / placeholder:** `https://placehold.co/1920x1080` — the
   poster shows until the loop buffers, so it must look correct as a
   still.
-- **Dimension fallback:** full-bleed frame, `object-fit: cover`; keep
+- **Dimension fallback:** full-bleed frame, `object-cover`; keep
   a token CSS atmosphere behind the video element for load failures.
 - **No-video variant:** the poster as a static full-bleed image — the
   slide becomes Cover Caption's grammar with a chip — or the CSS

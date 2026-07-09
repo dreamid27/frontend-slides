@@ -72,7 +72,7 @@ natural home for triads: three pillars, three phases, three teams.
 above its accent tick (y:380, content shifting down 232px; bodies then
 cap at 4 lines). All three columns get bands or none. **Recommended
 size / placeholder:** `https://placehold.co/512x200`. **Dimension
-fallback:** fixed letterbox frames, `object-fit: cover`, token CSS
+fallback:** fixed letterbox frames, `object-cover`, token CSS
 fill behind each `<img>`. Bands are optional.
 
 ## Choreography

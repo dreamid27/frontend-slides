@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -79,130 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === NAMEPLATE === */
-.lp-nameplate {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 96px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 170px;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-.lp-nameplate em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-
-/* === RULE PAIR + META ROW (skin point: system's divider vocabulary) === */
-.lp-rule-thick {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 312px;
-    height: 4px;
-    background: var(--lp-fg);
-    transform-origin: left center;
-}
-.lp-meta-row {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 344px;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-meta-row .lp-meta-kicker {
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    color: var(--lp-accent);
-}
-.lp-rule-thin {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 396px;
-    height: 1px;
-    background: var(--lp-line);
-    transform-origin: left center;
-}
-
-/* === GHOST DROP-CAP (cropped by bottom edge) === */
-.lp-ghost {
-    position: absolute;
-    left: 48px;
-    bottom: -140px;
-    font-family: var(--lp-font-display);
-    font-weight: 800;
-    font-size: 520px;
-    line-height: 0.8;
-    color: transparent;
-    -webkit-text-stroke: 2px var(--lp-fg-faint);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* === LEAD BLOCK (bottom-right counterweight) === */
-.lp-lead-block {
-    position: absolute;
-    right: 96px;
-    bottom: 200px;
-    max-width: 640px;
-    z-index: 1;
-}
-.lp-accent-bar {
-    width: 48px;
-    height: 6px;
-    background: var(--lp-accent);
-    margin-bottom: 28px;
-    transform-origin: left center;
-}
-.lp-lead {
-    margin: 0;
-    font-family: var(--lp-font-body);
-    font-size: 26px;
-    line-height: 1.55;
-    color: var(--lp-fg-muted);
-}
-
-/* === FOOTER === */
-.lp-foot-rule {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 962px;
-    height: 1px;
-    background: var(--lp-line);
-}
-.lp-foot-left,
-.lp-foot-right {
-    position: absolute;
-    top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; }
-.lp-foot-right { right: 96px; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
@@ -225,32 +135,32 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- nameplate -->
-            <h1 class="lp-nameplate">The year <em>ahead</em></h1>
+            <h1 class="lp-nameplate absolute left-[96px] right-[96px] top-[96px] m-0 font-display text-[170px] font-extrabold leading-[1] tracking-[-0.02em] uppercase whitespace-nowrap">The year <em class="not-italic text-lp-accent">ahead</em></h1>
 
-            <!-- rule pair + meta row -->
-            <div class="lp-rule-thick"></div>
-            <div class="lp-meta-row">
-                <span class="lp-meta-kicker">Company Briefing</span>
+            <!-- rule pair + meta row (skin point: system's divider vocabulary) -->
+            <div class="lp-rule-thick absolute left-[96px] right-[96px] top-[312px] h-[4px] origin-left bg-lp-fg"></div>
+            <div class="lp-meta-row absolute left-[96px] right-[96px] top-[344px] flex items-baseline justify-between font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">
+                <span class="font-medium tracking-[0.18em] text-lp-accent">Company Briefing</span>
                 <span>Volume 04 — Internal</span>
                 <span>08 Jul 2026</span>
             </div>
-            <div class="lp-rule-thin"></div>
+            <div class="lp-rule-thin absolute left-[96px] right-[96px] top-[396px] h-px origin-left bg-lp-line"></div>
 
-            <!-- ghost drop-cap -->
-            <div class="lp-ghost" aria-hidden="true">N</div>
+            <!-- ghost drop-cap (cropped by bottom edge) -->
+            <div class="lp-ghost absolute left-[48px] bottom-[-140px] z-0 pointer-events-none font-display font-extrabold text-[520px] leading-[0.8] text-transparent [-webkit-text-stroke:2px_var(--lp-fg-faint)]" aria-hidden="true">N</div>
 
-            <!-- lead block -->
-            <div class="lp-lead-block">
-                <div class="lp-accent-bar"></div>
-                <p class="lp-lead">Everything we shipped, everything we learned, and the plan we are carrying into next year — laid out in fourteen slides.</p>
+            <!-- lead block (bottom-right counterweight) -->
+            <div class="absolute right-[96px] bottom-[200px] z-[1] max-w-[640px]">
+                <div class="lp-accent-bar w-[48px] h-[6px] mb-[28px] origin-left bg-lp-accent"></div>
+                <p class="lp-lead m-0 font-body text-[26px] leading-[1.55] text-lp-muted">Everything we shipped, everything we learned, and the plan we are carrying into next year — laid out in fourteen slides.</p>
             </div>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">A. Rahman — Nodeflux</div>
-            <div class="lp-foot-right">01 / 14</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[962px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[984px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">A. Rahman — Nodeflux</div>
+            <div class="lp-foot-right absolute right-[96px] top-[984px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">01 / 14</div>
         </section>
     </div>
 </div>

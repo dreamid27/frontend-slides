@@ -74,7 +74,7 @@ right field then reads as the cover face.
 ## Image variant
 
 **With an image:** the spine column (x:0 → 600) becomes a full-height
-image strip, `object-fit: cover`. The spine rule stays at x:600. The
+image strip, `object-cover`. The spine rule stays at x:600. The
 rotated label sits on the image inside a scrim chip (its background
 `--lp-bg` at ~80%); the monogram and date move onto the chip's ends or
 onto the field side. Tall crops — figures, towers, racks — suit the
@@ -85,7 +85,7 @@ system may tint the spine column with its alternate surface at ≤ 8%
 contrast against `--lp-bg`.
 
 **Recommended size / placeholder:** `https://placehold.co/600x1080`.
-**Dimension fallback:** fixed 600×1080 strip, `object-fit: cover`,
+**Dimension fallback:** fixed 600×1080 strip, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional.
 
 ## Choreography

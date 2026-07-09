@@ -80,7 +80,7 @@ gets a thumbnail; its future is the point. All past nodes get thumbs
 or none.
 
 **Recommended size / placeholder:** `https://placehold.co/240x150`.
-**Dimension fallback:** fixed 240×150 frames, `object-fit: cover`,
+**Dimension fallback:** fixed 240×150 frames, `object-cover`,
 token CSS fill behind each `<img>`. Thumbnails are optional.
 
 **Without images:** the pure rail above; statement may grow to 120px.

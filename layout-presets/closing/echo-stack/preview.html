@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #141414;
@@ -79,85 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute;
-    right: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === ECHO STACK — opacity crescendo, strictly increasing downward === */
-.lp-stack {
-    position: absolute;
-    left: 96px;
-    top: 160px;
-}
-.lp-row {
-    display: block;
-    font-family: var(--lp-font-display);
-    font-size: 140px;
-    font-weight: 800;
-    line-height: 1.04;
-    letter-spacing: -0.02em;
-    color: var(--lp-fg);
-}
-.lp-row:nth-child(1) { opacity: 0.10; }
-.lp-row:nth-child(2) { opacity: 0.18; }
-.lp-row:nth-child(3) { opacity: 0.32; }
-.lp-row:nth-child(4) { opacity: 0.55; }
-.lp-row:nth-child(5) { opacity: 1; }
-.lp-row .lp-beat {
-    color: var(--lp-accent);
-    display: inline-block;
-}
-
-/* === FOOTER === */
-.lp-foot-rule {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 958px;
-    height: 1px;
-    background: var(--lp-line);
-}
-.lp-foot-left,
-.lp-foot-right {
-    position: absolute;
-    top: 982px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.08em;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; }
-.lp-foot-left .lp-dot { color: var(--lp-accent); }
-.lp-foot-right {
-    right: 96px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-pop { from { transform: scale(0); } to { transform: scale(1); } }
@@ -180,24 +135,24 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">In Closing</div>
-            <div class="lp-counter">12 / 12</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">In Closing</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 12</div>
 
             <!-- echo stack -->
-            <div class="lp-stack" aria-label="Thank you.">
-                <span class="lp-row" aria-hidden="true">Thank you</span>
-                <span class="lp-row" aria-hidden="true">Thank you</span>
-                <span class="lp-row" aria-hidden="true">Thank you</span>
-                <span class="lp-row" aria-hidden="true">Thank you</span>
-                <span class="lp-row">Thank you<span class="lp-beat">.</span></span>
+            <div class="absolute left-[96px] top-[160px]" aria-label="Thank you.">
+                <span class="lp-row block font-display text-[140px] font-extrabold leading-[1.04] tracking-[-0.02em] text-lp-fg opacity-[0.10]" aria-hidden="true">Thank you</span>
+                <span class="lp-row block font-display text-[140px] font-extrabold leading-[1.04] tracking-[-0.02em] text-lp-fg opacity-[0.18]" aria-hidden="true">Thank you</span>
+                <span class="lp-row block font-display text-[140px] font-extrabold leading-[1.04] tracking-[-0.02em] text-lp-fg opacity-[0.32]" aria-hidden="true">Thank you</span>
+                <span class="lp-row block font-display text-[140px] font-extrabold leading-[1.04] tracking-[-0.02em] text-lp-fg opacity-[0.55]" aria-hidden="true">Thank you</span>
+                <span class="lp-row block font-display text-[140px] font-extrabold leading-[1.04] tracking-[-0.02em] text-lp-fg">Thank you<span class="lp-beat inline-block text-lp-accent">.</span></span>
             </div>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">alfin@nodeflux.io <span class="lp-dot">·</span> nodeflux.io <span class="lp-dot">·</span> @nodeflux</div>
-            <div class="lp-foot-right">Nodeflux</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[958px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[982px] font-mono text-[15px] tracking-[0.08em] text-lp-muted">alfin@nodeflux.io <span class="text-lp-accent">·</span> nodeflux.io <span class="text-lp-accent">·</span> @nodeflux</div>
+            <div class="lp-foot-right absolute right-[96px] top-[982px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">Nodeflux</div>
         </section>
     </div>
 </div>

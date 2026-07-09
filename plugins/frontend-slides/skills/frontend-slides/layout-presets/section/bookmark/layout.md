@@ -51,7 +51,7 @@ where Inversion is cool; suits story-driven and editorial decks.
 
 | Element | Position & size | Type spec | Color role |
 |---|---|---|---|
-| Ribbon | x:200 → 320 (120px wide), y:0 → 440; notch cut via `clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 44px), 0 100%)` | — | fill `--lp-accent` |
+| Ribbon | x:200 → 320 (120px wide), y:0 → 440; notch cut via `[clip-path:polygon(0_0,100%_0,100%_100%,50%_calc(100%_-_44px),0_100%)]` | — | fill `--lp-accent` |
 | Ribbon numeral | centered in the ribbon's width, baseline 76px above the ribbon's bottom | `--lp-font-mono`, 34px, weight 500 | `--lp-bg` (text on the accent surface) |
 | Title | x:420, top y:440, max-width 1300px, 1–2 lines | `--lp-font-display`, 128–140px (default 136), weight 700–800, line-height 0.97, ls −0.02em | `--lp-fg`; `<em>` → `--lp-accent` |
 | Framing line | x:420, 40px below title, max-width 720px | `--lp-font-body`, 23px, line-height 1.5 | `--lp-fg-muted` |
@@ -72,7 +72,7 @@ mono caption below) anchors bottom-right at x:1264 → 1824, its bottom
 edge at y:920; the part count moves above the plate's caption. The
 chapter's key visual balancing the ribbon diagonally. **Recommended
 size / placeholder:** `https://placehold.co/560x420`. **Dimension
-fallback:** fixed frame, `object-fit: cover`, token CSS fill behind
+fallback:** fixed frame, `object-cover`, token CSS fill behind
 the `<img>`. The image is optional.
 
 ## Choreography

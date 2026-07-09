@@ -48,7 +48,7 @@ symmetrical film-frame deck, but closes any deck that has the image.
 
 | Element | Position & size | Type spec | Color role |
 |---|---|---|---|
-| Media layer | full bleed, `object-fit: cover` | — | — |
+| Media layer | full bleed, `object-cover` | — | — |
 | Scrim | full width, y:460 → 1080, linear gradient transparent → `--lp-bg` at 94% | — | — |
 | Kicker (top-left) | x:96, y:72 | `--lp-font-mono`, 15px, uppercase, ls 0.18em | `--lp-accent` |
 | Counter (top-right) | right-aligned x:1824, y:72 | `--lp-font-mono`, 15px, uppercase, ls 0.12em | `--lp-fg-muted` |
@@ -68,7 +68,7 @@ symmetrical film-frame deck, but closes any deck that has the image.
 This preset is image-first; the case above is the image case.
 
 **Recommended size / placeholder:** `https://placehold.co/1920x1080`.
-**Dimension fallback:** full-bleed fixed frame + `object-fit: cover`;
+**Dimension fallback:** full-bleed fixed frame + `object-cover`;
 keep the CSS atmosphere behind the `<img>` so a failed load degrades
 to the no-image variant. The image is optional.
 

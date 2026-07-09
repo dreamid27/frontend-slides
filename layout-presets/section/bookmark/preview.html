@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,53 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === RIBBON (accent as a surface; the notch sells the bookmark) === */
-.lp-ribbon {
-    position: absolute; left: 200px; top: 0;
-    width: 120px; height: 440px;
-    background: var(--lp-accent);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 44px), 0 100%);
-}
-.lp-ribbon-num {
-    position: absolute; left: 0; right: 0; bottom: 76px;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 34px; font-weight: 500;
-    color: var(--lp-bg);
-}
-
-/* === TITLE BLOCK === */
-.lp-title {
-    position: absolute; left: 420px; top: 440px;
-    margin: 0; max-width: 1300px;
-    font-family: var(--lp-font-display);
-    font-size: 136px; font-weight: 800;
-    line-height: 0.97; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title .lp-line { display: block; }
-.lp-title em { font-style: normal; color: var(--lp-accent); }
-.lp-framing {
-    position: absolute; left: 420px; top: 760px;
-    margin: 0; max-width: 720px;
-    font-family: var(--lp-font-body);
-    font-size: 23px; line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === PART COUNT === */
-.lp-count {
-    position: absolute; right: 96px; top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-drop { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
@@ -108,21 +96,21 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- ribbon -->
-            <div class="lp-ribbon" aria-hidden="true">
-                <div class="lp-ribbon-num">03</div>
+            <div class="lp-ribbon absolute left-[200px] top-0 w-[120px] h-[440px] bg-lp-accent [clip-path:polygon(0_0,100%_0,100%_100%,50%_calc(100%_-_44px),0_100%)]" aria-hidden="true">
+                <div class="lp-ribbon-num absolute left-0 right-0 bottom-[76px] text-center font-mono text-[34px] font-medium text-lp-bg">03</div>
             </div>
 
             <!-- title -->
-            <h1 class="lp-title">
-                <span class="lp-line">Where the work</span>
-                <span class="lp-line">got <em>hard</em></span>
+            <h1 class="lp-title absolute left-[420px] top-[440px] m-0 max-w-[1300px] font-display text-[136px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">
+                <span class="lp-line block">Where the work</span>
+                <span class="lp-line block">got <em class="not-italic text-lp-accent">hard</em></span>
             </h1>
-            <p class="lp-framing">The two months nobody wrote home about — and why they mattered most.</p>
+            <p class="lp-framing absolute left-[420px] top-[760px] m-0 max-w-[720px] font-body text-[23px] leading-[1.5] text-lp-muted">The two months nobody wrote home about — and why they mattered most.</p>
 
             <!-- part count -->
-            <div class="lp-count">Part 3 / 5</div>
+            <div class="lp-count absolute right-[96px] top-[984px] font-mono text-[15px] tracking-[0.14em] uppercase text-lp-muted">Part 3 / 5</div>
         </section>
     </div>
 </div>

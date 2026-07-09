@@ -285,20 +285,19 @@ components:
     background: "{colors.burgundy}"
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
-Editorial Tri-Tone is a **literary magazine presentation system** built on the strictest possible palette: three hex values, eleven CSS variable names. The naming system reveals editorial intent — `--pink` and `--sky` point at the same blush; `--cream`, `--butter`, `--lime`, and `--terracotta` all resolve to the same golden yellow; `--burgundy`, `--navy`, `--forest`, and `--ink` all collapse to the same deep wine. The aliases exist to communicate the role of the color in context, not to introduce variation.
+Editorial Tri-Tone is a **literary magazine presentation system** built on the strictest possible palette: three hex values, eleven design token names in the inline tailwind.config. The naming system reveals editorial intent — `pink` and `sky` point at the same blush; `cream`, `butter`, `lime`, and `terracotta` all resolve to the same golden yellow; `burgundy`, `navy`, `forest`, and `ink` all collapse to the same deep wine. The aliases exist to communicate the role of the color in context, not to introduce variation.
 
 The typeface stack is a deliberate three-way conversation:
 1. **Bricolage Grotesque** — a variable grotesque with an optical-size axis. Used at weights 500, 600, 700, and 800 for all display and body sans text.
@@ -320,7 +319,7 @@ The editorial voice is that of an independent magazine with a colophon — the d
 ## Colors
 
 ### The Three Actual Colors
-Despite many CSS variable names, the palette is:
+Despite many design token names in the inline tailwind.config, the palette is:
 
 | Name | Hex | Role |
 |---|---|---|
@@ -333,17 +332,17 @@ All aliases resolve to one of the three values above. The alias name signals con
 
 | Alias | Points to | Context of use |
 |---|---|---|
-| `--pink` | #F2B6C6 | Default accent label |
-| `--pink-deep` | #F2B6C6 | (unused distinct value — same as pink) |
-| `--sky` | #F2B6C6 | Segment D bar in breakdown |
-| `--cream` | #F2D86A | Light surface background |
-| `--butter` | #F2D86A | Accent text on dark; card backgrounds |
-| `--lime` | #F2D86A | Ribbon accent text; kicker label on dark surfaces |
-| `--terracotta` | #F2D86A | Italic em highlights in lede or body |
-| `--navy` | #7A1F35 | Alternate label for dark surface contexts |
-| `--forest` | #7A1F35 | Dark panel or column background |
-| `--burgundy` | #7A1F35 | Structural background color |
-| `--ink` | #7A1F35 | All text color |
+| `pink` | #F2B6C6 | Default accent label |
+| `pink-deep` | #F2B6C6 | (unused distinct value — same as pink) |
+| `sky` | #F2B6C6 | Segment D bar in breakdown |
+| `cream` | #F2D86A | Light surface background |
+| `butter` | #F2D86A | Accent text on dark; card backgrounds |
+| `lime` | #F2D86A | Ribbon accent text; kicker label on dark surfaces |
+| `terracotta` | #F2D86A | Italic em highlights in lede or body |
+| `navy` | #7A1F35 | Alternate label for dark surface contexts |
+| `forest` | #7A1F35 | Dark panel or column background |
+| `burgundy` | #7A1F35 | Structural background color |
+| `ink` | #7A1F35 | All text color |
 
 
 ## Typography
@@ -523,22 +522,22 @@ This template is designed **exclusively for 1920x1080 presentation display**. Th
 
 Use **Strategy C** — keep Bricolage Grotesque (display, body) and Instrument Serif (italic accents) as the Latin faces and fall back to the Chinese stack only for CJK glyphs. The literary-magazine identity of Editorial Tri-Tone depends on Bricolage Grotesque's optical-size axis and Instrument Serif's italic cut as part of the brand voice; replacing them wholesale with a CJK family would flatten the system into "generic Chinese editorial." Stack:
 
-```css
-/* Bricolage Grotesque roles (display, body) */
-font-family: 'Bricolage Grotesque', 'Noto Sans SC', sans-serif;
-/* Instrument Serif roles (chapter-num, quote-mark, year, signature) */
-font-family: 'Instrument Serif', 'LXGW WenKai TC', serif;
-/* JetBrains Mono roles (labels, section markers) */
-font-family: 'JetBrains Mono', 'Noto Sans Mono CJK SC', monospace;
+```js
+fontFamily: {
+  // Bricolage Grotesque roles (display, body)
+  sans:  "'Bricolage Grotesque', 'Noto Sans SC', sans-serif",
+  // Instrument Serif roles (chapter-num, quote-mark, year, signature)
+  serif: "'Instrument Serif', 'LXGW WenKai TC', serif",
+  // JetBrains Mono roles (labels, section markers)
+  mono:  "'JetBrains Mono', 'Noto Sans Mono CJK SC', monospace",
+}
 ```
 
-The system's signature `<em>` rule (Bricolage Grotesque → Instrument Serif italic inline) is what carries the editorial tone in Latin. The CJK equivalent: an `<em>` inside a 思源黑体 (Noto Sans SC) headline should switch to **站酷小薇体 (ZCOOL XiaoWei)** — a decorative literary serif with the same softness contrast as Instrument Serif italic. Add a CSS rule:
+The system's signature `<em>` rule (Bricolage Grotesque → Instrument Serif italic inline) is what carries the editorial tone in Latin. The CJK equivalent: an `<em>` inside a 思源黑体 (Noto Sans SC) headline should switch to **站酷小薇体 (ZCOOL XiaoWei)** — a decorative literary serif with the same softness contrast as Instrument Serif italic. Add the equivalent utilities on every `<em>` inside `h1`, `h2`, `.lede`, and `.quote-heading`:
 
-```css
-h1 em, h2 em, .lede em, .quote-heading em {
-  font-family: 'Instrument Serif', 'ZCOOL XiaoWei', 'LXGW WenKai TC', serif;
-  font-style: italic; /* Latin only — CJK ignores font-style */
-}
+```html
+<!-- italic renders for Latin only — CJK ignores font-style -->
+<em class="italic font-['Instrument_Serif','ZCOOL_XiaoWei','LXGW_WenKai_TC',serif]">…</em>
 ```
 
 Watch for baseline mismatch at display sizes (300–540px): Bricolage Grotesque at -0.04em to -0.06em tracking sits visually tighter than Noto Sans SC, so a mixed-script wordmark like `INTO 中国` may feel uneven. For hero / wordmark moments, prefer single-script lines and let the second script live on its own line below.
@@ -598,4 +597,4 @@ ZCOOL XiaoWei is the right aesthetic match for the em-switch role, but it ships 
 - The breakdown bars in slide 4 use inline `width: XX%` as a style — percentages must be set manually.
 - The timeline stop dots (`.stop .dot`) have `display: none` — they are styled but not visible. A presenter populating this slide would enable them via CSS.
 - Instrument Serif italic is loaded as a font variant but is not explicitly called with `font-style: italic` in every context — in some cases the browser selects it from the variable font's italic axis automatically based on surrounding context.
-- Color swatch circles on slide 4 reference `--terracotta` and `--sky`, which resolve identically to `--butter` and `--pink` — the visual distinction exists only semantically in the source, not visually.
+- Color swatch circles on slide 4 reference `terracotta` and `sky`, which resolve identically to `butter` and `pink` — the visual distinction exists only semantically in the source, not visually.

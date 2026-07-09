@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,68 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === TOP: KICKER + RIGHT-ALIGNED STATEMENT === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-statement {
-    position: absolute; right: 96px; top: 150px;
-    margin: 0; max-width: 1200px;
-    text-align: right;
-    font-family: var(--lp-font-display);
-    font-size: 128px; font-weight: 800;
-    line-height: 0.97; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-statement .lp-line { display: block; }
-.lp-statement em { font-style: normal; color: var(--lp-accent); }
-.lp-tail {
-    position: absolute; right: 96px; top: 470px;
-    width: 200px; height: 1px;
-    background: var(--lp-line);
-    transform-origin: right center;
-}
-
-/* === BOTTOM-LEFT: CONTACT STACK ===
-   Image variant: a bordered 480×360 plate (https://placehold.co/480x360,
-   object-fit cover, CSS fill behind) anchors the corner; the stack
-   sits on its top edge with a caption line under the plate. */
-.lp-stack {
-    position: absolute; left: 96px; bottom: 96px;
-    width: 560px;
-}
-.lp-entry { padding: 22px 0; }
-.lp-entry + .lp-entry { border-top: 1px solid var(--lp-line); }
-.lp-entry-label {
-    font-family: var(--lp-font-mono);
-    font-size: 13px; letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-    margin-bottom: 10px;
-}
-.lp-entry-value {
-    font-family: var(--lp-font-body);
-    font-size: 26px;
-    color: var(--lp-fg);
-}
-
-/* === COUNTER === */
-.lp-counter {
-    position: absolute; right: 96px; top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
@@ -125,33 +98,36 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- kicker + statement -->
-            <div class="lp-kicker">In Closing</div>
-            <h1 class="lp-statement">
-                <span class="lp-line">See you</span>
-                <span class="lp-line">out <em>there.</em></span>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">In Closing</div>
+            <h1 class="lp-statement absolute right-[96px] top-[150px] m-0 max-w-[1200px] text-right font-display text-[128px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">
+                <span class="lp-line block">See you</span>
+                <span class="lp-line block">out <em class="not-italic text-lp-accent">there.</em></span>
             </h1>
-            <div class="lp-tail" aria-hidden="true"></div>
+            <div class="lp-tail absolute right-[96px] top-[470px] w-[200px] h-px origin-right bg-lp-line" aria-hidden="true"></div>
 
-            <!-- contact stack -->
-            <div class="lp-stack">
-                <div class="lp-entry">
-                    <div class="lp-entry-label">Email</div>
-                    <div class="lp-entry-value">alfin@nodeflux.io</div>
+            <!-- contact stack.
+                 Image variant: a bordered 480×360 plate (https://placehold.co/480x360,
+                 object-cover, CSS fill behind) anchors the corner; the stack
+                 sits on its top edge with a caption line under the plate. -->
+            <div class="absolute left-[96px] bottom-[96px] w-[560px]">
+                <div class="lp-entry py-[22px]">
+                    <div class="mb-[10px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-muted">Email</div>
+                    <div class="font-body text-[26px] text-lp-fg">alfin@nodeflux.io</div>
                 </div>
-                <div class="lp-entry">
-                    <div class="lp-entry-label">Site</div>
-                    <div class="lp-entry-value">nodeflux.io</div>
+                <div class="lp-entry py-[22px] border-t border-lp-line">
+                    <div class="mb-[10px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-muted">Site</div>
+                    <div class="font-body text-[26px] text-lp-fg">nodeflux.io</div>
                 </div>
-                <div class="lp-entry">
-                    <div class="lp-entry-label">Handle</div>
-                    <div class="lp-entry-value">@nodeflux</div>
+                <div class="lp-entry py-[22px] border-t border-lp-line">
+                    <div class="mb-[10px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-muted">Handle</div>
+                    <div class="font-body text-[26px] text-lp-fg">@nodeflux</div>
                 </div>
             </div>
 
             <!-- counter -->
-            <div class="lp-counter">12 / 12</div>
+            <div class="lp-counter absolute right-[96px] top-[984px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 12</div>
         </section>
     </div>
 </div>

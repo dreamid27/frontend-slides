@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #141414;
@@ -45,77 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === STATEMENT === */
-.lp-statement {
-    position: absolute;
-    left: 96px; right: 96px; top: 170px;
-    margin: 0;
-    text-align: center;
-    font-family: var(--lp-font-display);
-    font-size: 120px; font-weight: 800;
-    line-height: 0.97; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-statement .lp-beat { color: var(--lp-accent); display: inline-block; }
-
-/* === CREDITS BLOCK ===
-   Image variant: each row gains a 56×56 photo chip left of the role
-   column (all rows or none). */
-.lp-credits {
-    position: absolute;
-    left: 0; right: 0; top: 420px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 48px;
-    row-gap: 30px;
-    justify-content: center;
-}
-.lp-role {
-    text-align: right;
-    align-self: center;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-name {
-    text-align: left;
-    font-family: var(--lp-font-display);
-    font-size: 30px; font-weight: 700;
-    color: var(--lp-fg);
-}
-
-/* === CONTACT LINE === */
-.lp-contact-line {
-    position: absolute;
-    left: 0; right: 0; top: 940px;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.08em;
-    color: var(--lp-fg-muted);
-}
-.lp-contact-line .lp-dot { color: var(--lp-accent); margin: 0 18px; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-xs { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -137,25 +101,26 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">In Closing</div>
-            <div class="lp-counter">12 / 12</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">In Closing</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 12</div>
 
             <!-- statement -->
-            <h1 class="lp-statement">Thank you<span class="lp-beat">.</span></h1>
+            <h1 class="lp-statement absolute left-[96px] right-[96px] top-[170px] m-0 text-center font-display text-[120px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">Thank you<span class="lp-beat inline-block text-lp-accent">.</span></h1>
 
-            <!-- credits -->
-            <div class="lp-credits">
-                <div class="lp-role">Platform Lead</div><div class="lp-name">A. Rahman</div>
-                <div class="lp-role">Edge Models</div><div class="lp-name">S. Wijaya</div>
-                <div class="lp-role">Unified Console</div><div class="lp-name">D. Putri</div>
-                <div class="lp-role">Site Rollout</div><div class="lp-name">Field Ops Guild</div>
-                <div class="lp-role">Reliability</div><div class="lp-name">On-call, all of you</div>
+            <!-- credits. Image variant: each row gains a 56×56 photo chip
+                 left of the role column (all rows or none). -->
+            <div class="lp-credits absolute left-0 right-0 top-[420px] grid grid-cols-[1fr_1fr] gap-x-[48px] gap-y-[30px] justify-center">
+                <div class="text-right self-center font-mono text-[15px] uppercase tracking-[0.16em] text-lp-muted">Platform Lead</div><div class="text-left font-display text-[30px] font-bold text-lp-fg">A. Rahman</div>
+                <div class="text-right self-center font-mono text-[15px] uppercase tracking-[0.16em] text-lp-muted">Edge Models</div><div class="text-left font-display text-[30px] font-bold text-lp-fg">S. Wijaya</div>
+                <div class="text-right self-center font-mono text-[15px] uppercase tracking-[0.16em] text-lp-muted">Unified Console</div><div class="text-left font-display text-[30px] font-bold text-lp-fg">D. Putri</div>
+                <div class="text-right self-center font-mono text-[15px] uppercase tracking-[0.16em] text-lp-muted">Site Rollout</div><div class="text-left font-display text-[30px] font-bold text-lp-fg">Field Ops Guild</div>
+                <div class="text-right self-center font-mono text-[15px] uppercase tracking-[0.16em] text-lp-muted">Reliability</div><div class="text-left font-display text-[30px] font-bold text-lp-fg">On-call, all of you</div>
             </div>
 
             <!-- contact line -->
-            <div class="lp-contact-line">alfin@nodeflux.io<span class="lp-dot">·</span>nodeflux.io<span class="lp-dot">·</span>@nodeflux</div>
+            <div class="lp-contact-line absolute left-0 right-0 top-[940px] text-center font-mono text-[15px] tracking-[0.08em] text-lp-muted">alfin@nodeflux.io<span class="mx-[18px] text-lp-accent">·</span>nodeflux.io<span class="mx-[18px] text-lp-accent">·</span>@nodeflux</div>
         </section>
     </div>
 </div>

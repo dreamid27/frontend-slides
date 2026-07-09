@@ -69,15 +69,15 @@ skylines, conveyor lines, dashboards panning.
 ## Video embed & fallbacks
 
 - **Embed:** local `<video controls preload="metadata" poster="...">`
-  filling the band with `object-fit: cover` (this produces the
+  filling the band with `object-cover` (this produces the
   cinemascope crop from a 16:9 source). Hosted `<iframe>` embeds
   cannot crop — with an iframe, letterbox it at 996×560 centered in
   the band and let the band's token fill show at the sides. Never
   autoplay with sound.
 - **Poster / placeholder:** `https://placehold.co/1920x560` (the
   band's own ratio, so drafting shows the true crop).
-- **Dimension fallback:** fixed 1920×560 band, media `object-fit:
-  cover`; token CSS fill behind for load failures.
+- **Dimension fallback:** fixed 1920×560 band, media `object-cover`;
+  token CSS fill behind for load failures.
 - **No-video variant:** the poster as a still — the band becomes a
   panoramic image slide, caption and runtime replaced by a plain
   caption. The video is optional.

@@ -85,7 +85,7 @@ ghost obeys), top at y:200. No border; the frame's clipping IS the
 chrome. The statement and contact strip are unchanged.
 
 **Recommended size / placeholder:** `https://placehold.co/700x500`.
-**Dimension fallback:** fixed 700×500 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 700×500 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional — the ghost
 echo word is the default.
 

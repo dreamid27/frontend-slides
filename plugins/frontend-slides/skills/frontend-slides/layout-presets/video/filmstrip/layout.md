@@ -82,7 +82,7 @@ what footage exists and how long each piece runs.
   rail thumbs `https://placehold.co/480x270` (2× for sharpness at
   240×135).
 - **Dimension fallback:** fixed frames throughout, posters
-  `object-fit: cover`, token CSS fill behind every poster.
+  `object-cover`, token CSS fill behind every poster.
 - **No-video variant:** posters as stills turn this into a gallery
   slide — acceptable for exported decks; keep durations only if the
   clips exist somewhere reachable.

@@ -80,13 +80,13 @@ chrome is centered on x:960.
 ## Image variant
 
 **With an image:** the ring seal becomes a 140px circular image
-medallion — same center, `border-radius: 50%`, the 1px `--lp-accent`
+medallion — same center, `rounded-full`, the 1px `--lp-accent`
 ring now enclosing the image (presenter portrait, team mark, or a
 circular product detail). The monogram is dropped.
 
 **Recommended size / placeholder:** `https://placehold.co/280x280`
 (2× for sharpness at 140px). **Dimension fallback:** fixed 140×140
-circular frame, `object-fit: cover`, token CSS fill behind the
+circular frame, `object-cover`, token CSS fill behind the
 `<img>`. The image is optional — the empty ring is the default.
 
 ## Choreography

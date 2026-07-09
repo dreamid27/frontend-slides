@@ -70,14 +70,14 @@ retrospectives, and launches.
 ## Image variant
 
 **With images:** each credit row may carry a 56×56 photo chip
-(grayscale-friendly headshot, `object-fit: cover`, no border-radius
+(grayscale-friendly headshot, `object-cover`, no border-radius
 unless the design system rounds avatars) sitting left of the role
 column, 20px gap, all vertically centered per row. All rows get chips
 or none. **Without images:** the pure type block above.
 
 **Recommended size / placeholder:** `https://placehold.co/112x112`
 (2× for sharpness at 56px). **Dimension fallback:** fixed 56×56 chip,
-`object-fit: cover`, token CSS fill behind each `<img>`. Chips are
+`object-cover`, token CSS fill behind each `<img>`. Chips are
 optional.
 
 ## Choreography

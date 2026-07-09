@@ -71,7 +71,7 @@ board decks that must feel unhurried.
 
 **With an image:** the presenter card becomes a framed image card at
 the same anchor — 560×420px, 1px border in `--lp-line`, image inset
-with `object-fit: cover`, and a mono caption line below the frame
+with `object-cover`, and a mono caption line below the frame
 (right-aligned, 13px, `--lp-fg-muted`). The presenter's name and role
 move to a single mono line under the kicker (top-left). Portrait or
 detail crops; the card is an object, not a window.
@@ -79,7 +79,7 @@ detail crops; the card is an object, not a window.
 **Without an image:** the presenter card as specified above.
 
 **Recommended size / placeholder:** `https://placehold.co/560x420`.
-**Dimension fallback:** fixed 560×420 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 560×420 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional — swap freely
 between card and photo per deck.
 

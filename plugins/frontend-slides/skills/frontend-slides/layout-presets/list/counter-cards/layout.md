@@ -85,7 +85,7 @@ photos), never decorative icons.
 
 **Recommended size / placeholder:** `https://placehold.co/200x200`
 (2× for sharpness at 100px). **Dimension fallback:** fixed 100×100
-frames, `object-fit: cover`, token CSS fill behind each `<img>`.
+frames, `object-cover`, token CSS fill behind each `<img>`.
 Chips are optional — numeral-only cards are the default.
 
 ## Choreography

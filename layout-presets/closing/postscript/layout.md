@@ -85,8 +85,8 @@ above.
 
 **Recommended size / placeholder:** `https://placehold.co/300x300`
 (portrait) or `https://placehold.co/380x110` (signature scan).
-**Dimension fallback:** fixed frames with `object-fit: cover`
-(portrait) / `contain` (signature scan — never crop a signature),
+**Dimension fallback:** fixed frames with `object-cover`
+(portrait) / `object-contain` (signature scan — never crop a signature),
 token CSS fill behind the portrait only. Both are optional.
 
 ## Choreography

@@ -155,16 +155,15 @@ components:
     description: "The wood-brown atmospheric glow that lives on every dark slide via ::before. Non-optional on dark surfaces; defines the warmth of the system."
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -402,15 +401,14 @@ The template does not declare a `@media print` rule. To produce a PDF, use the b
 
 ### Mixed-Content Strategy
 
-Use **Strategy A** — switch the entire face stack to Noto Serif SC across all roles, replacing Bricolage Grotesque (display), DM Sans (body), and DM Mono (labels). Mat's identity does not depend on the specific Latin faces; it depends on the **dark forest green canvas with wood-brown atmospheric glow**, the **single warm orange accent**, the **cream info-card inset**, and the **1px hairline divider language**. Going all-Mincho in Chinese preserves every one of those identity markers cleanly without the baseline wobble that Strategy C would introduce on a viewport-fluid system. Stack:
+Use **Strategy A** — switch the entire face stack to Noto Serif SC across all roles, replacing Bricolage Grotesque (display), DM Sans (body), and DM Mono (labels). Mat's identity does not depend on the specific Latin faces; it depends on the **dark forest green canvas with wood-brown atmospheric glow**, the **single warm orange accent**, the **cream info-card inset**, and the **1px hairline divider language**. Going all-Mincho in Chinese preserves every one of those identity markers cleanly without the baseline wobble that Strategy C would introduce on a viewport-fluid system. fontFamily tokens for the inline tailwind.config:
 
-```css
-/* Bricolage roles (display, h1, h2, h3, stat-value, quote) */
-font-family: 'Bricolage Grotesque', 'Noto Serif SC', sans-serif;
-/* DM Sans roles (lead, body, caption) */
-font-family: 'DM Sans', 'Noto Serif SC', sans-serif;
-/* DM Mono roles (label, kicker, chrome, footer) */
-font-family: 'DM Mono', 'Noto Serif SC', monospace;
+```js
+fontFamily: {
+  display: "'Bricolage Grotesque', 'Noto Serif SC', sans-serif", // display, h1, h2, h3, stat-value, quote
+  body:    "'DM Sans', 'Noto Serif SC', sans-serif",             // lead, body, caption
+  mono:    "'DM Mono', 'Noto Serif SC', monospace",              // label, kicker, chrome, footer
+}
 ```
 
 The system's source currently lists `'Noto Sans SC'` as the CJK fallback — for Mat's material-tactile register, **swap to `'Noto Serif SC'`**. The Mincho face's warm letterforms match the wood-glow / forest-green atmosphere better than the geometric Noto Sans SC, which reads as too modern-clinical for this system.

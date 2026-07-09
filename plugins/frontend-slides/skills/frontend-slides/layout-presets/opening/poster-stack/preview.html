@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f1f0ee;
@@ -45,63 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === MARGIN CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 64px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-meta {
-    position: absolute; right: 96px; top: 64px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === THE STACK ===
-   Row pattern is fixed: solid / outline / solid / accent.
-   Image variant: the outline row becomes a letterbox image band
-   (object-fit cover, full row footprint), caption chip at its right. */
-.lp-stack {
-    position: absolute;
-    left: 96px; right: 96px; top: 150px;
-}
-.lp-row {
-    display: block;
-    font-family: var(--lp-font-display);
-    font-size: 170px; font-weight: 800;
-    line-height: 1.09; letter-spacing: -0.02em;
-    text-transform: uppercase;
-    color: var(--lp-fg);
-}
-.lp-row.r-outline {
-    color: transparent;
-    -webkit-text-stroke: 2px rgba(26, 26, 26, 0.55);
-}
-.lp-row.r-accent { color: var(--lp-accent); }
-
-/* === FOOTER === */
-.lp-foot-rule {
-    position: absolute;
-    left: 96px; right: 96px; top: 940px;
-    height: 1px; background: var(--lp-line);
-}
-.lp-foot-left, .lp-foot-right {
-    position: absolute; top: 962px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; }
-.lp-foot-right { right: 96px; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-accent-in { from { color: var(--lp-fg); } to { color: var(--lp-accent); } }
@@ -121,23 +99,25 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- margin chrome -->
-            <div class="lp-kicker">Annual Briefing</div>
-            <div class="lp-meta">08 Jul 2026</div>
+            <div class="lp-kicker absolute left-[96px] top-[64px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Annual Briefing</div>
+            <div class="lp-meta absolute right-[96px] top-[64px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">08 Jul 2026</div>
 
-            <!-- the stack -->
-            <h1 class="lp-stack">
-                <span class="lp-row">State</span>
-                <span class="lp-row r-outline">of the</span>
-                <span class="lp-row">platform</span>
-                <span class="lp-row r-accent">2026</span>
+            <!-- the stack. Row pattern is fixed: solid / outline / solid / accent.
+                 Image variant: the outline row becomes a letterbox image band
+                 (object-cover, full row footprint), caption chip at its right -->
+            <h1 class="absolute left-[96px] right-[96px] top-[150px]">
+                <span class="lp-row block font-display text-[170px] font-extrabold leading-[1.09] tracking-[-0.02em] uppercase text-lp-fg">State</span>
+                <span class="lp-row block font-display text-[170px] font-extrabold leading-[1.09] tracking-[-0.02em] uppercase text-transparent [-webkit-text-stroke:2px_rgba(26,26,26,0.55)]">of the</span>
+                <span class="lp-row block font-display text-[170px] font-extrabold leading-[1.09] tracking-[-0.02em] uppercase text-lp-fg">platform</span>
+                <span class="lp-row block font-display text-[170px] font-extrabold leading-[1.09] tracking-[-0.02em] uppercase text-lp-accent">2026</span>
             </h1>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">A. Rahman — Nodeflux</div>
-            <div class="lp-foot-right">01 / 12</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[940px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[962px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">A. Rahman — Nodeflux</div>
+            <div class="lp-foot-right absolute right-[96px] top-[962px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">01 / 12</div>
         </section>
     </div>
 </div>

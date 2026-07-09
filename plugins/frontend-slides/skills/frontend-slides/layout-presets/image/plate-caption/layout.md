@@ -59,7 +59,7 @@ matters.
 | Figure number | x:96, y:170 | `--lp-font-mono`, 16px, uppercase, ls 0.2em | `--lp-accent` |
 | Title | x:96, top y:230, max-width 608px, 2–3 lines | `--lp-font-display`, 68–76px (default 76), weight 700–800, line-height 1.02, ls −0.02em | `--lp-fg`; `<em>` → `--lp-accent` |
 | Reading | x:96, 36px below title, max-width 560px | `--lp-font-body`, 21px, line-height 1.6 | `--lp-fg-muted` |
-| Plate | x:800 → 1824, y:120 → 900; 1px border; image inset flush, `object-fit: cover` | — | border `--lp-line` |
+| Plate | x:800 → 1824, y:120 → 900; 1px border; image inset flush, `object-cover` | — | border `--lp-line` |
 | Caption strip | x:800 → 1824, y:924, single line below the plate | `--lp-font-mono`, 13px, uppercase, ls 0.14em | `--lp-fg-muted` |
 
 ## Content constraints (hard limits)
@@ -79,8 +79,8 @@ This preset is image-first; the case above is the image case.
 
 **Recommended size / placeholder:** `https://placehold.co/1024x780`.
 **Dimension fallback:** the plate is a fixed 1024×780 frame with
-`object-fit: cover` — screenshots of any ratio fill it; if the exact
-pixels matter (UI detail), switch that plate to `object-fit: contain`
+`object-cover` — screenshots of any ratio fill it; if the exact
+pixels matter (UI detail), switch that plate to `object-contain`
 with the frame's own background visible as matting. Keep a token CSS
 fill behind the `<img>` for load failures.
 

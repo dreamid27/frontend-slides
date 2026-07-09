@@ -77,7 +77,7 @@ the whole job of hierarchy.
 (1px `--lp-line` border) at x:1264 → 1824, y:330; featured description
 caps at 900px. Followers never get images. **Recommended size /
 placeholder:** `https://placehold.co/560x280`. **Dimension fallback:**
-fixed frame, `object-fit: cover`, token CSS fill behind the `<img>`.
+fixed frame, `object-cover`, token CSS fill behind the `<img>`.
 The image is optional.
 
 ## Choreography

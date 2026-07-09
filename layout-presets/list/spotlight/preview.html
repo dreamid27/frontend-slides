@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #161616;
@@ -45,92 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADER === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-headline {
-    position: absolute; left: 96px; top: 118px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 84px; font-weight: 800;
-    line-height: 1.02; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-headline em { font-style: normal; color: var(--lp-accent); }
-
-/* === FEATURED ITEM ===
-   Image variant: 560×280 bordered plate at x:1264, y:330
-   (placehold.co/560x280); description caps at 900px. */
-.lp-feat-num {
-    position: absolute; left: 96px; top: 330px;
-    font-family: var(--lp-font-display);
-    font-size: 72px; font-weight: 800;
-    line-height: 1;
-    color: var(--lp-accent);
-}
-.lp-feat-title {
-    position: absolute; left: 260px; top: 330px;
-    margin: 0; max-width: 1450px;
-    font-family: var(--lp-font-display);
-    font-size: 56px; font-weight: 700;
-    line-height: 1.08;
-    color: var(--lp-fg);
-}
-.lp-feat-desc {
-    position: absolute; left: 260px; top: 420px;
-    margin: 0; max-width: 1100px;
-    font-family: var(--lp-font-body);
-    font-size: 22px; line-height: 1.6;
-    color: var(--lp-fg-muted);
-}
-
-/* === DIVIDER + FOLLOWERS === */
-.lp-divider {
-    position: absolute; left: 96px; right: 96px; top: 640px;
-    height: 1px; background: var(--lp-line);
-    transform-origin: left center;
-}
-.lp-followers {
-    position: absolute; left: 96px; right: 96px; top: 696px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 64px;
-}
-.lp-fol-head { display: flex; align-items: baseline; gap: 16px; }
-.lp-fol-num {
-    font-family: var(--lp-font-mono);
-    font-size: 16px;
-    color: var(--lp-fg-muted);
-    flex: none;
-}
-.lp-fol-title {
-    font-family: var(--lp-font-display);
-    font-size: 28px; font-weight: 700;
-    color: var(--lp-fg);
-}
-.lp-fol-desc {
-    margin: 10px 0 0;
-    font-family: var(--lp-font-body);
-    font-size: 17px; line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
@@ -152,31 +101,33 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- header -->
-            <div class="lp-kicker">Roadmap</div>
-            <div class="lp-counter">10 / 14</div>
-            <h2 class="lp-headline">This quarter's <em>focus</em></h2>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Roadmap</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">10 / 14</div>
+            <h2 class="lp-headline absolute left-[96px] top-[118px] m-0 font-display text-[84px] font-extrabold leading-[1.02] tracking-[-0.02em] uppercase">This quarter's <em class="not-italic text-lp-accent">focus</em></h2>
 
-            <!-- featured item -->
-            <div class="lp-feat-num">01</div>
-            <h3 class="lp-feat-title">Edge inference everywhere</h3>
-            <p class="lp-feat-desc">Every other line on this slide gets easier once models run on site. Latency budgets become trivial, the console gets a live feed worth showing, and partners integrate against hardware they already own. This is the domino.</p>
+            <!-- featured item
+                 Image variant: 560×280 bordered plate at x:1264, y:330
+                 (placehold.co/560x280); description caps at 900px. -->
+            <div class="lp-feat-num absolute left-[96px] top-[330px] font-display text-[72px] font-extrabold leading-[1] text-lp-accent">01</div>
+            <h3 class="lp-feat-title absolute left-[260px] top-[330px] m-0 max-w-[1450px] font-display text-[56px] font-bold leading-[1.08] text-lp-fg">Edge inference everywhere</h3>
+            <p class="lp-feat-desc absolute left-[260px] top-[420px] m-0 max-w-[1100px] font-body text-[22px] leading-[1.6] text-lp-muted">Every other line on this slide gets easier once models run on site. Latency budgets become trivial, the console gets a live feed worth showing, and partners integrate against hardware they already own. This is the domino.</p>
 
             <!-- divider + followers -->
-            <div class="lp-divider"></div>
-            <div class="lp-followers">
+            <div class="lp-divider absolute left-[96px] right-[96px] top-[640px] h-px bg-lp-line origin-left"></div>
+            <div class="absolute left-[96px] right-[96px] top-[696px] grid grid-cols-3 gap-[64px]">
                 <div class="lp-fol">
-                    <div class="lp-fol-head"><span class="lp-fol-num">02</span><span class="lp-fol-title">Console v3</span></div>
-                    <p class="lp-fol-desc">The live-feed release, riding on edge.</p>
+                    <div class="flex items-baseline gap-[16px]"><span class="font-mono text-[16px] text-lp-muted flex-none">02</span><span class="font-display text-[28px] font-bold text-lp-fg">Console v3</span></div>
+                    <p class="mt-[10px] mx-0 mb-0 font-body text-[17px] leading-[1.5] text-lp-muted">The live-feed release, riding on edge.</p>
                 </div>
                 <div class="lp-fol">
-                    <div class="lp-fol-head"><span class="lp-fol-num">03</span><span class="lp-fol-title">Partner APIs</span></div>
-                    <p class="lp-fol-desc">Stable contract, versioned from day one.</p>
+                    <div class="flex items-baseline gap-[16px]"><span class="font-mono text-[16px] text-lp-muted flex-none">03</span><span class="font-display text-[28px] font-bold text-lp-fg">Partner APIs</span></div>
+                    <p class="mt-[10px] mx-0 mb-0 font-body text-[17px] leading-[1.5] text-lp-muted">Stable contract, versioned from day one.</p>
                 </div>
                 <div class="lp-fol">
-                    <div class="lp-fol-head"><span class="lp-fol-num">04</span><span class="lp-fol-title">Latency budgets</span></div>
-                    <p class="lp-fol-desc">Enforced in CI once edge lands.</p>
+                    <div class="flex items-baseline gap-[16px]"><span class="font-mono text-[16px] text-lp-muted flex-none">04</span><span class="font-display text-[28px] font-bold text-lp-fg">Latency budgets</span></div>
+                    <p class="mt-[10px] mx-0 mb-0 font-body text-[17px] leading-[1.5] text-lp-muted">Enforced in CI once edge lands.</p>
                 </div>
             </div>
         </section>

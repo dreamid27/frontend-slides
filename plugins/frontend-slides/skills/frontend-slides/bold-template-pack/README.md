@@ -63,6 +63,10 @@ from", or user requirement notes on the slide itself.
 When generating final slides:
 
 - Keep `frontend-slides` output as one self-contained HTML file.
+- Style with Tailwind utilities: load the Tailwind CDN script and map the
+  template's `colors:`/`typography:` frontmatter into an inline
+  `tailwind.config`; raw CSS only for stage mechanics, token definitions,
+  and choreography.
 - Include the full contents of `viewport-base.css`.
 - Generate every deck as a fixed 1920×1080 stage scaled uniformly to the
   viewport. This applies even if the source template was originally

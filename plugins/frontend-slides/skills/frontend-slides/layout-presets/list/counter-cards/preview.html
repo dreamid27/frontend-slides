@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #171717;
@@ -79,91 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADLINE COLUMN === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 120px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-headline {
-    position: absolute;
-    left: 96px;
-    top: 170px;
-    margin: 0;
-    max-width: 544px;
-    font-family: var(--lp-font-display);
-    font-size: 96px;
-    font-weight: 800;
-    line-height: 1.0;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-headline em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-.lp-lead {
-    position: absolute;
-    left: 96px;
-    top: 520px;
-    margin: 0;
-    max-width: 460px;
-    font-family: var(--lp-font-body);
-    font-size: 21px;
-    line-height: 1.6;
-    color: var(--lp-fg-muted);
-}
-
-/* === CARD GRID — flat, ruled, no shadows or radii === */
-.lp-grid {
-    position: absolute;
-    left: 736px;
-    right: 96px;
-    top: 120px;
-    bottom: 120px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 24px;
-}
-.lp-card {
-    border: 1px solid var(--lp-line);
-    padding: 44px;
-}
-.lp-card-num {
-    font-family: var(--lp-font-display);
-    font-size: 64px;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--lp-accent);
-}
-.lp-card-title {
-    margin: 28px 0 0;
-    font-family: var(--lp-font-display);
-    font-size: 34px;
-    font-weight: 700;
-    line-height: 1.15;
-    color: var(--lp-fg);
-}
-.lp-card-body {
-    margin: 16px 0 0;
-    font-family: var(--lp-font-body);
-    font-size: 19px;
-    line-height: 1.55;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-card { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
@@ -185,33 +134,33 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- headline column -->
-            <div class="lp-kicker">Operating Model</div>
-            <h2 class="lp-headline">What changes <em>now</em></h2>
-            <p class="lp-lead">Four commitments that take effect this quarter — each one owned, measured, and reviewed monthly.</p>
+            <div class="lp-kicker absolute left-[96px] top-[120px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Operating Model</div>
+            <h2 class="lp-headline absolute left-[96px] top-[170px] m-0 max-w-[544px] font-display text-[96px] font-extrabold leading-[1.0] tracking-[-0.02em] uppercase">What changes <em class="not-italic text-lp-accent">now</em></h2>
+            <p class="lp-lead absolute left-[96px] top-[520px] m-0 max-w-[460px] font-body text-[21px] leading-[1.6] text-lp-muted">Four commitments that take effect this quarter — each one owned, measured, and reviewed monthly.</p>
 
             <!-- card grid -->
-            <div class="lp-grid">
-                <div class="lp-card">
-                    <div class="lp-card-num">01</div>
-                    <h3 class="lp-card-title">Weekly ship reviews</h3>
-                    <p class="lp-card-body">Every team demos what reached production — not what is planned. Slideware does not count.</p>
+            <div class="absolute left-[736px] right-[96px] top-[120px] bottom-[120px] grid grid-cols-2 grid-rows-2 gap-[24px]">
+                <div class="lp-card border border-lp-line p-[44px]">
+                    <div class="lp-card-num font-display text-[64px] font-extrabold leading-[1] text-lp-accent">01</div>
+                    <h3 class="mt-[28px] mx-0 mb-0 font-display text-[34px] font-bold leading-[1.15] text-lp-fg">Weekly ship reviews</h3>
+                    <p class="mt-[16px] mx-0 mb-0 font-body text-[19px] leading-[1.55] text-lp-muted">Every team demos what reached production — not what is planned. Slideware does not count.</p>
                 </div>
-                <div class="lp-card">
-                    <div class="lp-card-num">02</div>
-                    <h3 class="lp-card-title">One owner per metric</h3>
-                    <p class="lp-card-body">Each core number gets a single name beside it. Shared ownership was no ownership.</p>
+                <div class="lp-card border border-lp-line p-[44px]">
+                    <div class="lp-card-num font-display text-[64px] font-extrabold leading-[1] text-lp-accent">02</div>
+                    <h3 class="mt-[28px] mx-0 mb-0 font-display text-[34px] font-bold leading-[1.15] text-lp-fg">One owner per metric</h3>
+                    <p class="mt-[16px] mx-0 mb-0 font-body text-[19px] leading-[1.55] text-lp-muted">Each core number gets a single name beside it. Shared ownership was no ownership.</p>
                 </div>
-                <div class="lp-card">
-                    <div class="lp-card-num">03</div>
-                    <h3 class="lp-card-title">Latency as a feature</h3>
-                    <p class="lp-card-body">Speed budgets enter the definition of done. A slow feature is an unfinished feature.</p>
+                <div class="lp-card border border-lp-line p-[44px]">
+                    <div class="lp-card-num font-display text-[64px] font-extrabold leading-[1] text-lp-accent">03</div>
+                    <h3 class="mt-[28px] mx-0 mb-0 font-display text-[34px] font-bold leading-[1.15] text-lp-fg">Latency as a feature</h3>
+                    <p class="mt-[16px] mx-0 mb-0 font-body text-[19px] leading-[1.55] text-lp-muted">Speed budgets enter the definition of done. A slow feature is an unfinished feature.</p>
                 </div>
-                <div class="lp-card">
-                    <div class="lp-card-num">04</div>
-                    <h3 class="lp-card-title">Default to writing</h3>
-                    <p class="lp-card-body">Decisions live in documents, not meetings. If it isn't written, it didn't happen.</p>
+                <div class="lp-card border border-lp-line p-[44px]">
+                    <div class="lp-card-num font-display text-[64px] font-extrabold leading-[1] text-lp-accent">04</div>
+                    <h3 class="mt-[28px] mx-0 mb-0 font-display text-[34px] font-bold leading-[1.15] text-lp-fg">Default to writing</h3>
+                    <p class="mt-[16px] mx-0 mb-0 font-body text-[19px] leading-[1.55] text-lp-muted">Decisions live in documents, not meetings. If it isn't written, it didn't happen.</p>
                 </div>
             </div>
         </section>

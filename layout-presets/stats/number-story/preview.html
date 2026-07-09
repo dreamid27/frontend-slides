@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #151515;
@@ -45,56 +73,15 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === THE SENTENCE ===
-   Words in --lp-fg at 600; figures step up to 1.22em / 800 / accent.
-   Vertically centered via top/transform — figures animate inline,
-   never the block. */
-.lp-sentence {
-    position: absolute; left: 96px; top: 50%;
-    transform: translateY(-52%);
-    margin: 0; max-width: 1650px;
-    font-family: var(--lp-font-display);
-    font-size: 88px; font-weight: 600;
-    line-height: 1.3; letter-spacing: -0.01em;
-    color: var(--lp-fg);
-}
-.lp-sentence .fig {
-    display: inline-block;
-    font-size: 1.22em; font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--lp-accent);
-}
-
-/* === SOURCE LINE === */
-.lp-source {
-    position: absolute; left: 96px; top: 940px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY ===
-   Figures arrive camouflaged at word color, then step out of the
-   prose in reading order. */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   Figures arrive camouflaged at word color, then step
+   out of the prose in reading order.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-fig-in {
     from { color: var(--lp-fg); transform: scale(0.92); }
@@ -113,16 +100,16 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">The Quarter</div>
-            <div class="lp-counter">13 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">The Quarter</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">13 / 14</div>
 
-            <!-- the sentence -->
-            <p class="lp-sentence">We shipped <span class="fig">214</span> releases in <span class="fig">92</span> days — with <span class="fig">0</span> rollbacks.</p>
+            <!-- the sentence (words in fg at 600; figures step up to 1.22em / 800 / accent; figures animate inline, never the block) -->
+            <p class="lp-sentence absolute left-[96px] top-[50%] translate-y-[-52%] m-0 max-w-[1650px] font-display text-[88px] font-semibold leading-[1.3] tracking-[-0.01em] text-lp-fg">We shipped <span class="fig inline-block text-[1.22em] font-extrabold tracking-[-0.02em] text-lp-accent">214</span> releases in <span class="fig inline-block text-[1.22em] font-extrabold tracking-[-0.02em] text-lp-accent">92</span> days — with <span class="fig inline-block text-[1.22em] font-extrabold tracking-[-0.02em] text-lp-accent">0</span> rollbacks.</p>
 
             <!-- source line -->
-            <div class="lp-source">All figures: platform telemetry, Q2 FY26</div>
+            <div class="lp-source absolute left-[96px] top-[940px] font-mono text-[14px] uppercase tracking-[0.16em] text-lp-muted">All figures: platform telemetry, Q2 FY26</div>
         </section>
     </div>
 </div>

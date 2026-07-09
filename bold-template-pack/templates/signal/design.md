@@ -194,16 +194,15 @@ components:
     description: "Cycle/process step card with a 2px gold rule at top, gold numeral, serif title, sans body."
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -469,14 +468,13 @@ The system already loads Noto Sans SC via the existing font-family stacks. If us
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 ```
 
-The existing CSS variables already include Noto Sans SC and Noto Serif SC in every font stack. For a CJK-primary deck, swap the serif stacks to use Noto Sans SC as the active CJK face (rather than Noto Serif SC) so the entire system collapses to one Chinese family:
-```css
-/* Display / headline roles (CJK-primary) */
-font-family: 'Source Serif 4', 'Noto Sans SC', Georgia, serif;
-/* Body roles */
-font-family: 'DM Sans', 'Noto Sans SC', system-ui, sans-serif;
-/* Mono roles */
-font-family: 'IBM Plex Mono', 'Noto Sans SC', monospace;
+The existing design tokens in the inline tailwind.config already include Noto Sans SC and Noto Serif SC in every font stack. For a CJK-primary deck, swap the serif stacks to use Noto Sans SC as the active CJK face (rather than Noto Serif SC) so the entire system collapses to one Chinese family:
+```js
+fontFamily: {
+  display: "'Source Serif 4', 'Noto Sans SC', Georgia, serif", // display / headline roles (CJK-primary)
+  body:    "'DM Sans', 'Noto Sans SC', system-ui, sans-serif",
+  mono:    "'IBM Plex Mono', 'Noto Sans SC', monospace",
+}
 ```
 
 ### Universal CJK Adjustments

@@ -36,7 +36,7 @@ into the other except the caption chip, which belongs to the image.
 │                          │                                     │
 │      media plate         │  ▮▮▮▮                               │
 │      (full bleed,        │  FIELD                              │
-│       object-fit cover)  │  NOTES          ← title             │
+│       object-cover)      │  NOTES          ← title             │
 │                          │                                     │
 │                          │  Lead sentence, max-width 620px.    │
 │  ┌caption chip┐          │                                     │
@@ -50,7 +50,7 @@ into the other except the caption chip, which belongs to the image.
 
 | Element | Position & size | Type spec | Color role |
 |---|---|---|---|
-| Media plate | x:0 → 960, full height; image `object-fit: cover` | — | — |
+| Media plate | x:0 → 960, full height; image `object-cover` | — | — |
 | Caption chip | inside plate: x:48, bottom:48; padding 10×16 | `--lp-font-mono`, 13px, uppercase, letter-spacing 0.14em | text `--lp-fg-muted` on a chip of `--lp-bg` at ~82% opacity |
 | Kicker | x:1056, y:96 | `--lp-font-mono`, 15px, uppercase, letter-spacing 0.18em | `--lp-accent` |
 | Accent bar | x:1056, 44px above title, 72×8px | — | `--lp-accent` |
@@ -76,7 +76,7 @@ This preset is image-first; the case above is the image case.
 **Recommended size / placeholder:** `https://placehold.co/960x1080` —
 use this URL during drafting so the crop is honest, then swap for the
 real photo. **Dimension fallback:** the plate is a fixed 960×1080 frame
-with `object-fit: cover`, so any delivered aspect ratio fills it; keep
+with `object-cover`, so any delivered aspect ratio fills it; keep
 a token-built CSS fill behind the `<img>` so a missing or failed image
 degrades to a designed surface, not a hole.
 

@@ -50,7 +50,7 @@ the image like a photo essay's first plate.
 
 | Element | Position & size | Type spec | Color role |
 |---|---|---|---|
-| Media layer | full bleed, `object-fit: cover` | — | — |
+| Media layer | full bleed, `object-cover` | — | — |
 | Scrim | full width, y:480 → 1080, linear gradient transparent → `--lp-bg` at 92% | — | — |
 | Kicker (top-left) | x:96, y:72 | `--lp-font-mono`, 15px, uppercase, ls 0.18em | `--lp-accent` |
 | Counter (top-right) | right-aligned x:1824, y:72 | `--lp-font-mono`, 15px, uppercase, ls 0.12em | `--lp-fg-muted` (both may sit on a scrim chip if the crop is bright) |
@@ -71,7 +71,7 @@ the image like a photo essay's first plate.
 This preset is image-first; the case above is the image case.
 
 **Recommended size / placeholder:** `https://placehold.co/1920x1080`.
-**Dimension fallback:** full-bleed fixed frame + `object-fit: cover`
+**Dimension fallback:** full-bleed fixed frame + `object-cover`
 absorbs any delivered aspect ratio; keep the CSS atmosphere behind the
 `<img>` so a failed image degrades to the no-image variant unnoticed.
 The image is optional — removing the `<img>` yields the variant below.

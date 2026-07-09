@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #131313;
@@ -45,88 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === VIDEO LAYER ===
-   Real decks:
-     <video autoplay muted loop playsinline preload="auto"
-            poster="https://placehold.co/1920x1080">
-   full-bleed, object-fit cover. Autoplay is allowed ONLY muted.
-   Under prefers-reduced-motion, show the poster instead of playing.
-   This demo shows the poster state; the CSS atmosphere beneath is
-   the load-failure fallback AND the no-video variant. */
-.lp-media {
-    position: absolute; inset: 0;
-    background:
-        radial-gradient(1500px 900px at 70% 25%, rgba(255, 255, 255, 0.09), transparent 60%),
-        radial-gradient(1100px 800px at 10% 80%, rgba(255, 255, 255, 0.05), transparent 55%),
-        linear-gradient(190deg, #242424 0%, #131313 62%);
-}
-.lp-media img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    max-width: none; max-height: none;
-    object-fit: cover;
-}
-.lp-scrim {
-    position: absolute; inset: 0;
-    background:
-        linear-gradient(to bottom, transparent 44%, rgba(19, 19, 19, 0.94) 82%),
-        rgba(19, 19, 19, 0.45);
-}
-
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-    z-index: 2;
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-    z-index: 2;
-}
-
-/* === STATEMENT + WATCH CHIP === */
-.lp-block {
-    position: absolute; left: 96px; bottom: 120px;
-    max-width: 1400px;
-    z-index: 2;
-}
-.lp-statement {
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 140px; font-weight: 800;
-    line-height: 0.95; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-statement .lp-line { display: block; }
-.lp-statement em { font-style: normal; color: var(--lp-accent); }
-.lp-chip {
-    display: inline-flex; align-items: center; gap: 16px;
-    margin-top: 40px;
-    padding: 16px 28px;
-    border: 1px solid var(--lp-line);
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--lp-fg);
-}
-.lp-chip::before {
-    content: "";
-    border-left: 12px solid var(--lp-accent);
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(56px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -143,24 +96,31 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
-            <!-- video layer (poster state) + scrim -->
-            <div class="lp-media">
-                <img src="https://placehold.co/1920x1080/232323/606060" alt="Drone pass over the site network — ambient loop poster">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
+            <!-- video layer (poster state) + scrim.
+                 Real decks:
+                   <video autoplay muted loop playsinline preload="auto"
+                          poster="https://placehold.co/1920x1080">
+                 full-bleed, object-cover. Autoplay is allowed ONLY muted.
+                 Under prefers-reduced-motion, show the poster instead of playing.
+                 This demo shows the poster state; the CSS atmosphere beneath is
+                 the load-failure fallback AND the no-video variant. -->
+            <div class="lp-media absolute inset-0 bg-[radial-gradient(1500px_900px_at_70%_25%,rgba(255,255,255,0.09),transparent_60%),radial-gradient(1100px_800px_at_10%_80%,rgba(255,255,255,0.05),transparent_55%),linear-gradient(190deg,#242424_0%,#131313_62%)]">
+                <img class="absolute inset-0 w-full h-full max-w-none max-h-none object-cover" src="https://placehold.co/1920x1080/232323/606060" alt="Drone pass over the site network — ambient loop poster">
             </div>
-            <div class="lp-scrim" aria-hidden="true"></div>
+            <div class="lp-scrim absolute inset-0 [background:linear-gradient(to_bottom,transparent_44%,rgba(19,19,19,0.94)_82%),rgba(19,19,19,0.45)]" aria-hidden="true"></div>
 
             <!-- chrome -->
-            <div class="lp-kicker">The Network</div>
-            <div class="lp-counter">03 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] z-[2] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">The Network</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] z-[2] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">03 / 14</div>
 
             <!-- statement + chip -->
-            <div class="lp-block">
-                <h1 class="lp-statement">
-                    <span class="lp-line">Forty sites,</span>
-                    <span class="lp-line">always <em>on.</em></span>
+            <div class="absolute left-[96px] bottom-[120px] z-[2] max-w-[1400px]">
+                <h1 class="lp-statement m-0 font-display text-[140px] font-extrabold leading-[0.95] tracking-[-0.02em] uppercase">
+                    <span class="lp-line block">Forty sites,</span>
+                    <span class="lp-line block">always <em class="not-italic text-lp-accent">on.</em></span>
                 </h1>
-                <div class="lp-chip">Watch the full film — 03:58</div>
+                <div class="lp-chip inline-flex items-center gap-[16px] mt-[40px] py-[16px] px-[28px] border border-lp-line font-mono text-[15px] font-medium uppercase tracking-[0.14em] text-lp-fg before:content-[''] before:border-l-[12px] before:border-l-lp-accent before:border-y-[8px] before:border-y-transparent">Watch the full film — 03:58</div>
             </div>
         </section>
     </div>

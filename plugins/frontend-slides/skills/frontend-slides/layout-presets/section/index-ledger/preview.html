@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,70 +73,14 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === INDEX ROWS ===
-   Image variant: a 480×640 bordered plate at x:1344, y:220
-   (placehold.co/480x640) — row titles then cap at 14 chars. */
-.lp-index {
-    position: absolute; left: 160px; top: 220px;
-}
-.lp-row {
-    display: flex; align-items: baseline;
-    height: 136px;
-    opacity: 0.16;
-}
-.lp-row-num {
-    width: 120px; flex: none;
-    font-family: var(--lp-font-mono);
-    font-size: 26px; letter-spacing: 0.1em;
-}
-.lp-row-title {
-    font-family: var(--lp-font-display);
-    font-size: 96px; font-weight: 800;
-    line-height: 1; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-row.is-current { opacity: 1; }
-.lp-row.is-current .lp-row-num { color: var(--lp-accent); }
-
-/* current-row bar: 12×96, vertically centered on row 3
-   (rows start y:220, pitch 136 → row 3 center ≈ y:560) */
-.lp-current-bar {
-    position: absolute; left: 96px; top: 512px;
-    width: 12px; height: 96px;
-    background: var(--lp-accent);
-    transform-origin: center top;
-}
-
-/* === FRAMING LINE === */
-.lp-framing {
-    position: absolute; left: 160px; top: 964px;
-    margin: 0; max-width: 800px;
-    font-family: var(--lp-font-body);
-    font-size: 22px; line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY ===
-   Dim rows arrive at their resting 16% — they never flash to full. */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   Dim rows arrive at their resting 16% — they never flash to full.
+   =========================================== */
 @keyframes lp-fade-dim { from { opacity: 0; } to { opacity: 0.16; } }
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise-cur { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -129,23 +101,23 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Part Three</div>
-            <div class="lp-counter">06 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium tracking-[0.18em] uppercase text-lp-accent">Part Three</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] tracking-[0.12em] uppercase text-lp-muted">06 / 14</div>
 
             <!-- index -->
-            <div class="lp-index">
-                <div class="lp-row"><span class="lp-row-num">01</span><span class="lp-row-title">Inertia</span></div>
-                <div class="lp-row"><span class="lp-row-num">02</span><span class="lp-row-title">Depth</span></div>
-                <div class="lp-row is-current"><span class="lp-row-num">03</span><span class="lp-row-title">Execution</span></div>
-                <div class="lp-row"><span class="lp-row-num">04</span><span class="lp-row-title">Proof</span></div>
-                <div class="lp-row"><span class="lp-row-num">05</span><span class="lp-row-title">Next</span></div>
+            <div class="absolute left-[160px] top-[220px]">
+                <div class="lp-row flex items-baseline h-[136px] opacity-[0.16]"><span class="w-[120px] flex-none font-mono text-[26px] tracking-[0.1em]">01</span><span class="font-display text-[96px] font-extrabold leading-[1] tracking-[-0.02em] uppercase">Inertia</span></div>
+                <div class="lp-row flex items-baseline h-[136px] opacity-[0.16]"><span class="w-[120px] flex-none font-mono text-[26px] tracking-[0.1em]">02</span><span class="font-display text-[96px] font-extrabold leading-[1] tracking-[-0.02em] uppercase">Depth</span></div>
+                <div class="lp-row flex items-baseline h-[136px]"><span class="w-[120px] flex-none font-mono text-[26px] tracking-[0.1em] text-lp-accent">03</span><span class="font-display text-[96px] font-extrabold leading-[1] tracking-[-0.02em] uppercase">Execution</span></div>
+                <div class="lp-row flex items-baseline h-[136px] opacity-[0.16]"><span class="w-[120px] flex-none font-mono text-[26px] tracking-[0.1em]">04</span><span class="font-display text-[96px] font-extrabold leading-[1] tracking-[-0.02em] uppercase">Proof</span></div>
+                <div class="lp-row flex items-baseline h-[136px] opacity-[0.16]"><span class="w-[120px] flex-none font-mono text-[26px] tracking-[0.1em]">05</span><span class="font-display text-[96px] font-extrabold leading-[1] tracking-[-0.02em] uppercase">Next</span></div>
             </div>
-            <div class="lp-current-bar" aria-hidden="true"></div>
+            <div class="lp-current-bar absolute left-[96px] top-[512px] w-[12px] h-[96px] bg-lp-accent origin-top" aria-hidden="true"></div>
 
             <!-- framing -->
-            <p class="lp-framing">Sixty days of the concentrated roadmap — what actually happened.</p>
+            <p class="lp-framing absolute left-[160px] top-[964px] m-0 max-w-[800px] font-body text-[22px] leading-[1.5] text-lp-muted">Sixty days of the concentrated roadmap — what actually happened.</p>
         </section>
     </div>
 </div>

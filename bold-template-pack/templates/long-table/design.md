@@ -243,16 +243,15 @@ components:
     borderBottom: "1px solid {colors.ink-32}"
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -520,16 +519,18 @@ There is no `@media print` rule in the system. Print export will render only the
 
 ### Mixed-Content Strategy
 
-Use **Strategy A** — switch the entire face stack to Noto Serif SC across all roles, replacing both Bricolage Grotesque (display) and Fraunces (body). Long Table is a minimal single-ink data / program system where the typographic personality is carried more by the **single-ink rust terracotta**, the **outlined-shape vocabulary**, and the **paper-texture overlay** than by the specific Latin faces. Going all-Mincho in Chinese preserves the printed-program register cleanly without the per-glyph baseline wobble that Strategy C would introduce on a system this typographically dense. Stack:
+Use **Strategy A** — switch the entire face stack to Noto Serif SC across all roles, replacing both Bricolage Grotesque (display) and Fraunces (body). Long Table is a minimal single-ink data / program system where the typographic personality is carried more by the **single-ink rust terracotta**, the **outlined-shape vocabulary**, and the **paper-texture overlay** than by the specific Latin faces. Going all-Mincho in Chinese preserves the printed-program register cleanly without the per-glyph baseline wobble that Strategy C would introduce on a system this typographically dense. `fontFamily` tokens in the inline tailwind.config:
 
-```css
-/* Bricolage roles (display, headline, card-title, course-name, info-value) */
-font-family: 'Bricolage Grotesque', 'Noto Serif SC', sans-serif;
-/* Fraunces roles (body, lede, tagline, pill, pagenum, edition-label) */
-font-family: 'Fraunces', 'Noto Serif SC', Georgia, serif;
+```js
+fontFamily: {
+  // Bricolage roles (display, headline, card-title, course-name, info-value)
+  display: "'Bricolage Grotesque', 'Noto Serif SC', sans-serif",
+  // Fraunces roles (body, lede, tagline, pill, pagenum, edition-label)
+  body:    "'Fraunces', 'Noto Serif SC', Georgia, serif",
+}
 ```
 
-When the deck content is pure Chinese, override both font stacks to lead with Noto Serif SC. Bricolage roles get weight 700 (matches 800 mass in Mincho), Fraunces roles get weight 400.
+When the deck content is pure Chinese, override both `fontFamily` tokens to lead with Noto Serif SC. Bricolage roles get weight 700 (matches 800 mass in Mincho), Fraunces roles get weight 400.
 
 ### Loading
 

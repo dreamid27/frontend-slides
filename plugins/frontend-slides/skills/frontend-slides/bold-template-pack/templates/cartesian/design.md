@@ -197,16 +197,15 @@ components:
   chart-axis-tick-color: "{colors.accent}"
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -463,7 +462,7 @@ Not explicitly handled. Each slide is a 100vw × 100vh block; export workflows s
 
 ### Mixed-Content Strategy
 
-Use **Strategy A — single-font-stack with fallback**: declare Noto Serif SC *after* the Latin font in the same `font-family` stack so Latin glyphs render in Playfair / Inter and CJK glyphs fall through to Noto Serif SC automatically. One CSS rule per role, no manual class switching.
+Use **Strategy A — single-font-stack with fallback**: declare Noto Serif SC *after* the Latin font in the same `font-family` stack so Latin glyphs render in Playfair / Inter and CJK glyphs fall through to Noto Serif SC automatically. One `fontFamily` token per role in the inline tailwind.config, no manual class switching.
 
 ### Loading
 
@@ -473,12 +472,12 @@ Use **Strategy A — single-font-stack with fallback**: declare Noto Serif SC *a
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Inter:wght@300..600&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
 ```
 
-```css
-:root {
-  --font-display: "Playfair Display", "Noto Serif SC", serif;
-  --font-body: "Inter", "Noto Serif SC", sans-serif;
+```js
+fontFamily: {
+  display: "'Playfair Display', 'Noto Serif SC', serif",
+  body:    "'Inter', 'Noto Serif SC', sans-serif",
 }
-/* Headlines use Noto Serif SC 700; body uses Noto Serif SC 400. */
+// Headlines use Noto Serif SC 700; body uses Noto Serif SC 400.
 ```
 
 ### Universal CJK Adjustments
@@ -517,7 +516,7 @@ Noto Serif SC is the only Hanzi serif loaded — there is no italic axis (Chines
 - The Chart.js library is loaded via CDN; new chart types beyond bar and line require manual configuration matching the ink-primary / dashed-taupe-comparison aesthetic.
 - The decorative `geo-decoration` and `geo-ring` `::before` inner-ring pattern is hardcoded in CSS; size variants beyond what the source exercises require new style rules.
 - The team-photo placeholder shows a single Playfair initial in taupe; real portrait insertion requires replacing the initial with an `<img>` and adjusting the circular crop.
-- The chart axis label colors and grid colors are hardcoded inline in the Chart.js options blocks (rather than reading from CSS variables) — restyling requires editing JS, not CSS.
+- The chart axis label colors and grid colors are hardcoded inline in the Chart.js options blocks (rather than reading from the design tokens in the inline tailwind.config) — restyling requires editing JS, not the tailwind.config.
 - The image-placeholder X pattern (crossed +30°/-30° diagonals) is rendered via `::before` / `::after` with fixed 150% widths; resizing the placeholder beyond the source dimensions may require recomputing the rotation angle to maintain edge-touch.
 - Italic Playfair is loaded but not exercised in any default rule; it is available for inline `<em>` emphasis in body copy but the system itself does not author any italic text.
 - The `vertical-line` and `horizontal-accent` decorative elements have hardcoded position values (8vw from left, 15vh from bottom); using them off-default-position requires per-instance style overrides.

@@ -73,7 +73,7 @@ attention.
 - **Poster / placeholder:** `https://placehold.co/1280x720` — the
   poster is required; it is what the room sees until play is pressed.
 - **Dimension fallback:** the frame is fixed 1280×720 with the media at
-  `object-fit: cover` (posters) — non-16:9 sources letterbox inside the
+  `object-cover` (posters) — non-16:9 sources letterbox inside the
   player natively, which is acceptable for video.
 - **No-video variant:** the frame holds the poster image alone (this
   becomes an image slide with cinema framing) or is dropped and the

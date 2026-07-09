@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #151515;
@@ -45,105 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADER === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-headline {
-    position: absolute; left: 96px; top: 118px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 72px; font-weight: 800;
-    line-height: 1.02; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-headline em { font-style: normal; color: var(--lp-accent); }
-
-/* === BEFORE (muted — the past doesn't move) === */
-.lp-before {
-    position: absolute; left: 96px; top: 400px;
-    font-family: var(--lp-font-display);
-    font-size: 220px; font-weight: 800;
-    line-height: 0.9; letter-spacing: -0.03em;
-    color: var(--lp-fg-muted);
-}
-.lp-before-label {
-    position: absolute; left: 96px; top: 660px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === ARROW + DELTA === */
-.lp-arrow {
-    position: absolute; left: 850px; top: 498px;
-    width: 220px; height: 3px;
-    background: var(--lp-accent);
-    transform-origin: left center;
-}
-.lp-arrow-head {
-    position: absolute; left: 1070px; top: 486px;
-    border-left: 22px solid var(--lp-accent);
-    border-top: 14px solid transparent;
-    border-bottom: 14px solid transparent;
-}
-.lp-delta {
-    position: absolute; left: 850px; top: 548px;
-    width: 242px;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 22px; font-weight: 500;
-    letter-spacing: 0.06em;
-    color: var(--lp-accent);
-}
-
-/* === AFTER (full contrast) === */
-.lp-after {
-    position: absolute; right: 96px; top: 400px;
-    text-align: right;
-    font-family: var(--lp-font-display);
-    font-size: 220px; font-weight: 800;
-    line-height: 0.9; letter-spacing: -0.03em;
-    color: var(--lp-fg);
-}
-.lp-after .lp-unit { color: var(--lp-accent); }
-.lp-after-label {
-    position: absolute; right: 96px; top: 660px;
-    text-align: right;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === FOOTER === */
-.lp-foot-rule {
-    position: absolute; left: 96px; right: 96px; top: 962px;
-    height: 1px; background: var(--lp-line);
-}
-.lp-foot-left, .lp-foot-right {
-    position: absolute; top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; }
-.lp-foot-right { right: 96px; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
@@ -168,29 +104,29 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- header -->
-            <div class="lp-kicker">Latency</div>
-            <div class="lp-counter">11 / 14</div>
-            <h2 class="lp-headline">P99, two quarters <em>apart</em></h2>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Latency</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">11 / 14</div>
+            <h2 class="lp-headline absolute left-[96px] top-[118px] m-0 font-display text-[72px] font-extrabold leading-[1.02] tracking-[-0.02em] uppercase">P99, two quarters <em class="not-italic text-lp-accent">apart</em></h2>
 
             <!-- before -->
-            <div class="lp-before">91ms</div>
-            <div class="lp-before-label">Q1 baseline</div>
+            <div class="lp-before absolute left-[96px] top-[400px] font-display text-[220px] font-extrabold leading-[0.9] tracking-[-0.03em] text-lp-muted">91ms</div>
+            <div class="lp-before-label absolute left-[96px] top-[660px] font-mono text-[15px] uppercase tracking-[0.16em] text-lp-muted">Q1 baseline</div>
 
             <!-- arrow + delta -->
-            <div class="lp-arrow" aria-hidden="true"></div>
-            <div class="lp-arrow-head" aria-hidden="true"></div>
-            <div class="lp-delta">−58%</div>
+            <div class="lp-arrow absolute left-[850px] top-[498px] w-[220px] h-[3px] bg-lp-accent origin-left" aria-hidden="true"></div>
+            <div class="lp-arrow-head absolute left-[1070px] top-[486px] border-l-[22px] border-l-lp-accent border-t-[14px] border-t-transparent border-b-[14px] border-b-transparent" aria-hidden="true"></div>
+            <div class="lp-delta absolute left-[850px] top-[548px] w-[242px] text-center font-mono text-[22px] font-medium tracking-[0.06em] text-lp-accent">−58%</div>
 
             <!-- after -->
-            <div class="lp-after">38<span class="lp-unit">ms</span></div>
-            <div class="lp-after-label">Q2, after the scheduler rewrite</div>
+            <div class="lp-after absolute right-[96px] top-[400px] text-right font-display text-[220px] font-extrabold leading-[0.9] tracking-[-0.03em] text-lp-fg">38<span class="text-lp-accent">ms</span></div>
+            <div class="lp-after-label absolute right-[96px] top-[660px] text-right font-mono text-[15px] uppercase tracking-[0.16em] text-lp-muted">Q2, after the scheduler rewrite</div>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">Platform telemetry — FY26</div>
-            <div class="lp-foot-right">Nodeflux</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[962px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[984px] font-mono text-[14px] uppercase tracking-[0.12em] text-lp-muted">Platform telemetry — FY26</div>
+            <div class="lp-foot-right absolute right-[96px] top-[984px] font-mono text-[14px] uppercase tracking-[0.12em] text-lp-muted">Nodeflux</div>
         </section>
     </div>
 </div>

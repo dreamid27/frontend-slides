@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #161616;
@@ -45,64 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === TOP-LEFT: TITLE BLOCK === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 96px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-title {
-    position: absolute; left: 96px; top: 150px;
-    margin: 0; max-width: 1100px;
-    font-family: var(--lp-font-display);
-    font-size: 132px; font-weight: 800;
-    line-height: 0.97; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title .lp-line { display: block; }
-.lp-title em { font-style: normal; color: var(--lp-accent); }
-.lp-tail {
-    position: absolute; left: 96px; top: 470px;
-    width: 200px; height: 1px;
-    background: var(--lp-line);
-    transform-origin: left center;
-}
-
-/* === BOTTOM-RIGHT: PRESENTER CARD ===
-   Image variant: this card becomes a 560×420 framed photo card with a
-   mono caption below; presenter moves to a line under the kicker. */
-.lp-card {
-    position: absolute;
-    right: 96px; bottom: 96px;
-    text-align: right;
-}
-.lp-card-bar {
-    width: 48px; height: 6px;
-    background: var(--lp-accent);
-    margin: 0 0 24px auto;
-    transform-origin: right center;
-}
-.lp-card-name {
-    font-family: var(--lp-font-display);
-    font-size: 34px; font-weight: 700;
-    color: var(--lp-fg);
-}
-.lp-card-meta {
-    margin-top: 12px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em;
-    text-transform: uppercase;
-    line-height: 1.9;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
@@ -118,20 +95,22 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- top-left: title -->
-            <div class="lp-kicker">Board Update</div>
-            <h1 class="lp-title">
-                <span class="lp-line">The long</span>
-                <span class="lp-line"><em>game</em></span>
+            <div class="lp-kicker absolute left-[96px] top-[96px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Board Update</div>
+            <h1 class="lp-title absolute left-[96px] top-[150px] m-0 max-w-[1100px] font-display text-[132px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">
+                <span class="lp-line block">The long</span>
+                <span class="lp-line block"><em class="not-italic text-lp-accent">game</em></span>
             </h1>
-            <div class="lp-tail" aria-hidden="true"></div>
+            <div class="lp-tail absolute left-[96px] top-[470px] w-[200px] h-px origin-left bg-lp-line" aria-hidden="true"></div>
 
-            <!-- bottom-right: presenter card -->
-            <div class="lp-card">
-                <div class="lp-card-bar"></div>
-                <div class="lp-card-name">A. Rahman</div>
-                <div class="lp-card-meta">
+            <!-- bottom-right: presenter card. Image variant: this card becomes a
+                 560×420 framed photo card with a mono caption below; presenter
+                 moves to a line under the kicker -->
+            <div class="lp-card absolute right-[96px] bottom-[96px] text-right">
+                <div class="w-[48px] h-[6px] mb-[24px] ml-auto origin-right bg-lp-accent"></div>
+                <div class="font-display text-[34px] font-bold text-lp-fg">A. Rahman</div>
+                <div class="mt-[12px] font-mono text-[15px] uppercase tracking-[0.12em] leading-[1.9] text-lp-muted">
                     Head of Platform<br>
                     Nodeflux — 08 Jul 2026<br>
                     01 / 12

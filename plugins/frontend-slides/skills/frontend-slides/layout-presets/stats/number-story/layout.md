@@ -75,7 +75,7 @@ narrative; use Stat Strip when they are merely siblings.
 **With an image:** full-bleed behind the sentence under a heavy
 uniform scrim (`--lp-bg` at ≥ 88%) — texture only. **Recommended
 size / placeholder:** `https://placehold.co/1920x1080`. **Dimension
-fallback:** full-bleed frame, `object-fit: cover`, flat `--lp-bg`
+fallback:** full-bleed frame, `object-cover`, flat `--lp-bg`
 behind the `<img>`. The image is optional and usually omitted.
 
 ## Choreography

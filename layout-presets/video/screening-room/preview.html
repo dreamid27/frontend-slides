@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #121212;
@@ -45,77 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === PLAYER ===
-   Real decks: replace the frame's contents with
-     <video controls preload="metadata" poster="..."> (local file), or
-     <iframe src="https://www.youtube.com/embed/ID" allowfullscreen>
-   at this exact geometry. Poster placeholder: placehold.co/1280x720.
-   The gradient beneath is the poster's load-failure fallback. */
-.lp-player {
-    position: absolute; left: 320px; top: 150px;
-    width: 1280px; height: 720px;
-    border: 1px solid var(--lp-line);
-    overflow: hidden;
-    background: linear-gradient(150deg, #262626 0%, #181818 100%);
-}
-.lp-player img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    max-width: none; max-height: none;
-    object-fit: cover;
-}
-
-/* === PLAY GLYPH (demo affordance; native controls replace it live) === */
-.lp-play {
-    position: absolute; left: 50%; top: 50%;
-    width: 96px; height: 96px;
-    margin: -48px 0 0 -48px;
-    border: 1.5px solid rgba(236, 236, 234, 0.9);
-    border-radius: 50%;
-    background: rgba(18, 18, 18, 0.35);
-}
-.lp-play::after {
-    content: "";
-    position: absolute; left: 38px; top: 30px;
-    border-left: 30px solid rgba(236, 236, 234, 0.9);
-    border-top: 18px solid transparent;
-    border-bottom: 18px solid transparent;
-}
-
-/* === PROGRAM LINE === */
-.lp-film-title {
-    position: absolute; left: 320px; top: 904px;
-    font-family: var(--lp-font-display);
-    font-size: 40px; font-weight: 700;
-    color: var(--lp-fg);
-}
-.lp-film-meta {
-    position: absolute; right: 320px; top: 916px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-settle { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
 @keyframes lp-glyph-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
@@ -132,20 +96,26 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Screening</div>
-            <div class="lp-counter">07 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Screening</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">07 / 14</div>
 
-            <!-- player: poster + play glyph until a real <video>/<iframe> replaces it -->
-            <div class="lp-player">
-                <img src="https://placehold.co/1280x720/222222/6a6a68" alt="The rollout film — poster frame">
-                <div class="lp-play" aria-hidden="true"></div>
+            <!-- player: poster + play glyph until a real <video>/<iframe> replaces it.
+                 Real decks: replace the frame's contents with
+                   <video controls preload="metadata" poster="..."> (local file), or
+                   <iframe src="https://www.youtube.com/embed/ID" allowfullscreen>
+                 at this exact geometry. Poster placeholder: placehold.co/1280x720.
+                 The gradient beneath is the poster's load-failure fallback. -->
+            <div class="lp-player absolute left-[320px] top-[150px] w-[1280px] h-[720px] border border-lp-line overflow-hidden bg-[linear-gradient(150deg,#262626_0%,#181818_100%)]">
+                <img class="absolute inset-0 w-full h-full max-w-none max-h-none object-cover" src="https://placehold.co/1280x720/222222/6a6a68" alt="The rollout film — poster frame">
+                <!-- play glyph (demo affordance; native controls replace it live) -->
+                <div class="lp-play absolute left-1/2 top-1/2 w-[96px] h-[96px] mt-[-48px] ml-[-48px] border-[1.5px] border-[rgba(236,236,234,0.9)] rounded-full bg-[rgba(18,18,18,0.35)] after:content-[''] after:absolute after:left-[38px] after:top-[30px] after:border-l-[30px] after:border-l-[rgba(236,236,234,0.9)] after:border-y-[18px] after:border-y-transparent" aria-hidden="true"></div>
             </div>
 
             <!-- program line -->
-            <div class="lp-film-title">The Rollout Film</div>
-            <div class="lp-film-meta">04:32 — Sound On</div>
+            <div class="lp-film-title absolute left-[320px] top-[904px] font-display text-[40px] font-bold text-lp-fg">The Rollout Film</div>
+            <div class="lp-film-meta absolute right-[320px] top-[916px] font-mono text-[15px] uppercase tracking-[0.14em] text-lp-muted">04:32 — Sound On</div>
         </section>
     </div>
 </div>

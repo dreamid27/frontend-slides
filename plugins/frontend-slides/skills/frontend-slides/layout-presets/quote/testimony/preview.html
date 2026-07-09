@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,95 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === QUOTE GLYPH === */
-.lp-glyph {
-    position: absolute; left: 88px; top: 120px;
-    font-family: var(--lp-font-display);
-    font-size: 200px; font-weight: 700;
-    line-height: 0.7;
-    color: var(--lp-accent);
-    pointer-events: none;
-}
-
-/* === QUOTE === */
-.lp-quote {
-    position: absolute; left: 96px; top: 330px;
-    margin: 0;
-    max-width: 1180px; /* 1360px without the portrait */
-    font-family: var(--lp-font-display);
-    font-size: 64px; font-weight: 600;
-    line-height: 1.22; letter-spacing: -0.01em;
-    color: var(--lp-fg);
-}
-.lp-quote em { font-style: normal; color: var(--lp-accent); }
-
-/* === ATTRIBUTION === */
-.lp-attr { position: absolute; left: 96px; top: 860px; }
-.lp-attr-rule {
-    width: 48px; height: 4px;
-    background: var(--lp-accent);
-    margin-bottom: 24px;
-    transform-origin: left center;
-}
-.lp-attr-name {
-    font-family: var(--lp-font-display);
-    font-size: 28px; font-weight: 700;
-    color: var(--lp-fg);
-}
-.lp-attr-role {
-    margin-left: 20px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === PORTRAIT PLATE (optional) ===
-   Recommended: https://placehold.co/360x360 — fixed frame + object-fit
-   cover absorbs any dimensions; gradient beneath is the load fallback.
-   Delete this block for the no-image variant (quote widens to 1360px). */
-.lp-portrait {
-    position: absolute; left: 1464px; top: 330px;
-    width: 360px; height: 360px;
-    border: 1px solid var(--lp-line);
-    overflow: hidden;
-    background: linear-gradient(150deg, #d3d2cf 0%, #a8a7a4 100%);
-}
-.lp-portrait img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    max-width: none; max-height: none;
-    object-fit: cover;
-}
-.lp-portrait-caption {
-    position: absolute; left: 1464px; top: 710px;
-    width: 360px;
-    font-family: var(--lp-font-mono);
-    font-size: 13px; letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-drop { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
@@ -154,26 +100,29 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Customer Voice</div>
-            <div class="lp-counter">08 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Customer Voice</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">08 / 14</div>
 
-            <!-- quote glyph + quote -->
-            <div class="lp-glyph" aria-hidden="true">&ldquo;</div>
-            <blockquote class="lp-quote">We stopped noticing the platform this year. For infrastructure, <em>that is the highest compliment</em> we know how to give.</blockquote>
+            <!-- quote glyph + quote (max-width widens to 1360px without the portrait) -->
+            <div class="lp-glyph absolute left-[88px] top-[120px] font-display text-[200px] font-bold leading-[0.7] text-lp-accent pointer-events-none" aria-hidden="true">&ldquo;</div>
+            <blockquote class="lp-quote absolute left-[96px] top-[330px] m-0 max-w-[1180px] font-display text-[64px] font-semibold leading-[1.22] tracking-[-0.01em] text-lp-fg">We stopped noticing the platform this year. For infrastructure, <em class="not-italic text-lp-accent">that is the highest compliment</em> we know how to give.</blockquote>
 
-            <!-- portrait plate (optional) -->
-            <div class="lp-portrait">
-                <img src="https://placehold.co/360x360/c2c1be/6f6f6d" alt="Portrait of D. Putri">
+            <!-- portrait plate (optional) —
+                 Recommended: https://placehold.co/360x360 — fixed frame + object-cover
+                 absorbs any dimensions; gradient beneath is the load fallback.
+                 Delete this block for the no-image variant (quote widens to 1360px). -->
+            <div class="lp-portrait absolute left-[1464px] top-[330px] w-[360px] h-[360px] border border-lp-line overflow-hidden bg-[linear-gradient(150deg,#d3d2cf_0%,#a8a7a4_100%)]">
+                <img class="absolute inset-0 w-full h-full max-w-none max-h-none object-cover" src="https://placehold.co/360x360/c2c1be/6f6f6d" alt="Portrait of D. Putri">
             </div>
-            <div class="lp-portrait-caption">Harborworks Ops Center</div>
+            <div class="lp-portrait-caption absolute left-[1464px] top-[710px] w-[360px] font-mono text-[13px] uppercase tracking-[0.14em] text-lp-muted">Harborworks Ops Center</div>
 
             <!-- attribution -->
-            <div class="lp-attr">
-                <div class="lp-attr-rule"></div>
-                <span class="lp-attr-name">D. Putri</span>
-                <span class="lp-attr-role">VP Operations, Harborworks</span>
+            <div class="absolute left-[96px] top-[860px]">
+                <div class="lp-attr-rule w-[48px] h-[4px] mb-[24px] origin-left bg-lp-accent"></div>
+                <span class="lp-attr-name font-display text-[28px] font-bold text-lp-fg">D. Putri</span>
+                <span class="lp-attr-role ml-[20px] font-mono text-[14px] uppercase tracking-[0.14em] text-lp-muted">VP Operations, Harborworks</span>
             </div>
         </section>
     </div>

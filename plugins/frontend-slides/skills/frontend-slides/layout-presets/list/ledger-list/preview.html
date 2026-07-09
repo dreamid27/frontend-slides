@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -79,64 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADER === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute;
-    right: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-headline {
-    position: absolute;
-    left: 96px;
-    top: 118px;
-    margin: 0;
-    max-width: 1200px;
-    font-family: var(--lp-font-display);
-    font-size: 84px;
-    font-weight: 800;
-    line-height: 1.02;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-headline em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-
-/* === LEDGER ROWS === */
-.lp-rows {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 360px;
-}
-.lp-row {
-    position: relative;
-    display: grid;
-    grid-template-columns: 120px 1fr 640px;
-    align-items: start;
-    padding: 34px 0;
-}
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 .lp-row::before {
     content: "";
     position: absolute;
@@ -147,30 +123,7 @@ img, video, canvas, svg {
     background: var(--lp-line);
     transform-origin: left center;
 }
-.lp-row-num {
-    font-family: var(--lp-font-mono);
-    font-size: 20px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--lp-accent);
-    padding-top: 8px;
-}
-.lp-row-title {
-    font-family: var(--lp-font-display);
-    font-size: 44px;
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--lp-fg);
-}
-.lp-row-desc {
-    font-family: var(--lp-font-body);
-    font-size: 20px;
-    line-height: 1.55;
-    color: var(--lp-fg-muted);
-    padding-top: 4px;
-}
 
-/* === CHOREOGRAPHY === */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-row { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
@@ -192,33 +145,33 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- header -->
-            <div class="lp-kicker">Roadmap</div>
-            <div class="lp-counter">07 / 14</div>
-            <h2 class="lp-headline">What ships <em>next</em></h2>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Roadmap</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">07 / 14</div>
+            <h2 class="lp-headline absolute left-[96px] top-[118px] m-0 max-w-[1200px] font-display text-[84px] font-extrabold leading-[1.02] tracking-[-0.02em] uppercase">What ships <em class="not-italic text-lp-accent">next</em></h2>
 
             <!-- ledger rows -->
-            <div class="lp-rows">
-                <div class="lp-row">
-                    <div class="lp-row-num">01</div>
-                    <div class="lp-row-title">Edge inference</div>
-                    <div class="lp-row-desc">Move detection models onto customer hardware, cutting round-trip latency for the busiest sites.</div>
+            <div class="absolute left-[96px] right-[96px] top-[360px]">
+                <div class="lp-row relative grid grid-cols-[120px_1fr_640px] items-start py-[34px]">
+                    <div class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent pt-[8px]">01</div>
+                    <div class="font-display text-[44px] font-bold leading-[1.1] text-lp-fg">Edge inference</div>
+                    <div class="font-body text-[20px] leading-[1.55] text-lp-muted pt-[4px]">Move detection models onto customer hardware, cutting round-trip latency for the busiest sites.</div>
                 </div>
-                <div class="lp-row">
-                    <div class="lp-row-num">02</div>
-                    <div class="lp-row-title">Unified console</div>
-                    <div class="lp-row-desc">One operations surface for every deployment — provisioning, monitoring, and audit in a single view.</div>
+                <div class="lp-row relative grid grid-cols-[120px_1fr_640px] items-start py-[34px]">
+                    <div class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent pt-[8px]">02</div>
+                    <div class="font-display text-[44px] font-bold leading-[1.1] text-lp-fg">Unified console</div>
+                    <div class="font-body text-[20px] leading-[1.55] text-lp-muted pt-[4px]">One operations surface for every deployment — provisioning, monitoring, and audit in a single view.</div>
                 </div>
-                <div class="lp-row">
-                    <div class="lp-row-num">03</div>
-                    <div class="lp-row-title">Latency budgets</div>
-                    <div class="lp-row-desc">Publish per-endpoint budgets and hold every release to them in CI, not in postmortems.</div>
+                <div class="lp-row relative grid grid-cols-[120px_1fr_640px] items-start py-[34px]">
+                    <div class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent pt-[8px]">03</div>
+                    <div class="font-display text-[44px] font-bold leading-[1.1] text-lp-fg">Latency budgets</div>
+                    <div class="font-body text-[20px] leading-[1.55] text-lp-muted pt-[4px]">Publish per-endpoint budgets and hold every release to them in CI, not in postmortems.</div>
                 </div>
-                <div class="lp-row">
-                    <div class="lp-row-num">04</div>
-                    <div class="lp-row-title">Partner APIs</div>
-                    <div class="lp-row-desc">A stable public contract so integrators build on us without waiting on us.</div>
+                <div class="lp-row relative grid grid-cols-[120px_1fr_640px] items-start py-[34px]">
+                    <div class="font-mono text-[20px] font-medium tracking-[0.1em] text-lp-accent pt-[8px]">04</div>
+                    <div class="font-display text-[44px] font-bold leading-[1.1] text-lp-fg">Partner APIs</div>
+                    <div class="font-body text-[20px] leading-[1.55] text-lp-muted pt-[4px]">A stable public contract so integrators build on us without waiting on us.</div>
                 </div>
             </div>
         </section>

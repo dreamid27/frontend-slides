@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,82 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === THE FRACTION === */
-.lp-numerator {
-    position: absolute; left: 96px; top: 230px;
-    font-family: var(--lp-font-display);
-    font-size: 320px; font-weight: 800;
-    line-height: 0.85; letter-spacing: -0.03em;
-    color: var(--lp-fg);
-}
-.lp-frac-bar {
-    position: absolute; left: 96px; top: 540px;
-    width: 520px; height: 4px;
-    background: var(--lp-accent);
-    transform-origin: left center;
-}
-.lp-denominator {
-    position: absolute; left: 96px; top: 572px;
-    font-family: var(--lp-font-mono);
-    font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-chip {
-    position: absolute; left: 96px; top: 700px;
-    padding: 12px 20px;
-    border: 1px solid var(--lp-line);
-    font-family: var(--lp-font-mono);
-    font-size: 16px; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-
-/* === READING COLUMN ===
-   Image variant: 624×300 bordered plate at x:1200, y:300
-   (placehold.co/624x300); reading then flows from y:640. */
-.lp-reading {
-    position: absolute; left: 1200px; right: 96px; top: 300px;
-    margin: 0;
-    font-family: var(--lp-font-body);
-    font-size: 23px; line-height: 1.6;
-    color: var(--lp-fg-muted);
-}
-.lp-reading em { font-style: normal; color: var(--lp-fg); }
-
-/* === FOOTER === */
-.lp-foot-rule {
-    position: absolute; left: 96px; right: 96px; top: 962px;
-    height: 1px; background: var(--lp-line);
-}
-.lp-foot-left, .lp-foot-right {
-    position: absolute; top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; }
-.lp-foot-right { right: 96px; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(64px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -142,24 +101,24 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Migration</div>
-            <div class="lp-counter">12 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Migration</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 14</div>
 
             <!-- the fraction -->
-            <div class="lp-numerator">38</div>
-            <div class="lp-frac-bar" aria-hidden="true"></div>
-            <div class="lp-denominator">Of 40 sites migrated</div>
-            <div class="lp-chip">95% complete</div>
+            <div class="lp-numerator absolute left-[96px] top-[230px] font-display text-[320px] font-extrabold leading-[0.85] tracking-[-0.03em] text-lp-fg">38</div>
+            <div class="lp-frac-bar absolute left-[96px] top-[540px] w-[520px] h-[4px] bg-lp-accent origin-left" aria-hidden="true"></div>
+            <div class="lp-denominator absolute left-[96px] top-[572px] font-mono text-[26px] uppercase tracking-[0.14em] text-lp-muted">Of 40 sites migrated</div>
+            <div class="lp-chip absolute left-[96px] top-[700px] px-[20px] py-[12px] border border-lp-line font-mono text-[16px] font-medium uppercase tracking-[0.1em] text-lp-accent">95% complete</div>
 
-            <!-- reading -->
-            <p class="lp-reading">Every production site except two now runs the new stack. <em>The remainder — Balikpapan and Sorong —</em> wait on customs-held hardware, not on us; both are scheduled for the first week of August.</p>
+            <!-- reading (image variant: 624×300 bordered plate at x:1200, y:300 — placehold.co/624x300; reading then flows from y:640) -->
+            <p class="lp-reading absolute left-[1200px] right-[96px] top-[300px] m-0 font-body text-[23px] leading-[1.6] text-lp-muted">Every production site except two now runs the new stack. <em class="not-italic text-lp-fg">The remainder — Balikpapan and Sorong —</em> wait on customs-held hardware, not on us; both are scheduled for the first week of August.</p>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">Deployment tracker — 08 Jul 2026</div>
-            <div class="lp-foot-right">Nodeflux</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[962px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[984px] font-mono text-[14px] uppercase tracking-[0.12em] text-lp-muted">Deployment tracker — 08 Jul 2026</div>
+            <div class="lp-foot-right absolute right-[96px] top-[984px] font-mono text-[14px] uppercase tracking-[0.12em] text-lp-muted">Nodeflux</div>
         </section>
     </div>
 </div>

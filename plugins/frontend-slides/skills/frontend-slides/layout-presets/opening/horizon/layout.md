@@ -81,7 +81,7 @@ crops only; this is literally the horizon.
 
 **Recommended size / placeholder:** `https://placehold.co/1920x560`.
 **Dimension fallback:** the band is a fixed 1920×560 frame with
-`object-fit: cover`; keep a token CSS fill behind the `<img>` so a
+`object-cover`; keep a token CSS fill behind the `<img>` so a
 failed load degrades to the no-image sky. The image is optional.
 
 ## Choreography

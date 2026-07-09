@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f1f0ee;
@@ -79,114 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CORNER CHROME === */
-.lp-deck-title,
-.lp-counter {
-    position: absolute;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-deck-title { left: 96px; }
-.lp-counter { right: 96px; }
-
-/* === CENTERED TITLE GROUP === */
-.lp-part-kicker {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 300px;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-title {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 380px;
-    margin: 0;
-    text-align: center;
-    font-family: var(--lp-font-display);
-    font-size: 150px;
-    font-weight: 800;
-    line-height: 0.97;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-
-/* === JOURNEY LINE === */
-.lp-journey {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 700px;
-    margin: 0 auto;   /* margin centering — keeps transforms free for animation */
-    width: 800px;
-    height: 1px;
-}
-.lp-track {
-    position: absolute;
-    inset: 0;
-    background: var(--lp-line);
-    transform-origin: left center;
-}
-.lp-node {
-    position: absolute;
-    top: 50%;
-    width: 10px;
-    height: 10px;
-    margin: -5px 0 0 -5px; /* self-centering via margins, not transforms */
-    border-radius: 50%;
-    background: var(--lp-fg-muted);
-}
-.lp-node.n1 { left: 0; }
-.lp-node.n2 { left: 25%; }
-.lp-node.n3 { left: 50%; }
-.lp-node.n4 { left: 75%; }
-.lp-node.n5 { left: 100%; }
-.lp-node.is-current {
-    width: 16px;
-    height: 16px;
-    margin: -8px 0 0 -8px;
-    background: var(--lp-accent);
-}
-.lp-node.is-future {
-    background: transparent;
-    border: 1px solid var(--lp-fg-muted);
-    opacity: 0.5;
-}
-.lp-node-label {
-    position: absolute;
-    left: 50%;
-    top: 29px;
-    width: 400px;
-    margin-left: -200px; /* margin centering under the current (middle) node */
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-fade-half { from { opacity: 0; } to { opacity: 0.5; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(44px); } to { opacity: 1; transform: translateY(0); } }
@@ -211,24 +137,24 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- corner chrome -->
-            <div class="lp-deck-title">Where We Go Next</div>
-            <div class="lp-counter">06 / 14</div>
+            <div class="lp-deck-title absolute left-[96px] top-[72px] font-mono text-[15px] tracking-[0.12em] uppercase text-lp-muted">Where We Go Next</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] tracking-[0.12em] uppercase text-lp-muted">06 / 14</div>
 
             <!-- centered title group -->
-            <div class="lp-part-kicker">Part Three of Five</div>
-            <h1 class="lp-title">Execution</h1>
+            <div class="lp-part-kicker absolute left-0 right-0 top-[300px] text-center font-mono text-[16px] font-medium tracking-[0.3em] uppercase text-lp-accent">Part Three of Five</div>
+            <h1 class="lp-title absolute left-[96px] right-[96px] top-[380px] m-0 text-center font-display text-[150px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">Execution</h1>
 
             <!-- journey line -->
-            <div class="lp-journey" aria-label="Part 3 of 5: Execution">
-                <div class="lp-track"></div>
-                <span class="lp-node n1" aria-hidden="true"></span>
-                <span class="lp-node n2" aria-hidden="true"></span>
-                <span class="lp-node n3 is-current" aria-hidden="true"></span>
-                <span class="lp-node n4 is-future" aria-hidden="true"></span>
-                <span class="lp-node n5 is-future" aria-hidden="true"></span>
-                <div class="lp-node-label">Execution</div>
+            <div class="absolute left-0 right-0 top-[700px] mx-auto w-[800px] h-px" aria-label="Part 3 of 5: Execution">
+                <div class="lp-track absolute inset-0 bg-lp-line origin-left"></div>
+                <span class="lp-node n1 absolute left-0 top-1/2 w-[10px] h-[10px] mt-[-5px] ml-[-5px] rounded-full bg-lp-muted" aria-hidden="true"></span>
+                <span class="lp-node n2 absolute left-[25%] top-1/2 w-[10px] h-[10px] mt-[-5px] ml-[-5px] rounded-full bg-lp-muted" aria-hidden="true"></span>
+                <span class="lp-node n3 absolute left-[50%] top-1/2 w-[16px] h-[16px] mt-[-8px] ml-[-8px] rounded-full bg-lp-accent" aria-hidden="true"></span>
+                <span class="lp-node n4 absolute left-[75%] top-1/2 w-[10px] h-[10px] mt-[-5px] ml-[-5px] rounded-full bg-transparent border border-lp-muted opacity-50" aria-hidden="true"></span>
+                <span class="lp-node n5 absolute left-[100%] top-1/2 w-[10px] h-[10px] mt-[-5px] ml-[-5px] rounded-full bg-transparent border border-lp-muted opacity-50" aria-hidden="true"></span>
+                <div class="lp-node-label absolute left-1/2 top-[29px] w-[400px] ml-[-200px] text-center font-mono text-[14px] font-medium tracking-[0.18em] uppercase text-lp-accent">Execution</div>
             </div>
         </section>
     </div>

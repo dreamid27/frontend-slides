@@ -94,7 +94,7 @@ get thumbs or none — a gap in the thumb column breaks the ledger.
 
 **Recommended size / placeholder:** `https://placehold.co/192x192`
 (2× for sharpness at 96px). **Dimension fallback:** fixed 96×96
-frames, `object-fit: cover`, token CSS fill behind each `<img>`.
+frames, `object-cover`, token CSS fill behind each `<img>`.
 Thumbnails are optional — the type-only ledger is the default.
 
 ## Choreography

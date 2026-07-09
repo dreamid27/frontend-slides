@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #151515;
@@ -79,84 +106,14 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute;
-    right: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === HERO FIGURE === */
-.lp-hero {
-    position: absolute;
-    left: 96px;
-    top: 280px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 400px;
-    font-weight: 800;
-    line-height: 0.9;
-    letter-spacing: -0.03em;
-    color: var(--lp-fg);
-}
-.lp-hero .lp-unit {
-    color: var(--lp-accent);
-    display: inline-block;
-}
-.lp-hero-label {
-    position: absolute;
-    left: 96px;
-    top: 680px;
-    font-family: var(--lp-font-mono);
-    font-size: 17px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-reading {
-    position: absolute;
-    left: 96px;
-    top: 740px;
-    margin: 0;
-    max-width: 720px;
-    font-family: var(--lp-font-body);
-    font-size: 24px;
-    line-height: 1.55;
-    color: var(--lp-fg-muted);
-}
-
-/* === SUPPORTING RAIL === */
-.lp-rail {
-    position: absolute;
-    left: 1360px;
-    right: 96px;
-    top: 300px;
-}
-.lp-rail-entry {
-    position: relative;
-    padding: 28px 0 36px;
-}
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
+/* Animated pseudo-element — kept as raw CSS because choreography targets it. */
 .lp-rail-entry::before {
     content: "";
     position: absolute;
@@ -167,23 +124,7 @@ img, video, canvas, svg {
     background: var(--lp-line);
     transform-origin: left center;
 }
-.lp-rail-value {
-    font-family: var(--lp-font-display);
-    font-size: 88px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--lp-fg);
-}
-.lp-rail-label {
-    margin-top: 12px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
 
-/* === CHOREOGRAPHY === */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(64px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
@@ -207,29 +148,29 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Performance</div>
-            <div class="lp-counter">09 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Performance</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">09 / 14</div>
 
             <!-- hero figure -->
-            <div class="lp-hero">4.7<span class="lp-unit">×</span></div>
-            <div class="lp-hero-label">Throughput vs. last year</div>
-            <p class="lp-reading">Same hardware, same budget — the gain came entirely from the scheduler rewrite and quantized edge models.</p>
+            <div class="lp-hero absolute left-[96px] top-[280px] m-0 font-display text-[400px] font-extrabold leading-[0.9] tracking-[-0.03em] text-lp-fg">4.7<span class="lp-unit inline-block text-lp-accent">×</span></div>
+            <div class="lp-hero-label absolute left-[96px] top-[680px] font-mono text-[17px] font-medium uppercase tracking-[0.2em] text-lp-muted">Throughput vs. last year</div>
+            <p class="lp-reading absolute left-[96px] top-[740px] m-0 max-w-[720px] font-body text-[24px] leading-[1.55] text-lp-muted">Same hardware, same budget — the gain came entirely from the scheduler rewrite and quantized edge models.</p>
 
             <!-- supporting rail -->
-            <div class="lp-rail">
-                <div class="lp-rail-entry">
-                    <div class="lp-rail-value">38ms</div>
-                    <div class="lp-rail-label">P99 inference</div>
+            <div class="absolute left-[1360px] right-[96px] top-[300px]">
+                <div class="lp-rail-entry relative pt-[28px] pb-[36px]">
+                    <div class="font-display text-[88px] font-bold leading-[1] text-lp-fg">38ms</div>
+                    <div class="mt-[12px] font-mono text-[14px] uppercase tracking-[0.16em] text-lp-muted">P99 inference</div>
                 </div>
-                <div class="lp-rail-entry">
-                    <div class="lp-rail-value">12</div>
-                    <div class="lp-rail-label">Regions live</div>
+                <div class="lp-rail-entry relative pt-[28px] pb-[36px]">
+                    <div class="font-display text-[88px] font-bold leading-[1] text-lp-fg">12</div>
+                    <div class="mt-[12px] font-mono text-[14px] uppercase tracking-[0.16em] text-lp-muted">Regions live</div>
                 </div>
-                <div class="lp-rail-entry">
-                    <div class="lp-rail-value">99.98%</div>
-                    <div class="lp-rail-label">Uptime, trailing 12mo</div>
+                <div class="lp-rail-entry relative pt-[28px] pb-[36px]">
+                    <div class="font-display text-[88px] font-bold leading-[1] text-lp-fg">99.98%</div>
+                    <div class="mt-[12px] font-mono text-[14px] uppercase tracking-[0.16em] text-lp-muted">Uptime, trailing 12mo</div>
                 </div>
             </div>
         </section>

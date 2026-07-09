@@ -78,13 +78,13 @@ All values are stage pixels at 1920×1080.
 ## Image variant
 
 **With an image:** the inverted panel becomes an image panel — the
-image fills the 720×1080 panel (`object-fit: cover`) under a scrim
+image fills the 720×1080 panel (`object-cover`) under a scrim
 strong enough for the panel's kicker and meta stack to stay legible
 (top and bottom gradients of the panel surface color at ~75%). The
 seam numeral stays astride the seam.
 
 **Recommended size / placeholder:** `https://placehold.co/720x1080`.
-**Dimension fallback:** fixed 720×1080 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 720×1080 frame, `object-cover`,
 the solid inverted surface behind the `<img>` doubles as the load
 fallback. The image is optional — the solid panel is the default.
 

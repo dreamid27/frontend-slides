@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,92 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === HEADER === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-title {
-    position: absolute; left: 96px; top: 150px;
-    margin: 0; max-width: 1728px;
-    font-family: var(--lp-font-display);
-    font-size: 96px; font-weight: 800;
-    line-height: 1; letter-spacing: -0.02em;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-.lp-title em { font-style: normal; color: var(--lp-accent); }
-
-/* === CINEMASCOPE BAND ===
-   Real decks: <video controls poster="..."> with object-fit: cover
-   fills the band and produces the wide crop from 16:9 footage.
-   Iframes can't crop: center them at 996×560 and let this band's
-   fill show as matting. Poster placeholder: placehold.co/1920x560. */
-.lp-band {
-    position: absolute; left: 0; right: 0; top: 300px;
-    height: 560px;
-    overflow: hidden;
-    background: linear-gradient(160deg, #d3d2cf 0%, #a9a8a5 100%);
-}
-.lp-band img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    max-width: none; max-height: none;
-    object-fit: cover;
-}
-.lp-band-edge {
-    position: absolute; left: 0; right: 0;
-    height: 1px; background: var(--lp-line);
-    transform-origin: left center;
-    z-index: 2;
-}
-.lp-band-edge.top { top: 300px; }
-.lp-band-edge.bottom { top: 860px; }
-.lp-play {
-    position: absolute; left: 50%; top: 50%;
-    width: 96px; height: 96px;
-    margin: -48px 0 0 -48px;
-    border: 1.5px solid rgba(27, 27, 27, 0.85);
-    border-radius: 50%;
-    background: rgba(242, 241, 239, 0.35);
-}
-.lp-play::after {
-    content: "";
-    position: absolute; left: 38px; top: 30px;
-    border-left: 30px solid rgba(27, 27, 27, 0.85);
-    border-top: 18px solid transparent;
-    border-bottom: 18px solid transparent;
-}
-
-/* === BELOW THE BAND === */
-.lp-caption {
-    position: absolute; left: 96px; top: 896px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-runtime {
-    position: absolute; right: 96px; top: 896px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--lp-accent);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -151,23 +100,27 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- header -->
-            <div class="lp-kicker">Single Take</div>
-            <div class="lp-counter">10 / 14</div>
-            <h2 class="lp-title">The line, end to <em>end</em></h2>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Single Take</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">10 / 14</div>
+            <h2 class="lp-title absolute left-[96px] top-[150px] m-0 max-w-[1728px] font-display text-[96px] font-extrabold leading-none tracking-[-0.02em] uppercase whitespace-nowrap">The line, end to <em class="not-italic text-lp-accent">end</em></h2>
 
-            <!-- cinemascope band -->
-            <div class="lp-band">
-                <img src="https://placehold.co/1920x560/c6c5c2/76756f" alt="Sukabumi corridor — poster frame">
-                <div class="lp-play" aria-hidden="true"></div>
+            <!-- cinemascope band: poster + play glyph until a real <video> replaces it.
+                 Real decks: <video controls poster="..."> with object-cover
+                 fills the band and produces the wide crop from 16:9 footage.
+                 Iframes can't crop: center them at 996×560 and let this band's
+                 fill show as matting. Poster placeholder: placehold.co/1920x560. -->
+            <div class="lp-band absolute left-0 right-0 top-[300px] h-[560px] overflow-hidden bg-[linear-gradient(160deg,#d3d2cf_0%,#a9a8a5_100%)]">
+                <img class="absolute inset-0 w-full h-full max-w-none max-h-none object-cover" src="https://placehold.co/1920x560/c6c5c2/76756f" alt="Sukabumi corridor — poster frame">
+                <div class="lp-play absolute left-1/2 top-1/2 w-[96px] h-[96px] mt-[-48px] ml-[-48px] border-[1.5px] border-[rgba(27,27,27,0.85)] rounded-full bg-[rgba(242,241,239,0.35)] after:content-[''] after:absolute after:left-[38px] after:top-[30px] after:border-l-[30px] after:border-l-[rgba(27,27,27,0.85)] after:border-y-[18px] after:border-y-transparent" aria-hidden="true"></div>
             </div>
-            <div class="lp-band-edge top" aria-hidden="true"></div>
-            <div class="lp-band-edge bottom" aria-hidden="true"></div>
+            <div class="lp-band-edge absolute left-0 right-0 top-[300px] h-px bg-lp-line origin-left z-[2]" aria-hidden="true"></div>
+            <div class="lp-band-edge absolute left-0 right-0 top-[860px] h-px bg-lp-line origin-left z-[2]" aria-hidden="true"></div>
 
             <!-- below the band -->
-            <div class="lp-caption">Sukabumi corridor — single take</div>
-            <div class="lp-runtime">02:41</div>
+            <div class="lp-caption absolute left-[96px] top-[896px] font-mono text-[14px] uppercase tracking-[0.14em] text-lp-muted">Sukabumi corridor — single take</div>
+            <div class="lp-runtime absolute right-[96px] top-[896px] font-mono text-[14px] font-medium tracking-[0.1em] text-lp-accent">02:41</div>
         </section>
     </div>
 </div>

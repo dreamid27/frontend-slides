@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f1f0ee;
@@ -79,119 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 96px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute;
-    right: 96px;
-    top: 96px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === STATEMENT (upper field) === */
-.lp-statement-block {
-    position: absolute;
-    left: 96px;
-    top: 230px;
-    max-width: 1500px;
-}
-.lp-statement {
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 168px;
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-statement .lp-line {
-    display: block;
-}
-.lp-statement em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-.lp-sub {
-    margin: 32px 0 0;
-    max-width: 720px;
-    font-family: var(--lp-font-body);
-    font-size: 24px;
-    line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === CURTAIN BAND (skin point: dual-surface systems use their alt surface) === */
-.lp-band {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 680px;
-    height: 400px;
-    background: var(--lp-fg);
-    color: var(--lp-bg);
-    z-index: 1;
-}
-.lp-band-grid {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 140px; /* y:820 on stage */
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-}
-.lp-cell + .lp-cell {
-    border-left: 1px solid rgba(255, 255, 255, 0.25);
-    padding-left: 48px;
-}
-.slide.lp .lp-cell + .lp-cell {
-    border-left-color: color-mix(in srgb, var(--lp-bg) 25%, transparent);
-}
-.lp-cell-label {
-    font-family: var(--lp-font-mono);
-    font-size: 13px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--lp-bg);
-    opacity: 0.6;
-    margin-bottom: 12px;
-}
-.lp-cell-value {
-    font-family: var(--lp-font-body);
-    font-size: 24px;
-    color: var(--lp-bg);
-}
-
-/* === ACCENT STITCH (overlaps the seam) === */
-.lp-stitch {
-    position: absolute;
-    left: 96px;
-    top: 676px;
-    width: 160px;
-    height: 8px;
-    background: var(--lp-accent);
-    transform-origin: left center;
-    z-index: 2;
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(56px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-band { from { opacity: 0; transform: translateY(80px); } to { opacity: 1; transform: translateY(0); } }
@@ -213,37 +134,38 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Before You Go</div>
-            <div class="lp-counter">12 / 12</div>
+            <div class="lp-kicker absolute left-[96px] top-[96px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Before You Go</div>
+            <div class="lp-counter absolute right-[96px] top-[96px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 12</div>
 
             <!-- statement -->
-            <div class="lp-statement-block">
-                <h1 class="lp-statement">
-                    <span class="lp-line">Build it</span>
-                    <span class="lp-line"><em>with us.</em></span>
+            <div class="absolute left-[96px] top-[230px] max-w-[1500px]">
+                <h1 class="lp-statement m-0 font-display text-[168px] font-extrabold leading-[0.95] tracking-[-0.02em] uppercase">
+                    <span class="lp-line block">Build it</span>
+                    <span class="lp-line block"><em class="not-italic text-lp-accent">with us.</em></span>
                 </h1>
-                <p class="lp-sub">The roadmap is public — pick a lane and claim it this week.</p>
+                <p class="lp-sub mt-[32px] mb-0 max-w-[720px] font-body text-[24px] leading-[1.5] text-lp-muted">The roadmap is public — pick a lane and claim it this week.</p>
             </div>
 
             <!-- accent stitch on the seam -->
-            <div class="lp-stitch" aria-hidden="true"></div>
+            <div class="lp-stitch absolute left-[96px] top-[676px] z-[2] w-[160px] h-[8px] origin-left bg-lp-accent" aria-hidden="true"></div>
 
-            <!-- curtain band -->
-            <div class="lp-band">
-                <div class="lp-band-grid">
+            <!-- curtain band (skin point: dual-surface systems use their alt surface) -->
+            <div class="lp-band absolute left-0 right-0 top-[680px] z-[1] h-[400px] bg-lp-fg text-lp-bg">
+                <!-- grid top edge lands at y:820 on stage -->
+                <div class="absolute left-[96px] right-[96px] top-[140px] grid grid-cols-3">
                     <div class="lp-cell">
-                        <div class="lp-cell-label">Email</div>
-                        <div class="lp-cell-value">alfin@nodeflux.io</div>
+                        <div class="mb-[12px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-bg opacity-60">Email</div>
+                        <div class="font-body text-[24px] text-lp-bg">alfin@nodeflux.io</div>
                     </div>
-                    <div class="lp-cell">
-                        <div class="lp-cell-label">Docs</div>
-                        <div class="lp-cell-value">nodeflux.io/roadmap</div>
+                    <div class="lp-cell pl-[48px] border-l border-[color-mix(in_srgb,var(--lp-bg)_25%,transparent)]">
+                        <div class="mb-[12px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-bg opacity-60">Docs</div>
+                        <div class="font-body text-[24px] text-lp-bg">nodeflux.io/roadmap</div>
                     </div>
-                    <div class="lp-cell">
-                        <div class="lp-cell-label">Channel</div>
-                        <div class="lp-cell-value">#platform-roadmap</div>
+                    <div class="lp-cell pl-[48px] border-l border-[color-mix(in_srgb,var(--lp-bg)_25%,transparent)]">
+                        <div class="mb-[12px] font-mono text-[13px] uppercase tracking-[0.16em] text-lp-bg opacity-60">Channel</div>
+                        <div class="font-body text-[24px] text-lp-bg">#platform-roadmap</div>
                     </div>
                 </div>
             </div>

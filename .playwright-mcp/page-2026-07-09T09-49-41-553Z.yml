@@ -1,0 +1,14 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]: Climate Emergency Summit
+      - generic [ref=e7]: 08 JUL 2026
+      - generic [ref=e8]:
+        - generic [ref=e9]: GLOBAL
+        - generic [ref=e10]: WARMING
+        - generic [ref=e11]: THE DANGER
+        - generic [ref=e12]: AHEAD
+      - generic [ref=e14]: Dr. Elena Vasquez — Environmental Science Institute
+      - generic [ref=e15]: 01 / 17
+  - generic [ref=e17]: 01 / 17
+  - button "✏️"

@@ -5,8 +5,8 @@ slot: stats
 description: >
   Comparison you can measure with your eye. Three or four labeled
   horizontal bars, widths in true proportion to their values, the
-  highlighted bar in accent and the rest muted — the only preset in
-  the pack that draws a chart, and it draws the humblest one.
+  highlighted bar in accent and the rest muted — the humblest chart
+  in the pack; richer data shapes live in the `chart` slot.
 tokens:
   - --lp-bg
   - --lp-fg
@@ -78,7 +78,7 @@ sentence's subject.
 of it (grid gains a 120px chip column; labels shorten to ≤ 18
 characters). All rows or none. **Recommended size / placeholder:**
 `https://placehold.co/192x192` (2× for sharpness at 96px).
-**Dimension fallback:** fixed 96×96 frames, `object-fit: cover`,
+**Dimension fallback:** fixed 96×96 frames, `object-cover`,
 token CSS fill behind each `<img>`. Chips are optional.
 
 ## Choreography

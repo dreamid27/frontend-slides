@@ -82,8 +82,8 @@ below-entries, 20px gap). All entries get thumbnails or none — the
 alternating rhythm must stay symmetric.
 
 **Recommended size / placeholder:** `https://placehold.co/280x158`
-(16:9). **Dimension fallback:** fixed 280×158 frames, `object-fit:
-cover`, token CSS fill behind each `<img>`. Thumbnails are optional —
+(16:9). **Dimension fallback:** fixed 280×158 frames, `object-cover`,
+token CSS fill behind each `<img>`. Thumbnails are optional —
 with them, headline drops to 72px and the track moves to y:660.
 
 ## Choreography

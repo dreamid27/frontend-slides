@@ -76,7 +76,7 @@ numeral (its right edge 24px before the numeral; step 1's thumb is
 therefore off-grid at x:96 and the steps shift right by 224px, so cap
 at 3 steps). All steps get thumbs or none. **Recommended size /
 placeholder:** `https://placehold.co/400x224` (2× for sharpness at
-200×112). **Dimension fallback:** fixed frames, `object-fit: cover`,
+200×112). **Dimension fallback:** fixed frames, `object-cover`,
 token CSS fill behind each `<img>`. Thumbnails are optional.
 
 ## Choreography

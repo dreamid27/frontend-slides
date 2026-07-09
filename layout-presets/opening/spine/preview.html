@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,84 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === SPINE COLUMN ===
-   Image variant: x:0→600 becomes a full-height image strip; the rotated
-   label sits on a scrim chip. The rule at x:600 never moves. */
-.lp-spine-rule {
-    position: absolute;
-    left: 600px; top: 0;
-    width: 1px; height: 1080px;
-    background: var(--lp-line);
-    transform-origin: center top;
-}
-.lp-monogram {
-    position: absolute;
-    left: 0; width: 600px; top: 96px;
-    text-align: center;
-    font-family: var(--lp-font-display);
-    font-size: 44px; font-weight: 800;
-    letter-spacing: 0.04em;
-    color: var(--lp-fg);
-}
-.lp-spine-label {
-    position: absolute;
-    left: 0; width: 600px; top: 540px;
-    text-align: center;
-    transform: rotate(-90deg);
-    font-family: var(--lp-font-mono);
-    font-size: 22px; font-weight: 500;
-    letter-spacing: 0.5em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-    white-space: nowrap;
-}
-.lp-spine-date {
-    position: absolute;
-    left: 0; width: 600px; top: 984px;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === TITLE FIELD === */
-.lp-kicker {
-    position: absolute; left: 696px; top: 180px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-title {
-    position: absolute; left: 696px; top: 340px;
-    margin: 0; max-width: 1030px;
-    font-family: var(--lp-font-display);
-    font-size: 140px; font-weight: 800;
-    line-height: 0.97; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title .lp-line { display: block; }
-.lp-title em { font-style: normal; color: var(--lp-accent); }
-.lp-lead {
-    position: absolute; left: 696px; top: 660px;
-    margin: 0; max-width: 640px;
-    font-family: var(--lp-font-body);
-    font-size: 22px; line-height: 1.55;
-    color: var(--lp-fg-muted);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-rise-sm { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -143,22 +100,24 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
-            <!-- spine column -->
-            <div class="lp-spine-rule"></div>
-            <div class="lp-monogram">NF</div>
-            <div class="lp-spine-label">Quarterly Review · Vol 04</div>
-            <div class="lp-spine-date">08 Jul 2026</div>
+        <section class="slide lp active bg-lp-bg text-lp-fg">
+            <!-- spine column. Image variant: x:0→600 becomes a full-height image
+                 strip; the rotated label sits on a scrim chip. The rule at x:600
+                 never moves -->
+            <div class="lp-spine-rule absolute left-[600px] top-0 w-px h-[1080px] origin-top bg-lp-line"></div>
+            <div class="lp-monogram absolute left-0 top-[96px] w-[600px] text-center font-display text-[44px] font-extrabold tracking-[0.04em] text-lp-fg">NF</div>
+            <div class="lp-spine-label absolute left-0 top-[540px] w-[600px] text-center rotate-[-90deg] whitespace-nowrap font-mono text-[22px] font-medium uppercase tracking-[0.5em] text-lp-muted">Quarterly Review · Vol 04</div>
+            <div class="lp-spine-date absolute left-0 top-[984px] w-[600px] text-center font-mono text-[14px] uppercase tracking-[0.14em] text-lp-muted">08 Jul 2026</div>
 
             <!-- title field -->
-            <div class="lp-kicker">Q2 Results &amp; Outlook</div>
-            <h1 class="lp-title">
-                <span class="lp-line">The quiet</span>
-                <span class="lp-line"><em>quarter</em></span>
+            <div class="lp-kicker absolute left-[696px] top-[180px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Q2 Results &amp; Outlook</div>
+            <h1 class="lp-title absolute left-[696px] top-[340px] m-0 max-w-[1030px] font-display text-[140px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">
+                <span class="lp-line block">The quiet</span>
+                <span class="lp-line block"><em class="not-italic text-lp-accent">quarter</em></span>
             </h1>
-            <p class="lp-lead">No launches, no incidents, no drama — and the strongest numbers we have ever posted. Here is why boring worked.</p>
+            <p class="lp-lead absolute left-[696px] top-[660px] m-0 max-w-[640px] font-body text-[22px] leading-[1.55] text-lp-muted">No launches, no incidents, no drama — and the strongest numbers we have ever posted. Here is why boring worked.</p>
 
-            <div class="lp-counter">01 / 12</div>
+            <div class="lp-counter absolute right-[96px] top-[984px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">01 / 12</div>
         </section>
     </div>
 </div>

@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f2f1ef;
@@ -45,111 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === LEFT COLUMN === */
-.lp-title {
-    position: absolute; left: 96px; top: 170px;
-    margin: 0; max-width: 544px;
-    font-family: var(--lp-font-display);
-    font-size: 72px; font-weight: 800;
-    line-height: 1.02; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title .lp-line { display: block; }
-.lp-title em { font-style: normal; color: var(--lp-accent); }
-.lp-reading {
-    position: absolute; left: 96px; top: 350px;
-    margin: 0; max-width: 500px;
-    font-family: var(--lp-font-body);
-    font-size: 20px; line-height: 1.55;
-    color: var(--lp-fg-muted);
-}
-.lp-chapters {
-    position: absolute; left: 96px; top: 600px;
-    width: 544px;
-}
-.lp-chapter {
-    position: relative;
-    display: flex; align-items: baseline; gap: 24px;
-    padding: 22px 0;
-}
-.lp-chapter::before {
-    content: "";
-    position: absolute; left: 0; right: 0; top: 0;
-    height: 1px; background: var(--lp-line);
-    transform-origin: left center;
-}
-.lp-chapter-time {
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--lp-accent);
-    flex: none;
-}
-.lp-chapter-beat {
-    font-family: var(--lp-font-body);
-    font-size: 19px;
-    color: var(--lp-fg);
-}
-
-/* === PLAYER ===
-   Real decks: replace frame contents with <video controls poster="...">
-   or an <iframe allowfullscreen> at this geometry.
-   Poster placeholder: placehold.co/1088x612; gradient = load fallback. */
-.lp-player {
-    position: absolute; left: 736px; top: 234px;
-    width: 1088px; height: 612px;
-    border: 1px solid var(--lp-line);
-    overflow: hidden;
-    background: linear-gradient(150deg, #d6d5d2 0%, #b0afac 100%);
-}
-.lp-player img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    max-width: none; max-height: none;
-    object-fit: cover;
-}
-.lp-play {
-    position: absolute; left: 50%; top: 50%;
-    width: 88px; height: 88px;
-    margin: -44px 0 0 -44px;
-    border: 1.5px solid rgba(27, 27, 27, 0.85);
-    border-radius: 50%;
-    background: rgba(242, 241, 239, 0.35);
-}
-.lp-play::after {
-    content: "";
-    position: absolute; left: 35px; top: 27px;
-    border-left: 28px solid rgba(27, 27, 27, 0.85);
-    border-top: 17px solid transparent;
-    border-bottom: 17px solid transparent;
-}
-.lp-caption {
-    position: absolute; left: 736px; top: 870px;
-    font-family: var(--lp-font-mono);
-    font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-settle { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
 @keyframes lp-glyph-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
@@ -172,39 +102,42 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Product Demo</div>
-            <div class="lp-counter">08 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Product Demo</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">08 / 14</div>
 
             <!-- left column -->
-            <h2 class="lp-title">
-                <span class="lp-line">Console,</span>
-                <span class="lp-line">in <em>motion</em></span>
+            <h2 class="lp-title absolute left-[96px] top-[170px] m-0 max-w-[544px] font-display text-[72px] font-extrabold leading-[1.02] tracking-[-0.02em] uppercase">
+                <span class="lp-line block">Console,</span>
+                <span class="lp-line block">in <em class="not-italic text-lp-accent">motion</em></span>
             </h2>
-            <p class="lp-reading">Three minutes of the unified console doing a full site's day — recorded live, no cuts.</p>
+            <p class="lp-reading absolute left-[96px] top-[350px] m-0 max-w-[500px] font-body text-[20px] leading-[1.55] text-lp-muted">Three minutes of the unified console doing a full site's day — recorded live, no cuts.</p>
 
-            <div class="lp-chapters">
-                <div class="lp-chapter">
-                    <span class="lp-chapter-time">00:00</span>
-                    <span class="lp-chapter-beat">Cold open — morning provisioning</span>
+            <div class="absolute left-[96px] top-[600px] w-[544px]">
+                <div class="lp-chapter relative flex items-baseline gap-[24px] py-[22px] before:content-[''] before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-lp-line before:origin-left">
+                    <span class="flex-none font-mono text-[15px] font-medium tracking-[0.1em] text-lp-accent">00:00</span>
+                    <span class="font-body text-[19px] text-lp-fg">Cold open — morning provisioning</span>
                 </div>
-                <div class="lp-chapter">
-                    <span class="lp-chapter-time">01:24</span>
-                    <span class="lp-chapter-beat">Incident drill, end to end</span>
+                <div class="lp-chapter relative flex items-baseline gap-[24px] py-[22px] before:content-[''] before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-lp-line before:origin-left">
+                    <span class="flex-none font-mono text-[15px] font-medium tracking-[0.1em] text-lp-accent">01:24</span>
+                    <span class="font-body text-[19px] text-lp-fg">Incident drill, end to end</span>
                 </div>
-                <div class="lp-chapter">
-                    <span class="lp-chapter-time">03:05</span>
-                    <span class="lp-chapter-beat">Audit trail, one click</span>
+                <div class="lp-chapter relative flex items-baseline gap-[24px] py-[22px] before:content-[''] before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-lp-line before:origin-left">
+                    <span class="flex-none font-mono text-[15px] font-medium tracking-[0.1em] text-lp-accent">03:05</span>
+                    <span class="font-body text-[19px] text-lp-fg">Audit trail, one click</span>
                 </div>
             </div>
 
-            <!-- player -->
-            <div class="lp-player">
-                <img src="https://placehold.co/1088x612/c8c7c4/76756f" alt="Console demo — poster frame">
-                <div class="lp-play" aria-hidden="true"></div>
+            <!-- player: poster + play glyph until a real <video>/<iframe> replaces it.
+                 Real decks: replace frame contents with <video controls poster="...">
+                 or an <iframe allowfullscreen> at this geometry.
+                 Poster placeholder: placehold.co/1088x612; gradient = load fallback. -->
+            <div class="lp-player absolute left-[736px] top-[234px] w-[1088px] h-[612px] border border-lp-line overflow-hidden bg-[linear-gradient(150deg,#d6d5d2_0%,#b0afac_100%)]">
+                <img class="absolute inset-0 w-full h-full max-w-none max-h-none object-cover" src="https://placehold.co/1088x612/c8c7c4/76756f" alt="Console demo — poster frame">
+                <div class="lp-play absolute left-1/2 top-1/2 w-[88px] h-[88px] mt-[-44px] ml-[-44px] border-[1.5px] border-[rgba(27,27,27,0.85)] rounded-full bg-[rgba(242,241,239,0.35)] after:content-[''] after:absolute after:left-[35px] after:top-[27px] after:border-l-[28px] after:border-l-[rgba(27,27,27,0.85)] after:border-y-[17px] after:border-y-transparent" aria-hidden="true"></div>
             </div>
-            <div class="lp-caption">Unified console v2.4 — recorded Jul 2026</div>
+            <div class="lp-caption absolute left-[736px] top-[870px] font-mono text-[13px] uppercase tracking-[0.14em] text-lp-muted">Unified console v2.4 — recorded Jul 2026</div>
         </section>
     </div>
 </div>

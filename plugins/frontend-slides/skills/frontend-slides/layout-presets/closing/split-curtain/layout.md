@@ -78,7 +78,7 @@ max-width tightens to 1000px. The band and stitch are unchanged — the
 photo rides above the curtain.
 
 **Recommended size / placeholder:** `https://placehold.co/584x504`.
-**Dimension fallback:** fixed 584×504 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 584×504 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional.
 
 ## Choreography

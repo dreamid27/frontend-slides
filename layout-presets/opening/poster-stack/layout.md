@@ -70,7 +70,7 @@ exactly the poster effect.
 
 **With an image:** row 2 (the outline row) is replaced by a letterbox
 image band — full row footprint (x:96 → 1824, height ≈ 165px), image
-`object-fit: cover`, no border. The image reads as one word in the
+`object-cover`, no border. The image reads as one word in the
 stack. Choose a crop with a strong horizontal (skyline, hands on a
 table, hardware rack). The row's text fragment moves into the caption
 position at the band's right edge (mono 13px on a scrim chip) so no
@@ -80,7 +80,7 @@ words are lost.
 
 **Recommended size / placeholder:** `https://placehold.co/1728x165`.
 **Dimension fallback:** the band is a fixed 1728×165 frame with
-`object-fit: cover` (tall images simply crop to the letterbox); keep a
+`object-cover` (tall images simply crop to the letterbox); keep a
 token CSS fill behind the `<img>`. The image is optional — the outline
 text row is the default.
 

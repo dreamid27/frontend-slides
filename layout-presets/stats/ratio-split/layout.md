@@ -78,7 +78,7 @@ theatrical stat.
 **With an image:** full-bleed behind everything under a heavy scrim
 (`--lp-bg` at ≥ 90%) — the setting of the measurement, as texture.
 **Recommended size / placeholder:** `https://placehold.co/1920x1080`.
-**Dimension fallback:** full-bleed frame, `object-fit: cover`, flat
+**Dimension fallback:** full-bleed frame, `object-cover`, flat
 `--lp-bg` behind the `<img>`. The image is optional and usually
 omitted.
 

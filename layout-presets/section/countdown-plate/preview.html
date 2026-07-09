@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #151515;
@@ -45,67 +73,15 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === NUMERAL PLATE — solid faint, never outline === */
-.lp-plate {
-    position: absolute; left: 50%; top: 50%;
-    transform: translate(-50%, -50%);
-    font-family: var(--lp-font-display);
-    font-size: 880px; font-weight: 800;
-    line-height: 0.8;
-    color: var(--lp-fg-faint);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* === TITLE — dead center, on top of the plate === */
-.lp-title {
-    position: absolute; left: 96px; right: 96px; top: 50%;
-    transform: translateY(-50%);
-    margin: 0;
-    text-align: center;
-    z-index: 1;
-}
-.lp-title .lp-word {
-    display: inline-block;
-    font-family: var(--lp-font-display);
-    font-size: 112px; font-weight: 800;
-    line-height: 1; letter-spacing: -0.02em;
-    text-transform: uppercase;
-    color: var(--lp-fg);
-}
-.lp-title em { font-style: normal; color: var(--lp-accent); }
-.lp-sub {
-    position: absolute; left: 0; right: 0; top: calc(50% + 100px);
-    margin: 0;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY ===
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
    Plate and title are transform-centered → animate opacity on the
-   blocks and transforms only on inner spans. */
+   blocks and transforms only on inner spans.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise-word { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -119,17 +95,17 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">Part Four</div>
-            <div class="lp-counter">10 / 14</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium tracking-[0.18em] uppercase text-lp-accent">Part Four</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] tracking-[0.12em] uppercase text-lp-muted">10 / 14</div>
 
             <!-- numeral plate -->
-            <div class="lp-plate" aria-hidden="true">04</div>
+            <div class="lp-plate absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[880px] font-extrabold leading-[0.8] text-lp-faint pointer-events-none z-0" aria-hidden="true">04</div>
 
             <!-- centered title -->
-            <h1 class="lp-title"><span class="lp-word"><em>Proof</em></span></h1>
-            <p class="lp-sub">The numbers behind the bet</p>
+            <h1 class="lp-title absolute left-[96px] right-[96px] top-1/2 -translate-y-1/2 m-0 text-center z-[1]"><span class="lp-word inline-block font-display text-[112px] font-extrabold leading-[1] tracking-[-0.02em] uppercase text-lp-fg"><em class="not-italic text-lp-accent">Proof</em></span></h1>
+            <p class="lp-sub absolute left-0 right-0 top-[calc(50%+100px)] m-0 text-center font-mono text-[15px] tracking-[0.3em] uppercase text-lp-muted">The numbers behind the bet</p>
         </section>
     </div>
 </div>

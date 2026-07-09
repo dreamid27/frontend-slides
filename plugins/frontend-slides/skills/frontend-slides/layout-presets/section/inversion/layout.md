@@ -72,7 +72,7 @@ cream deck, and vice versa); single-surface systems invert literally.
 scrim of this slide's (inverted) `--lp-bg` at ≥ 85% — texture, not
 picture. **Recommended size / placeholder:**
 `https://placehold.co/1920x1080`. **Dimension fallback:** full-bleed
-frame, `object-fit: cover`, flat surface behind the `<img>`. The image
+frame, `object-cover`, flat surface behind the `<img>`. The image
 is optional and usually omitted.
 
 ## Choreography

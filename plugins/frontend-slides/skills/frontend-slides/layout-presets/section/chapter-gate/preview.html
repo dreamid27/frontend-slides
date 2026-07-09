@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #161616;
@@ -79,121 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === KICKER === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-
-/* === CHAPTER NUMERAL — solid faint fill, never an outline === */
-.lp-numeral {
-    position: absolute;
-    right: -40px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: var(--lp-font-display);
-    font-size: 640px;
-    font-weight: 800;
-    line-height: 0.8;
-    color: var(--lp-fg-faint);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* === TITLE BLOCK (lower-left anchor) === */
-.lp-title-block {
-    position: absolute;
-    left: 96px;
-    bottom: 300px;
-    max-width: 1150px;
-    z-index: 1;
-}
-.lp-accent-bar {
-    width: 72px;
-    height: 8px;
-    background: var(--lp-accent);
-    margin-bottom: 44px;
-    transform-origin: left center;
-}
-.lp-title {
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 132px;
-    font-weight: 800;
-    line-height: 0.97;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title .lp-line {
-    display: block;
-}
-.lp-title em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-.lp-framing {
-    margin: 36px 0 0;
-    max-width: 680px;
-    font-family: var(--lp-font-body);
-    font-size: 24px;
-    line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === CHAPTER RAIL === */
-.lp-rail-rule {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 940px;
-    height: 1px;
-    background: var(--lp-line);
-}
-.lp-rail {
-    position: absolute;
-    left: 96px;
-    top: 966px;
-    display: flex;
-    gap: 64px;
-    font-family: var(--lp-font-mono);
-    font-size: 14px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-    z-index: 1;
-}
-.lp-rail-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.lp-rail-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--lp-fg-muted);
-    flex: none;
-}
-.lp-rail-item.is-current { color: var(--lp-accent); }
-.lp-rail-item.is-current .lp-rail-dot { background: var(--lp-accent); }
-.lp-rail-item.is-future { opacity: 0.5; }
-.lp-rail-item.is-future .lp-rail-dot {
-    background: transparent;
-    border: 1px solid var(--lp-fg-muted);
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-fade-half { from { opacity: 0; } to { opacity: 0.5; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(44px); } to { opacity: 1; transform: translateY(0); } }
@@ -217,30 +136,30 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- kicker -->
-            <div class="lp-kicker">Part Two</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium tracking-[0.18em] uppercase text-lp-accent">Part Two</div>
 
             <!-- chapter numeral -->
-            <div class="lp-numeral" aria-hidden="true">02</div>
+            <div class="lp-numeral absolute right-[-40px] top-1/2 -translate-y-1/2 font-display text-[640px] font-extrabold leading-[0.8] text-lp-faint pointer-events-none z-0" aria-hidden="true">02</div>
 
             <!-- title block -->
-            <div class="lp-title-block">
-                <div class="lp-accent-bar"></div>
-                <h1 class="lp-title">
-                    <span class="lp-line">Deeper,</span>
-                    <span class="lp-line">not <em>wider</em></span>
+            <div class="absolute left-[96px] bottom-[300px] max-w-[1150px] z-[1]">
+                <div class="lp-accent-bar w-[72px] h-[8px] bg-lp-accent mb-[44px] origin-left"></div>
+                <h1 class="lp-title m-0 font-display text-[132px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">
+                    <span class="lp-line block">Deeper,</span>
+                    <span class="lp-line block">not <em class="not-italic text-lp-accent">wider</em></span>
                 </h1>
-                <p class="lp-framing">Why we are concentrating the roadmap on two products instead of five.</p>
+                <p class="lp-framing mt-[36px] mb-0 max-w-[680px] font-body text-[24px] leading-[1.5] text-lp-muted">Why we are concentrating the roadmap on two products instead of five.</p>
             </div>
 
             <!-- chapter rail -->
-            <div class="lp-rail-rule"></div>
-            <div class="lp-rail">
-                <div class="lp-rail-item"><span class="lp-rail-dot"></span>01 Inertia</div>
-                <div class="lp-rail-item is-current"><span class="lp-rail-dot"></span>02 Depth</div>
-                <div class="lp-rail-item is-future"><span class="lp-rail-dot"></span>03 Execution</div>
-                <div class="lp-rail-item is-future"><span class="lp-rail-dot"></span>04 Proof</div>
+            <div class="lp-rail-rule absolute left-[96px] right-[96px] top-[940px] h-px bg-lp-line"></div>
+            <div class="absolute left-[96px] top-[966px] flex gap-[64px] font-mono text-[14px] tracking-[0.14em] uppercase text-lp-muted z-[1]">
+                <div class="lp-rail-item flex items-center gap-[12px]"><span class="lp-rail-dot w-[8px] h-[8px] rounded-full bg-lp-muted flex-none"></span>01 Inertia</div>
+                <div class="lp-rail-item is-current flex items-center gap-[12px] text-lp-accent"><span class="lp-rail-dot w-[8px] h-[8px] rounded-full bg-lp-accent flex-none"></span>02 Depth</div>
+                <div class="lp-rail-item is-future flex items-center gap-[12px] opacity-50"><span class="lp-rail-dot w-[8px] h-[8px] rounded-full bg-transparent border border-lp-muted flex-none"></span>03 Execution</div>
+                <div class="lp-rail-item is-future flex items-center gap-[12px] opacity-50"><span class="lp-rail-dot w-[8px] h-[8px] rounded-full bg-transparent border border-lp-muted flex-none"></span>04 Proof</div>
             </div>
         </section>
     </div>

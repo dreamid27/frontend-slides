@@ -85,7 +85,7 @@ cutting it. The chapter number moves into the kicker ("Part 02 —
 Depth"). Title, framing line, and chapter rail are unchanged.
 
 **Recommended size / placeholder:** `https://placehold.co/640x1080`.
-**Dimension fallback:** fixed 640×1080 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 640×1080 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional — the faint
 numeral is the default.
 

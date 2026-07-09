@@ -76,8 +76,8 @@ play. Best for product demos and walkthroughs discussed while paused.
   poster="...">` in the frame; hosted `<iframe>` at the same geometry
   otherwise. Never autoplay with sound.
 - **Poster / placeholder:** `https://placehold.co/1088x612`.
-- **Dimension fallback:** fixed 1088×612 frame; posters `object-fit:
-  cover`; non-16:9 video letterboxes natively inside the frame.
+- **Dimension fallback:** fixed 1088×612 frame; posters `object-cover`;
+  non-16:9 video letterboxes natively inside the frame.
 - **No-video variant:** keep the layout with the poster as a still
   (the chapter list becomes a step list) — or use Plate Caption if no
   chapter structure exists. The video is optional; the chapter list

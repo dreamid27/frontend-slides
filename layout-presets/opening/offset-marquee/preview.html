@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f1f0ee;
@@ -79,119 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME (top) === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-meta {
-    position: absolute;
-    right: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-chrome-rule {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 118px;
-    height: 1px;
-    background: var(--lp-line);
-}
-
-/* === GHOST NUMERAL (skin point: may become the system's texture/mark) === */
-.lp-ghost {
-    position: absolute;
-    right: -24px;
-    top: 36px;
-    font-family: var(--lp-font-display);
-    font-weight: 800;
-    font-size: 560px;
-    line-height: 0.8;
-    color: transparent;
-    -webkit-text-stroke: 2px var(--lp-fg-faint);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* === TITLE BLOCK (lower-left anchor) === */
-.lp-title-block {
-    position: absolute;
-    left: 96px;
-    bottom: 300px;
-    max-width: 1360px;
-    z-index: 1;
-}
-.lp-accent-bar {
-    width: 72px;
-    height: 8px;
-    background: var(--lp-accent);
-    margin-bottom: 48px;
-    transform-origin: left center;
-}
-.lp-title {
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 168px;
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-title .lp-line {
-    display: block;
-}
-.lp-title em {
-    font-style: normal;
-    color: var(--lp-accent);
-}
-.lp-lead {
-    margin: 40px 0 0;
-    max-width: 680px;
-    font-family: var(--lp-font-body);
-    font-size: 26px;
-    line-height: 1.5;
-    color: var(--lp-fg-muted);
-}
-
-/* === FOOTER === */
-.lp-foot-rule {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 962px;
-    height: 1px;
-    background: var(--lp-line);
-}
-.lp-foot-left,
-.lp-foot-right {
-    position: absolute;
-    top: 984px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; }
-.lp-foot-right { right: 96px; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-drift { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
@@ -214,29 +135,29 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
-            <!-- chrome -->
-            <div class="lp-kicker">Quarterly Review</div>
-            <div class="lp-meta">FY26 · Q2 — 08 Jul 2026</div>
-            <div class="lp-chrome-rule"></div>
+        <section class="slide lp active bg-lp-bg text-lp-fg">
+            <!-- chrome (top) -->
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">Quarterly Review</div>
+            <div class="lp-meta absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">FY26 · Q2 — 08 Jul 2026</div>
+            <div class="lp-chrome-rule absolute left-[96px] right-[96px] top-[118px] h-px bg-lp-line"></div>
 
-            <!-- ghost numeral (behind content) -->
-            <div class="lp-ghost" aria-hidden="true">01</div>
+            <!-- ghost numeral, behind content (skin point: may become the system's texture/mark) -->
+            <div class="lp-ghost absolute right-[-24px] top-[36px] z-0 pointer-events-none font-display font-extrabold text-[560px] leading-[0.8] text-transparent [-webkit-text-stroke:2px_var(--lp-fg-faint)]" aria-hidden="true">01</div>
 
-            <!-- title block -->
-            <div class="lp-title-block">
-                <div class="lp-accent-bar"></div>
-                <h1 class="lp-title">
-                    <span class="lp-line">Where we</span>
-                    <span class="lp-line">go <em>next</em></span>
+            <!-- title block (lower-left anchor) -->
+            <div class="absolute left-[96px] bottom-[300px] z-10 max-w-[1360px]">
+                <div class="lp-accent-bar w-[72px] h-[8px] mb-[48px] origin-left bg-lp-accent"></div>
+                <h1 class="lp-title m-0 font-display text-[168px] font-extrabold leading-[0.95] tracking-[-0.02em] uppercase">
+                    <span class="lp-line block">Where we</span>
+                    <span class="lp-line block">go <em class="not-italic text-lp-accent">next</em></span>
                 </h1>
-                <p class="lp-lead">Where the platform stands today, what we learned this quarter, and the three bets we are making for the next one.</p>
+                <p class="lp-lead mt-[40px] mb-0 max-w-[680px] font-body text-[26px] leading-[1.5] text-lp-muted">Where the platform stands today, what we learned this quarter, and the three bets we are making for the next one.</p>
             </div>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">A. Rahman — Head of Platform — Nodeflux</div>
-            <div class="lp-foot-right">01 / 12</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[962px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[984px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">A. Rahman — Head of Platform — Nodeflux</div>
+            <div class="lp-foot-right absolute right-[96px] top-[984px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">01 / 12</div>
         </section>
     </div>
 </div>

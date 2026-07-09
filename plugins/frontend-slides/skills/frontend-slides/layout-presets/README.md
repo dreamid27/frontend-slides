@@ -47,8 +47,13 @@ Reusable, style-agnostic **structural blueprints** for individual slides. A layo
 | Stats | Ratio Split | [stats/ratio-split/layout.md](stats/ratio-split/layout.md) | [preview.html](stats/ratio-split/preview.html) | Before faces after: muted old figure left, bright new figure right, accent arrow and computed delta chip between (exactly one pair) |
 | Stats | Denominator | [stats/denominator/layout.md](stats/denominator/layout.md) | [preview.html](stats/denominator/preview.html) | The stat as a typeset fraction — huge numerator over an accent bar over its denominator phrase, ratio chip below, candid reading column right |
 | Stats | Ticker | [stats/ticker/layout.md](stats/ticker/layout.md) | [preview.html](stats/ticker/preview.html) | A dense ruled band of exactly four figures divided by hairlines — the broadsheet market strip; values and terse labels only |
-| Stats | Bar Ledger | [stats/bar-ledger/layout.md](stats/bar-ledger/layout.md) | [preview.html](stats/bar-ledger/preview.html) | 3–4 labeled horizontal bars in true proportion, one highlighted in accent — the pack's only chart, stripped to label / bar / value |
+| Stats | Bar Ledger | [stats/bar-ledger/layout.md](stats/bar-ledger/layout.md) | [preview.html](stats/bar-ledger/preview.html) | 3–4 labeled horizontal bars in true proportion, one highlighted in accent — the pack's humblest chart, stripped to label / bar / value |
 | Stats | Number Story | [stats/number-story/layout.md](stats/number-story/layout.md) | [preview.html](stats/number-story/preview.html) | One display-scale sentence with its 2–4 figures oversized in accent, and a mono source line certifying them — statistics people can quote |
+| Chart | Skyline | [chart/skyline/layout.md](chart/skyline/layout.md) | [preview.html](chart/skyline/preview.html) | 6–10 vertical columns march chronologically in true proportion from a zero baseline, the accent column last — growth read as height, only two value labels bracketing the range |
+| Chart | Tideline | [chart/tideline/layout.md](chart/tideline/layout.md) | [preview.html](chart/tideline/preview.html) | One single-series area chart rises across the full stage width like a tide, honest straight segments, faint fill, accent endpoint dot carrying the only big number |
+| Chart | Aperture | [chart/aperture/layout.md](chart/aperture/layout.md) | [preview.html](chart/aperture/preview.html) | Thin-ring donut left with the honest total in its hole, ruled share ledger right naming every segment with swatch, value, and share — the ledger is the legend |
+| Chart | Crossover | [chart/crossover/layout.md](chart/crossover/layout.md) | [preview.html](chart/crossover/preview.html) | Slope chart between a "then" pole and a "now" pole, 3–5 series value-labeled at both ends, the accent line crossing the field as the finale |
+| Chart | Alloy | [chart/alloy/layout.md](chart/alloy/layout.md) | [preview.html](chart/alloy/preview.html) | One full-width 100% composition band in 4–6 true-proportion segments with surface gaps, one in accent, each labeled beneath its left edge like an assay stamp |
 | Quote | Testimony | [quote/testimony/layout.md](quote/testimony/layout.md) | [preview.html](quote/testimony/preview.html) | Giant accent quote glyph, the quotation at display scale across two-thirds of the stage, ruled attribution, optional 360px portrait |
 | Comparison | Ledger Versus | [comparison/ledger-versus/layout.md](comparison/ledger-versus/layout.md) | [preview.html](comparison/ledger-versus/preview.html) | Two columns split by one center hairline, baseline-aligned point pairs, the favored column's header carrying the accent — no checkmark tables |
 | Timeline | Meridian | [timeline/meridian/layout.md](timeline/meridian/layout.md) | [preview.html](timeline/meridian/preview.html) | Horizontal track with 3–5 dated entries alternating above/below on plain tick connectors; final "today" node in accent |
@@ -67,6 +72,8 @@ Within the content slots — **sections** by register: **Chapter Gate** is the a
 
 **Stats** by the number's shape: **Keynote Figure** for one hero number; **Stat Strip** for three equals; **Ticker** for four terse figures; **Ratio Split** for one before/after pair; **Denominator** for a proportion with an honest total; **Bar Ledger** when magnitudes should be compared by eye (true proportions, no chart chrome); **Number Story** when 2–4 figures share one causal sentence. **Testimony** carries one attributed quote; **Ledger Versus** one two-option decision; **Meridian** one chronology; **Plate Caption** one framed exhibit.
 
+**Charts** by the data's job — every chart preset keeps the pack's refusals (no gridlines, no y-axes, no floating legends, true proportions from honest baselines, exactly one accent element): **Skyline** for one series across 6–10 chronological periods (growth as height); **Tideline** for one trend with 12–36 points (the shape is the story); **Aperture** for part-to-whole with an honest total (3–5 segments + ledger); **Crossover** for change between exactly two moments across 3–5 series (steepness as story, the crossing as finale); **Alloy** for a flat 100% composition in 4–6 segments (length as the only encoding). Category magnitudes with 3–4 values stay with **Bar Ledger** in the stats slot. When remapping chart presets to a design system, derive multi-segment fills from ONE ink mixed toward the surface (or the system's single sequential ramp) — never one hue per segment; swatches, ledgers, and direct labels carry identity so color never has to.
+
 Within the video slot, pick by how the clip is meant to be consumed: **Screening Room** for full-attention viewing (demo films, launch clips), **Side Reel** for walkthroughs discussed while paused (its chapter list is the device), **Backdrop** for footage that is atmosphere rather than content (muted loop, statement over it), **Filmstrip** when several clips exist and one leads, **Letterbox** for footage with strong horizontals that earns a cinemascope crop.
 
 ## Images in presets
@@ -75,7 +82,7 @@ Every preset documents an **Image variant** section in its `layout.md`. The rule
 
 - **Images are always optional.** Each spec defines both cases; the no-image case is first-class, not a fallback. An image slot may be removed, filled with the deck's main image, pushed to a background treatment, or substituted with the design system's texture/glyph device — whatever the spec's variant section names.
 - **Recommended size via placeholder URL.** Each image slot states its size as `https://placehold.co/{W}x{H}`. Use that URL while drafting — it makes crops honest and tells the generator the intended dimensions — then swap the `src` for the real asset.
-- **Dimension fallback is structural.** Every image sits inside a fixed-geometry frame with `object-fit: cover` (or a spec-noted `contain` where exact pixels matter), so an image of any delivered aspect ratio fills the slot without moving the layout.
+- **Dimension fallback is structural.** Every image sits inside a fixed-geometry frame with `object-cover` (or a spec-noted `object-contain` where exact pixels matter), so an image of any delivered aspect ratio fills the slot without moving the layout.
 - **Load fallback is structural too.** Keep a token-built CSS fill (gradient/texture in `--lp-*` tones) *behind* every `<img>`, so a missing or failed image degrades to a designed surface instead of a hole. Image-led presets (Half Plate, Cover Caption, Cover Coda, Plate Caption) design that fill to double as their documented no-image variant.
 
 ## Video in presets
@@ -89,12 +96,12 @@ The `video` slot presets follow the image rules plus a media contract, spelled o
 
 ## Slot taxonomy
 
-Slots covered: `opening` (10), `closing` (10), `section` (7), `list` (7), `stats` (7), `quote` (1), `comparison` (1), `timeline` (1), `image` (1), `video` (5). Remaining candidates for future presets: editorial two-column read, process/cycle, agenda. A deck's remaining slide types are designed freely within the chosen design system; where a preset slot exists, use a preset.
+Slots covered: `opening` (10), `closing` (10), `section` (7), `list` (7), `stats` (7), `chart` (5), `quote` (1), `comparison` (1), `timeline` (1), `image` (1), `video` (5). Remaining candidates for future presets: editorial two-column read, process/cycle, agenda. A deck's remaining slide types are designed freely within the chosen design system; where a preset slot exists, use a preset.
 
 ## How to use a preset
 
 1. **Pick the preset for the slot** (opening, closing, …) and read its `layout.md`. Treat every geometry value in the spec as authoritative at the 1920×1080 stage — positions, sizes, max line counts, spacing.
-2. **Map the neutral tokens to the active design system.** Every preset styles itself exclusively through the `--lp-*` custom properties listed below. Point each token at the design system's equivalent role — never at the demo's neutral grays.
+2. **Map the neutral tokens to the active design system.** Every preset styles itself exclusively through the `lp` Tailwind utilities backed by the `--lp-*` variables listed below. Point each token at the design system's equivalent role — never at the demo's neutral grays.
 3. **Apply the design system's decorative vocabulary on top.** The spec marks explicit *skin points* — places where the design system may substitute its own signature element (e.g., its kicker treatment, its rule/divider style, its texture overlay) without moving or resizing anything.
 4. **Keep the structure.** Do not re-center an asymmetric layout, shrink a display size below its stated minimum, add panels, or exceed the stated line/character limits. If content doesn't fit the limits, shorten the content — not the layout.
 
@@ -102,32 +109,51 @@ Slots covered: `opening` (10), `closing` (10), `section` (7), `list` (7), `stats
 
 Every layout preset consumes exactly these tokens. Demos ship grayscale defaults; real decks must remap all of them.
 
-```css
-.slide.lp {
-    /* surfaces & text */
-    --lp-bg:        /* slide surface */;
-    --lp-fg:        /* primary text on that surface */;
-    --lp-fg-muted:  /* secondary text — leads, meta */;
-    --lp-fg-faint:  /* ghost/outline elements — must stay low-contrast */;
-    --lp-accent:    /* the design system's single accent */;
-    --lp-line:      /* hairline borders & dividers */;
+The tokens are CSS variables (so regions can invert them at runtime) exposed as Tailwind utilities through a fixed `tailwind.config` mapping. Include both blocks in every deck that uses presets:
 
-    /* type roles */
-    --lp-font-display: /* design system's display face */;
-    --lp-font-body:    /* design system's body face */;
-    --lp-font-mono:    /* metadata face — mono if the system has one,
-                          otherwise its caps/label treatment face */;
+```html
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',        // slide surface
+                fg:     'var(--lp-fg)',        // primary text on that surface
+                muted:  'var(--lp-fg-muted)',  // secondary text — leads, meta
+                faint:  'var(--lp-fg-faint)',  // ghost/outline elements — stays low-contrast
+                accent: 'var(--lp-accent)',    // the design system's single accent
+                line:   'var(--lp-line)',      // hairline borders & dividers
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)', // design system's display face
+            body:    'var(--lp-font-body)',    // design system's body face
+            mono:    'var(--lp-font-mono)',    // metadata face — mono, or the system's caps/label face
+        },
+    } },
+};
+</script>
+<style>
+/* Token DEFINITIONS — the only place values live. Real decks remap all of them. */
+.slide.lp {
+    --lp-bg: /* value */; --lp-fg: /* value */; --lp-fg-muted: /* value */;
+    --lp-fg-faint: /* value */; --lp-accent: /* value */; --lp-line: /* value */;
+    --lp-font-display: /* face */; --lp-font-body: /* face */; --lp-font-mono: /* face */;
 }
+</style>
 ```
+
+Preset markup then styles itself exclusively through the mapped utilities — `bg-lp-bg`, `text-lp-fg`, `text-lp-muted`, `text-lp-accent`, `border-lp-line`, `font-display`, `font-body`, `font-mono` — plus arbitrary pixel values for geometry (`left-[96px]`, `text-[168px]`). Raw CSS in a preset is limited to the stage-mechanics block, this token block, and the choreography block (`@keyframes` + `.slide.active` triggers).
 
 Mapping rules:
 
 - **Dark and light systems both work.** The tokens are role-based, not lightness-based. For a dark system, `--lp-bg` is the dark surface and `--lp-fg-faint` becomes a low-opacity light value; for a light system, the reverse.
 - **`--lp-accent` maps to the system's one hot color.** If the system is monochrome, map it to `--lp-fg` — accents degrade gracefully to weight/contrast.
 - **`--lp-fg-faint` must stay quiet.** Ghost elements are atmosphere, not content: keep them at roughly 8–18% contrast against `--lp-bg`. If the design system has a texture fingerprint (grids, halftone), it may replace a ghost element entirely — that is a documented skin point.
-- **Inverted regions.** Some presets (Split Ledger, Split Curtain) fill a panel or band by swapping `--lp-bg`/`--lp-fg`. Dual-surface design systems should map that region to their alternate surface (e.g., navy panel on cream field) instead of a literal swap; single-surface systems keep the inversion. Text on the inverted region uses the region's surface colors.
+- **Inverted regions.** Some presets (Split Ledger, Split Curtain) fill a panel or band by swapping `--lp-bg`/`--lp-fg` — done inline with arbitrary properties on the region: `class="[--lp-bg:#1a1a1a] [--lp-fg:#f1f0ee] bg-lp-bg text-lp-fg"`. Dual-surface design systems should map that region to their alternate surface (e.g., navy panel on cream field) instead of a literal swap; single-surface systems keep the inversion.
 - **Font metrics differ between systems.** After remapping fonts, re-verify the line-count and overflow limits in the spec; a wider face may need the display size stepped down within the spec's allowed range.
 
 ## Authoring new presets
 
-One directory per preset: `layout-presets/<slot>/<preset-name>/` containing `layout.md` (frontmatter + structural spec) and `preview.html` (self-contained fixed-stage demo in neutral grayscale). Demos follow the same authenticity rules as style previews: they must read as a real slide — plausible content, no meta labels like "preset" or "layout" rendered on the slide.
+One directory per preset: `layout-presets/<slot>/<preset-name>/` containing `layout.md` (frontmatter + structural spec) and `preview.html` (self-contained fixed-stage demo in neutral grayscale). Demos are styled with Tailwind utilities under the token contract above (raw CSS only for stage mechanics, token definitions, and choreography) and follow the same authenticity rules as style previews: they must read as a real slide — plausible content, no meta labels like "preset" or "layout" rendered on the slide.

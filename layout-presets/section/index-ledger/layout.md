@@ -73,7 +73,7 @@ occupies the right field at x:1344 → 1824, y:220, with a mono caption
 beneath — the chapter's key visual; row titles then cap at 14
 characters so no row approaches the plate. **Recommended size /
 placeholder:** `https://placehold.co/480x640`. **Dimension fallback:**
-fixed frame, `object-fit: cover`, token CSS fill behind the `<img>`.
+fixed frame, `object-cover`, token CSS fill behind the `<img>`.
 The image is optional.
 
 ## Choreography

@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
@@ -33,7 +60,8 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #f1f0ee;
@@ -45,107 +73,13 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CHROME === */
-.lp-kicker {
-    position: absolute; left: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute; right: 96px; top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === STATEMENT === */
-.lp-statement {
-    position: absolute; left: 96px; top: 150px;
-    margin: 0; max-width: 1400px;
-    font-family: var(--lp-font-display);
-    font-size: 116px; font-weight: 800;
-    line-height: 0.97; letter-spacing: -0.02em;
-    text-transform: uppercase;
-}
-.lp-statement em { font-style: normal; color: var(--lp-accent); }
-
-/* === RECAP RAIL ===
-   Image variant: past nodes may carry 240×150 thumbnails above the
-   track (https://placehold.co/240x150, object-fit cover, CSS fill
-   behind). The final ring node never gets one. */
-.lp-rail {
-    position: absolute;
-    left: 96px; right: 96px; top: 560px;
-    height: 1px;
-}
-.lp-track {
-    position: absolute; inset: 0;
-    background: var(--lp-line);
-    transform-origin: left center;
-}
-.lp-node {
-    position: absolute; top: 50%;
-    width: 12px; height: 12px;
-    margin: -6px 0 0 -6px;
-    border-radius: 50%;
-    background: var(--lp-fg-muted);
-}
-.lp-node.p1 { left: 0; }
-.lp-node.p2 { left: 25%; }
-.lp-node.p3 { left: 50%; }
-.lp-node.p4 { left: 75%; }
-.lp-node.p5 { left: 100%; }
-.lp-node.is-open {
-    width: 16px; height: 16px;
-    margin: -8px 0 0 -8px;
-    background: transparent;
-    border: 3px solid var(--lp-accent);
-}
-.lp-node-label {
-    position: absolute; top: 27px;
-    width: 240px;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 14px; letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-.lp-node-label.p1 { left: 0; text-align: left; width: auto; } /* edge labels align inward */
-.lp-node-label.p2 { left: 25%; margin-left: -120px; }
-.lp-node-label.p3 { left: 50%; margin-left: -120px; }
-.lp-node-label.p4 { left: 75%; margin-left: -120px; }
-.lp-node-label.p5 { right: 0; text-align: right; width: auto; }
-.lp-node-label.is-open { color: var(--lp-accent); font-weight: 500; }
-
-/* === CODA + FOOTER === */
-.lp-coda {
-    position: absolute; left: 96px; top: 700px;
-    margin: 0; max-width: 1000px;
-    font-family: var(--lp-font-body);
-    font-size: 24px; line-height: 1.55;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-rule {
-    position: absolute; left: 96px; right: 96px; top: 940px;
-    height: 1px; background: var(--lp-line);
-}
-.lp-foot-left, .lp-foot-right {
-    position: absolute; top: 962px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    color: var(--lp-fg-muted);
-}
-.lp-foot-left { left: 96px; letter-spacing: 0.08em; }
-.lp-foot-left .lp-dot { color: var(--lp-accent); margin: 0 14px; }
-.lp-foot-right { right: 96px; letter-spacing: 0.12em; text-transform: uppercase; }
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(44px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes lp-wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
@@ -174,36 +108,40 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- chrome -->
-            <div class="lp-kicker">In Closing</div>
-            <div class="lp-counter">12 / 12</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">In Closing</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 12</div>
 
             <!-- statement -->
-            <h1 class="lp-statement">The whole <em>arc.</em></h1>
+            <h1 class="lp-statement absolute left-[96px] top-[150px] m-0 max-w-[1400px] font-display text-[116px] font-extrabold leading-[0.97] tracking-[-0.02em] uppercase">The whole <em class="not-italic text-lp-accent">arc.</em></h1>
 
-            <!-- recap rail -->
-            <div class="lp-rail" aria-label="Deck recap: Inertia, Depth, Execution, Proof, Next">
-                <div class="lp-track"></div>
-                <span class="lp-node p1" aria-hidden="true"></span>
-                <span class="lp-node p2" aria-hidden="true"></span>
-                <span class="lp-node p3" aria-hidden="true"></span>
-                <span class="lp-node p4" aria-hidden="true"></span>
-                <span class="lp-node p5 is-open" aria-hidden="true"></span>
-                <div class="lp-node-label p1">01 Inertia</div>
-                <div class="lp-node-label p2">02 Depth</div>
-                <div class="lp-node-label p3">03 Execution</div>
-                <div class="lp-node-label p4">04 Proof</div>
-                <div class="lp-node-label p5 is-open">Next</div>
+            <!-- recap rail.
+                 Image variant: past nodes may carry 240×150 thumbnails above the
+                 track (https://placehold.co/240x150, object-cover, CSS fill
+                 behind). The final ring node never gets one.
+                 Edge labels (p1/p5) align inward. -->
+            <div class="absolute left-[96px] right-[96px] top-[560px] h-px" aria-label="Deck recap: Inertia, Depth, Execution, Proof, Next">
+                <div class="lp-track absolute inset-0 origin-left bg-lp-line"></div>
+                <span class="lp-node p1 absolute top-1/2 left-0 w-[12px] h-[12px] mt-[-6px] ml-[-6px] rounded-full bg-lp-muted" aria-hidden="true"></span>
+                <span class="lp-node p2 absolute top-1/2 left-1/4 w-[12px] h-[12px] mt-[-6px] ml-[-6px] rounded-full bg-lp-muted" aria-hidden="true"></span>
+                <span class="lp-node p3 absolute top-1/2 left-1/2 w-[12px] h-[12px] mt-[-6px] ml-[-6px] rounded-full bg-lp-muted" aria-hidden="true"></span>
+                <span class="lp-node p4 absolute top-1/2 left-3/4 w-[12px] h-[12px] mt-[-6px] ml-[-6px] rounded-full bg-lp-muted" aria-hidden="true"></span>
+                <span class="lp-node p5 absolute top-1/2 left-full w-[16px] h-[16px] mt-[-8px] ml-[-8px] rounded-full bg-transparent border-[3px] border-lp-accent" aria-hidden="true"></span>
+                <div class="lp-node-label p1 absolute top-[27px] left-0 w-auto text-left font-mono text-[14px] uppercase tracking-[0.14em] text-lp-muted">01 Inertia</div>
+                <div class="lp-node-label p2 absolute top-[27px] left-1/4 ml-[-120px] w-[240px] text-center font-mono text-[14px] uppercase tracking-[0.14em] text-lp-muted">02 Depth</div>
+                <div class="lp-node-label p3 absolute top-[27px] left-1/2 ml-[-120px] w-[240px] text-center font-mono text-[14px] uppercase tracking-[0.14em] text-lp-muted">03 Execution</div>
+                <div class="lp-node-label p4 absolute top-[27px] left-3/4 ml-[-120px] w-[240px] text-center font-mono text-[14px] uppercase tracking-[0.14em] text-lp-muted">04 Proof</div>
+                <div class="lp-node-label p5 absolute top-[27px] right-0 w-auto text-right font-mono text-[14px] font-medium uppercase tracking-[0.14em] text-lp-accent">Next</div>
             </div>
 
             <!-- coda -->
-            <p class="lp-coda">Four parts, one thesis: depth compounds. The open ring is Q3 — and it starts Monday.</p>
+            <p class="lp-coda absolute left-[96px] top-[700px] m-0 max-w-[1000px] font-body text-[24px] leading-[1.55] text-lp-muted">Four parts, one thesis: depth compounds. The open ring is Q3 — and it starts Monday.</p>
 
             <!-- footer -->
-            <div class="lp-foot-rule"></div>
-            <div class="lp-foot-left">alfin@nodeflux.io<span class="lp-dot">·</span>nodeflux.io<span class="lp-dot">·</span>@nodeflux</div>
-            <div class="lp-foot-right">Nodeflux</div>
+            <div class="lp-foot-rule absolute left-[96px] right-[96px] top-[940px] h-px bg-lp-line"></div>
+            <div class="lp-foot-left absolute left-[96px] top-[962px] font-mono text-[15px] tracking-[0.08em] text-lp-muted">alfin@nodeflux.io<span class="mx-[14px] text-lp-accent">·</span>nodeflux.io<span class="mx-[14px] text-lp-accent">·</span>@nodeflux</div>
+            <div class="lp-foot-right absolute right-[96px] top-[962px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">Nodeflux</div>
         </section>
     </div>
 </div>

@@ -78,7 +78,7 @@ x:96 → 1296, y:220 (headline then 1 line, max-width 1200px is
 unaffected; the image band right-aligns with the ticker's third
 divider). Use for the operation's setting. **Recommended size /
 placeholder:** `https://placehold.co/1200x260`. **Dimension
-fallback:** fixed letterbox frame, `object-fit: cover`, token CSS
+fallback:** fixed letterbox frame, `object-cover`, token CSS
 fill behind the `<img>`. The image is optional.
 
 ## Choreography

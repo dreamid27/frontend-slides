@@ -7,9 +7,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN JIT — no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- === TOKEN MAPPING (fixed contract — same in every preset) === -->
+<script>
+tailwind.config = {
+    theme: { extend: {
+        colors: {
+            lp: {
+                bg:     'var(--lp-bg)',
+                fg:     'var(--lp-fg)',
+                muted:  'var(--lp-fg-muted)',
+                faint:  'var(--lp-fg-faint)',
+                accent: 'var(--lp-accent)',
+                line:   'var(--lp-line)',
+            },
+        },
+        fontFamily: {
+            display: 'var(--lp-font-display)',
+            body:    'var(--lp-font-body)',
+            mono:    'var(--lp-font-mono)',
+        },
+    } },
+};
+</script>
+
 <style>
 /* ===========================================
-   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   1. STAGE MECHANICS (viewport-base.css — raw CSS by design)
    =========================================== */
 html,
 body {
@@ -66,8 +93,8 @@ img, video, canvas, svg {
 }
 
 /* ===========================================
-   NEUTRAL TOKEN CONTRACT — remap per design system.
-   Demo defaults are grayscale placeholders only.
+   2. TOKEN DEFINITIONS — grayscale demo placeholders.
+   Real decks remap every value to the design system.
    =========================================== */
 .slide.lp {
     --lp-bg: #151515;
@@ -79,108 +106,13 @@ img, video, canvas, svg {
     --lp-font-display: 'Archivo', sans-serif;
     --lp-font-body: 'Archivo', sans-serif;
     --lp-font-mono: 'IBM Plex Mono', monospace;
-    background: var(--lp-bg);
-    color: var(--lp-fg);
 }
 
-/* === CORNER CHROME (top corners only) === */
-.lp-kicker {
-    position: absolute;
-    left: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-.lp-counter {
-    position: absolute;
-    right: 96px;
-    top: 72px;
-    font-family: var(--lp-font-mono);
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--lp-fg-muted);
-}
-
-/* === RING SEAL (skin point: system's emblem, ≤150px, same center) === */
-.lp-seal {
-    position: absolute;
-    left: 50%;
-    top: 280px;
-    transform: translateX(-50%);
-    width: 140px;
-    height: 140px;
-    border: 1px solid var(--lp-accent);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.lp-seal-monogram {
-    font-family: var(--lp-font-mono);
-    font-size: 20px;
-    letter-spacing: 0.3em;
-    margin-right: -0.3em; /* recenter tracked text */
-    text-transform: uppercase;
-    color: var(--lp-accent);
-}
-
-/* === CENTERED STATEMENT === */
-.lp-statement {
-    position: absolute;
-    left: 96px;
-    right: 96px;
-    top: 490px;
-    margin: 0;
-    font-family: var(--lp-font-display);
-    font-size: 176px;
-    font-weight: 800;
-    line-height: 0.98;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    text-align: center;
-}
-.lp-statement .lp-beat {
-    color: var(--lp-accent);
-    display: inline-block;
-}
-.lp-coda {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 720px;
-    width: 720px;
-    margin: 0 auto; /* margin centering — a transform here would be
-                       overridden by the entrance animation's translateY */
-    font-family: var(--lp-font-body);
-    font-size: 24px;
-    line-height: 1.55;
-    text-align: center;
-    color: var(--lp-fg-muted);
-}
-
-/* === CONTACT LINE === */
-.lp-contact-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 900px;
-    text-align: center;
-    font-family: var(--lp-font-mono);
-    font-size: 16px;
-    letter-spacing: 0.08em;
-    color: var(--lp-fg-muted);
-}
-.lp-contact-line .lp-dot {
-    color: var(--lp-accent);
-    margin: 0 20px;
-}
-
-/* === CHOREOGRAPHY === */
+/* ===========================================
+   3. CHOREOGRAPHY — keyframes + .slide.active triggers.
+   Classes below are animation hooks only; all visual
+   styling lives in Tailwind utilities on the markup.
+   =========================================== */
 @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lp-seal-in { from { opacity: 0; transform: translateX(-50%) scale(0.7); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: translateY(0); } }
@@ -200,22 +132,25 @@ img, video, canvas, svg {
 <body>
 <div class="deck-viewport">
     <div class="deck-stage">
-        <section class="slide lp active">
+        <section class="slide lp active bg-lp-bg text-lp-fg">
             <!-- corner chrome -->
-            <div class="lp-kicker">In Closing</div>
-            <div class="lp-counter">12 / 12</div>
+            <div class="lp-kicker absolute left-[96px] top-[72px] font-mono text-[15px] font-medium uppercase tracking-[0.18em] text-lp-accent">In Closing</div>
+            <div class="lp-counter absolute right-[96px] top-[72px] font-mono text-[15px] uppercase tracking-[0.12em] text-lp-muted">12 / 12</div>
 
-            <!-- ring seal -->
-            <div class="lp-seal" aria-hidden="true">
-                <span class="lp-seal-monogram">NF</span>
+            <!-- ring seal (skin point: system's emblem, ≤150px, same center);
+                 negative right margin on the monogram recenters tracked text -->
+            <div class="lp-seal absolute left-1/2 top-[280px] -translate-x-1/2 w-[140px] h-[140px] rounded-full border border-lp-accent flex items-center justify-center" aria-hidden="true">
+                <span class="lp-seal-monogram font-mono text-[20px] uppercase tracking-[0.3em] mr-[-0.3em] text-lp-accent">NF</span>
             </div>
 
             <!-- statement -->
-            <h1 class="lp-statement">Onward<span class="lp-beat">.</span></h1>
-            <p class="lp-coda">Ten years in, the mission has not moved an inch — only our reach has. Thank you for carrying it.</p>
+            <h1 class="lp-statement absolute left-[96px] right-[96px] top-[490px] m-0 text-center font-display text-[176px] font-extrabold leading-[0.98] tracking-[-0.02em] uppercase">Onward<span class="lp-beat inline-block text-lp-accent">.</span></h1>
+            <!-- coda: margin centering — a transform here would be
+                 overridden by the entrance animation's translateY -->
+            <p class="lp-coda absolute left-0 right-0 top-[720px] w-[720px] mt-0 mb-0 mx-auto text-center font-body text-[24px] leading-[1.55] text-lp-muted">Ten years in, the mission has not moved an inch — only our reach has. Thank you for carrying it.</p>
 
             <!-- contact line -->
-            <div class="lp-contact-line">alfin@nodeflux.io<span class="lp-dot">·</span>nodeflux.io<span class="lp-dot">·</span>@nodeflux</div>
+            <div class="lp-contact-line absolute left-0 right-0 top-[900px] text-center font-mono text-[16px] tracking-[0.08em] text-lp-muted">alfin@nodeflux.io<span class="mx-[20px] text-lp-accent">·</span>nodeflux.io<span class="mx-[20px] text-lp-accent">·</span>@nodeflux</div>
         </section>
     </div>
 </div>

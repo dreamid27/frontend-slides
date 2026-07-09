@@ -77,7 +77,7 @@ max-width tightens to 1180px. A mono caption line under the plate may
 carry the speaker's org.
 
 **Recommended size / placeholder:** `https://placehold.co/360x360`.
-**Dimension fallback:** fixed 360×360 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 360×360 frame, `object-cover`,
 token CSS fill behind the `<img>`. The portrait is optional; without
 it the quote takes the full 1360px measure.
 

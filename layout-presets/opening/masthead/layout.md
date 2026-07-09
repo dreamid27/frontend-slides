@@ -90,7 +90,7 @@ beneath — a front-page lead photo. The bottom-right lead block is
 unchanged; the two anchors now mirror as photo vs. prose.
 
 **Recommended size / placeholder:** `https://placehold.co/520x360`.
-**Dimension fallback:** fixed 520×360 frame, `object-fit: cover`,
+**Dimension fallback:** fixed 520×360 frame, `object-cover`,
 token CSS fill behind the `<img>`. The image is optional — the ghost
 drop-cap is the default.
 

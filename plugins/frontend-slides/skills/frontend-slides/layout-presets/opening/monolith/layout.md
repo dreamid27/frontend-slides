@@ -84,7 +84,7 @@ symmetric content only.
 
 **Recommended size / placeholder:** `https://placehold.co/320x320`
 (2× for sharpness at 160px). **Dimension fallback:** fixed 160×160
-frame, `object-fit: cover`, token CSS fill behind the `<img>`. The
+frame, `object-cover`, token CSS fill behind the `<img>`. The
 image is optional — the bare plumb line is the default.
 
 ## Choreography

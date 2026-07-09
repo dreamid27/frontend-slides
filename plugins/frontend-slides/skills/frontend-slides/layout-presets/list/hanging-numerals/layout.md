@@ -74,7 +74,7 @@ reading: principles, bets, commitments.
 mono caption below) fills the right margin at x:1404 → 1824, y:340;
 item descriptions then cap at 900px width. **Recommended size /
 placeholder:** `https://placehold.co/420x760`. **Dimension fallback:**
-fixed frame, `object-fit: cover`, token CSS fill behind the `<img>`.
+fixed frame, `object-cover`, token CSS fill behind the `<img>`.
 The image is optional.
 
 ## Choreography

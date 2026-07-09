@@ -148,16 +148,15 @@ components:
     description: "Warm-toned rectangular placeholder for images, centered mono label inside, no border on dark / hairline border on yellow."
 ---
 
-## Frontend Slides Fixed-Stage Policy
+## Frontend Slides Fixed-Stage & Tailwind Policy
 
-When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+When the `frontend-slides` skill uses this design system, these rules override any source-template behavior described later in this file:
 
-This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
-
-This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
-
-Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
-
+- Generate the final deck as a **fixed 1920×1080 stage** scaled uniformly to the viewport (letterbox/pillarbox allowed); never reflow slide content for mobile.
+- Style with Tailwind utilities per the skill's Styling Conventions: map this file's `colors:` and `typography:` frontmatter into the deck's inline `tailwind.config`, then use them as utilities (`bg-…`, `text-…`, `font-…`).
+- Translate viewport-fluid values (`vw`, `vh`, `clamp()`) into fixed 1920×1080 stage pixels as arbitrary values (e.g. `9.5vw` → `text-[182px]`); treat them as design proportions, never as live responsive rules.
+- Express `components:` specs as reusable Tailwind utility stacks; raw CSS only for stage mechanics (viewport-base.css), token definitions, and `.slide.active` choreography.
+- Use `deck-stage.js` or an equivalent inline scaler, and verify rendered screenshots for both text overflow and panel overlap.
 
 ## Overview
 
@@ -422,12 +421,14 @@ There is no embedded print stylesheet. The horizontal-strip layout would need to
 
 ### Mixed-Content Strategy
 
-This template uses **Strategy A**: replace the Latin face entirely with the CJK face for any element rendering Chinese characters. Studio's identity is type-as-graphic-mass — and Barlow 900 cannot render CJK glyphs (no glyph coverage). Mixing Barlow Latin with NSC CJK in the same line via stack fallback creates a metric mismatch at display scale that breaks the "single typeface, single weight" register. Replace the entire `font-family` with NSC for any Chinese-content element.
+This template uses **Strategy A**: replace the Latin face entirely with the CJK face for any element rendering Chinese characters. Studio's identity is type-as-graphic-mass — and Barlow 900 cannot render CJK glyphs (no glyph coverage). Mixing Barlow Latin with NSC CJK in the same line via stack fallback creates a metric mismatch at display scale that breaks the "single typeface, single weight" register. Replace the entire fontFamily stack with NSC for any Chinese-content element — in the inline tailwind.config:
 
-```css
-font-family: 'Noto Serif SC', 'Barlow', sans-serif;  /* display / headlines — CJK first */
-font-family: 'Noto Serif SC', 'Barlow', sans-serif;  /* body — CJK first */
-font-family: 'IBM Plex Mono', 'Noto Sans Mono CJK SC', monospace;  /* mono — Latin first, CJK only if needed */
+```js
+fontFamily: {
+  display: "'Noto Serif SC', 'Barlow', sans-serif",               // display / headlines — CJK first
+  body:    "'Noto Serif SC', 'Barlow', sans-serif",               // body — CJK first
+  mono:    "'IBM Plex Mono', 'Noto Sans Mono CJK SC', monospace", // mono — Latin first, CJK only if needed
+}
 ```
 
 For pure-Chinese decks, the system's "uppercase" identity drops away (Chinese has no case), so Studio's character shifts from "industrial agency manifesto" toward "editorial Chinese newspaper headline." This is a real register change — Chinese Studio reads as serious and severe, but no longer reads as Pentagram/Anti. Accept this trade-off or scope Chinese to specific slides while keeping the cover and section dividers in Latin Barlow.
