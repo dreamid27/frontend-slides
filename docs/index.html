@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Frontend Slides — Beautiful HTML presentations from any coding agent</title>
+<meta name="description" content="A coding-agent skill for stunning, animation-rich HTML presentations. 50 layout presets + 34 bold templates. Single self-contained HTML file, no build step." />
+<meta property="og:title" content="Frontend Slides — Beautiful HTML presentations from any coding agent" />
+<meta property="og:description" content="50 layout presets + 34 bold design templates. Build slides from scratch or convert PowerPoint into a single self-contained HTML file." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --coral: #e85d5d;
+    --cream: #f5f0e8;
+    --cream-dark: #e8e0d4;
+    --gray: #6b6b6b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--ink); color: var(--cream); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
+  a { color: inherit; }
+  .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; line-height: 0.95; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  header { padding: 96px 0 64px; border-bottom: 1px solid #333; }
+  .kicker { color: var(--coral); font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em; font-size: 13px; margin-bottom: 24px; }
+  h1 { font-size: clamp(56px, 10vw, 128px); text-transform: uppercase; }
+  h1 .accent { color: var(--coral); }
+  .sub { max-width: 640px; margin-top: 24px; color: #b9b2a6; font-size: 18px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 40px; }
+  .btn { display: inline-block; padding: 14px 28px; font-weight: 600; font-size: 15px; text-decoration: none; border: 2px solid var(--cream); transition: all .15s ease; }
+  .btn:hover { background: var(--cream); color: var(--ink); }
+  .btn.primary { background: var(--coral); border-color: var(--coral); color: var(--ink); }
+  .btn.primary:hover { background: #d44a4a; border-color: #d44a4a; }
+
+  section { padding: 72px 0; }
+  h2 { font-size: clamp(36px, 5vw, 64px); text-transform: uppercase; margin-bottom: 12px; }
+  .section-sub { color: #b9b2a6; max-width: 600px; margin-bottom: 40px; }
+
+  .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .demo-card { border: 1px solid #3a3a3a; text-decoration: none; display: block; transition: border-color .15s ease, transform .15s ease; }
+  .demo-card:hover { border-color: var(--coral); transform: translateY(-3px); }
+  .demo-thumb { aspect-ratio: 16/9; overflow: hidden; background: #222; }
+  .demo-thumb iframe { width: 1920px; height: 1080px; transform-origin: top left; border: 0; pointer-events: none; }
+  .demo-meta { padding: 20px; }
+  .demo-meta .name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: .03em; }
+  .demo-meta .desc { color: #b9b2a6; font-size: 14px; margin-top: 4px; }
+  .demo-meta .open { color: var(--coral); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; margin-top: 14px; display: inline-block; }
+
+  .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .shot { border: 1px solid #3a3a3a; text-decoration: none; display: block; transition: border-color .15s ease; }
+  .shot:hover { border-color: var(--coral); }
+  .shot img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
+  .shot span { display: block; padding: 10px 14px; font-size: 13px; color: #b9b2a6; }
+  .more-note { margin-top: 28px; color: #b9b2a6; }
+  .more-note a { color: var(--coral); }
+
+  .install-box { background: var(--cream); color: var(--ink); padding: 48px; }
+  .install-box h2 { color: var(--ink); }
+  .install-box p { color: #555; margin-bottom: 24px; }
+  pre { background: var(--ink); color: var(--cream); padding: 18px 22px; overflow-x: auto; font-size: 14px; margin-bottom: 12px; }
+  pre .c { color: #8a8478; }
+
+  footer { border-top: 1px solid #333; padding: 48px 0; color: #8a8478; font-size: 14px; }
+  footer a { color: var(--coral); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">A skill for Claude Code &amp; other coding agents</div>
+    <h1 class="display">Frontend<br /><span class="accent">Slides</span></h1>
+    <p class="sub">Stunning, animation-rich HTML presentations from a prompt — or from your old PowerPoint. 50 layout presets and 34 bold design templates mean even budget models produce decks that look deliberate. One self-contained HTML file. No build step. No dependencies.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#demos">View live demos</a>
+      <a class="btn" href="https://github.com/dreamid27/frontend-slides">Star on GitHub ★</a>
+      <a class="btn" href="https://www.youtube.com/watch?v=372Iksaz8b0">Watch tutorial ▶</a>
+    </div>
+  </div>
+</header>
+
+<section id="demos">
+  <div class="wrap">
+    <h2 class="display">Live demos</h2>
+    <p class="section-sub">Real decks generated by the skill. Click through with arrow keys — every one is a single HTML file.</p>
+    <div class="demo-grid">
+      <a class="demo-card" href="demos/coral.html">
+        <div class="demo-thumb"><iframe src="demos/coral.html" loading="lazy" tabindex="-1" title="Coral demo deck preview"></iframe></div>
+        <div class="demo-meta">
+          <div class="name">Coral</div>
+          <div class="desc">Cream and coral on near-black, oversized Bebas Neue. A pitch deck for this very skill.</div>
+          <span class="open">Open deck →</span>
+        </div>
+      </a>
+      <a class="demo-card" href="demos/retro-windows.html">
+        <div class="demo-thumb"><iframe src="demos/retro-windows.html" loading="lazy" tabindex="-1" title="Retro Windows demo deck preview"></iframe></div>
+        <div class="demo-meta">
+          <div class="name">Retro Windows</div>
+          <div class="desc">Windows 95 chrome and pixel type. "A Brief History of Presentations."</div>
+          <span class="open">Open deck →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="display">34 bold templates</h2>
+    <p class="section-sub">Hand-crafted design systems — editorial, brutalist, retro, playful — that the skill applies to your content. A sample:</p>
+    <div class="shots">
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/coral"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/coral-1.png" alt="Coral template" loading="lazy" /><span>Coral</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/neo-grid-bold"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/neo-grid-bold-1.png" alt="Neo-Grid Bold template" loading="lazy" /><span>Neo-Grid Bold</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/retro-windows"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/retro-windows-1.png" alt="Retro Windows template" loading="lazy" /><span>Retro Windows</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/sakura-chroma"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/sakura-chroma-1.png" alt="Sakura Chroma template" loading="lazy" /><span>Sakura Chroma</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/editorial-forest"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/editorial-forest-1.png" alt="Editorial Forest template" loading="lazy" /><span>Editorial Forest</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/8-bit-orbit"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/8-bit-orbit-1.png" alt="8-Bit Orbit template" loading="lazy" /><span>8-Bit Orbit</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/pin-and-paper"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/pin-and-paper-1.png" alt="Pin and Paper template" loading="lazy" /><span>Pin &amp; Paper</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/broadside"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/broadside-1.png" alt="Broadside template" loading="lazy" /><span>Broadside</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/scatterbrain"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/scatterbrain-1.png" alt="Scatterbrain template" loading="lazy" /><span>Scatterbrain</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/vellum"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/vellum-1.png" alt="Vellum template" loading="lazy" /><span>Vellum</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/studio"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/studio-1.png" alt="Studio template" loading="lazy" /><span>Studio</span></a>
+      <a class="shot" href="https://github.com/dreamid27/frontend-slides/tree/main/bold-template-pack/templates/biennale-yellow"><img src="https://raw.githubusercontent.com/zarazhangrui/beautiful-html-templates/main/screenshots/biennale-yellow-1.png" alt="Biennale Yellow template" loading="lazy" /><span>Biennale Yellow</span></a>
+    </div>
+    <p class="more-note">…and 22 more in the <a href="https://github.com/dreamid27/frontend-slides#bold-template-gallery">full gallery on GitHub</a>. Template designs originate from <a href="https://github.com/zarazhangrui/beautiful-html-templates">beautiful-html-templates</a> by @zarazhangrui.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="install-box">
+      <h2 class="display">Install in 30 seconds</h2>
+      <p>In Claude Code, run these as two separate messages:</p>
+      <pre>/plugin marketplace add https://github.com/dreamid27/frontend-slides</pre>
+      <pre>/plugin install frontend-slides@frontend-slides</pre>
+      <p style="margin-top:24px;margin-bottom:0">Using another coding agent (Codex, Gemini CLI, OpenCode…)? Just point it at the repo and ask it to use the Frontend Slides skill. <a href="https://github.com/dreamid27/frontend-slides#installation" style="color:var(--coral)">Full instructions →</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>MIT licensed. Original skill by <a href="https://github.com/zarazhangrui">@zarazhangrui</a> · layout-presets fork by <a href="https://github.com/dreamid27">@dreamid27</a> · <a href="https://github.com/dreamid27/frontend-slides">github.com/dreamid27/frontend-slides</a></p>
+  </div>
+</footer>
+
+<script>
+  // Scale the 1920x1080 iframe previews down to card width
+  function scaleThumbs() {
+    document.querySelectorAll('.demo-thumb').forEach(function (t) {
+      var f = t.querySelector('iframe');
+      if (f) f.style.transform = 'scale(' + t.clientWidth / 1920 + ')';
+    });
+  }
+  window.addEventListener('resize', scaleThumbs);
+  window.addEventListener('load', scaleThumbs);
+  scaleThumbs();
+</script>
+
+</body>
+</html>

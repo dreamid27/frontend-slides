@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Slides — Decks in the Browser</title>
+
+    <!-- === FONTS: Bebas Neue (display) + Inter (body) — Google Fonts === -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- === TAILWIND (CDN JIT — no build step) === -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- === DESIGN TOKENS (Coral — bold-template-pack/templates/coral) === -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coral:        '#E85D5D',
+                        'coral-dark': '#D44A4A',
+                        cream:        '#F5F0E8',
+                        'cream-dark': '#E8E0D4',
+                        ink:          '#1A1A1A',
+                        gray:         '#6B6B6B',
+                        'light-gray': '#B0B0B0',
+                    },
+                    fontFamily: {
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                        body:    ['Inter', 'sans-serif'],
+                    },
+                    transitionTimingFunction: {
+                        'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* === 1. TOKEN DEFINITIONS (stage surfaces only — colors/fonts live in tailwind.config) === */
+        :root {
+            --stage-bg: #111111;
+            --slide-bg: #F5F0E8;
+        }
+
+        /* === 2. STAGE MECHANICS (viewport-base.css, verbatim) === */
+        /* ===========================================
+           FIXED 16:9 STAGE: MANDATORY BASE STYLES
+           Include this ENTIRE file in every presentation
+           (the "stage mechanics" style block).
+           Slides are authored at 1920×1080 and scaled as a whole.
+
+           This is deliberately raw CSS, not Tailwind utilities:
+           the transform is set by JS, slide switching is state-
+           driven (.active/.visible), and print + reduced-motion
+           need media-query rules. Everything OUTSIDE this block
+           is styled with Tailwind utility classes.
+           =========================================== */
+
+        /* 1. Lock the browser viewport */
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+
+        /* 2. Full-window deck viewport */
+        .deck-viewport {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+
+        /* 3. Fixed 16:9 design canvas.
+           JavaScript sets transform: translate(...) scale(...). */
+        .deck-stage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            transform-origin: 0 0;
+            background: var(--slide-bg, #fff);
+        }
+
+        /* 4. Slides stack inside the fixed stage; author content at 1920×1080, never reflowed per device.
+           position needs !important: the Tailwind CDN injects utilities after this block, so a stray `relative` on a slide would win the cascade and blank every slide after the first. */
+        .slide {
+            position: absolute !important;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            background: var(--slide-bg, #fff);
+        }
+
+        .slide.active,
+        .slide.visible {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 1;
+        }
+
+        /* 5. Keep media inside authored slide bounds */
+        img,
+        video,
+        canvas,
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* 6. Presentation chrome stays outside the slide design system */
+        .deck-controls {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        /* 7. Print one fixed-size slide per page */
+        @media print {
+            html,
+            body {
+                width: 1920px;
+                height: auto;
+                overflow: visible;
+                background: #fff;
+            }
+
+            .deck-viewport {
+                position: static;
+                overflow: visible;
+                background: #fff;
+            }
+
+            .deck-stage {
+                position: static;
+                width: auto;
+                height: auto;
+                transform: none !important;
+                background: none;
+            }
+
+            .slide {
+                /* !important to beat the screen rule's hardened position */
+                position: relative !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                width: 1920px;
+                height: 1080px;
+                break-after: page;
+                page-break-after: always;
+            }
+
+            .slide:last-child {
+                break-after: auto;
+                page-break-after: auto;
+            }
+
+            .deck-controls {
+                display: none !important;
+            }
+        }
+
+        /* 8. Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+        }
+
+        /* === 3. CHOREOGRAPHY (state-scoped entrances — can't be utilities) === */
+        .reveal,
+        .reveal-left,
+        .reveal-drop,
+        .reveal-rise,
+        .reveal-fade,
+        .reveal-wipe,
+        .reveal-wipe-y {
+            transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal        { opacity: 0; transform: translateY(34px); }
+        .reveal-left   { opacity: 0; transform: translateX(-44px); }
+        .reveal-drop   { opacity: 0; transform: translateY(-30px); }
+        .reveal-rise   { opacity: 0; transform: translateY(80px); }
+        .reveal-fade   { opacity: 0; transition-duration: 0.9s; }
+        .reveal-wipe   { opacity: 0; transform: scaleX(0); transform-origin: left center; }
+        .reveal-wipe-y { opacity: 0; transform: scaleY(0); transform-origin: center top; }
+
+        .slide.visible :is(.reveal, .reveal-left, .reveal-drop, .reveal-rise, .reveal-fade, .reveal-wipe, .reveal-wipe-y) {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* Edit-mode toggle visibility (state class toggled by JS) */
+        .edit-toggle.show,
+        .edit-toggle.active { opacity: 1; pointer-events: auto; }
+        .edit-toggle.active { background: #E85D5D; border-color: #E85D5D; }
+    </style>
+</head>
+<body>
+
+    <!-- === INLINE EDITING CHROME (outside the stage) === -->
+    <div class="edit-hotzone fixed top-0 left-0 w-[80px] h-[80px] z-[10000] cursor-pointer"></div>
+    <button id="editToggle" title="Edit mode (E) — Ctrl+S saves a copy" aria-label="Toggle edit mode"
+            class="edit-toggle fixed top-[16px] left-[16px] z-[10001] w-[40px] h-[40px] flex items-center justify-center rounded-full border-2 border-white/30 bg-white/10 text-[17px] opacity-0 pointer-events-none transition-all duration-300">✏️</button>
+
+    <div class="deck-viewport">
+        <main class="deck-stage" id="deckStage">
+
+            <!-- ============================================================
+                 Slide 1: Title — layout: opening/poster-stack
+                 Coral skin: cream field, ink rows, outline row 2, coral row 4
+                 ============================================================ -->
+            <section class="slide active bg-cream">
+                <p class="reveal-fade [transition-delay:950ms] absolute left-[96px] top-[64px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">A Claude Code Skill</p>
+                <p class="reveal-fade [transition-delay:950ms] absolute right-[96px] top-[64px] font-body text-[15px] uppercase tracking-[2px] text-gray">Jul 2026 · Coral Edition</p>
+
+                <div class="absolute left-[96px] top-[142px]">
+                    <h1 class="font-display text-[170px] leading-[1.09] tracking-[8px] text-ink">
+                        <span class="reveal block">FRONTEND</span>
+                        <span class="reveal [transition-delay:110ms] block text-transparent [-webkit-text-stroke:2.5px_rgba(26,26,26,0.55)]">SLIDES</span>
+                        <span class="reveal [transition-delay:220ms] block">IN YOUR</span>
+                        <span class="reveal [transition-delay:330ms] block text-coral">BROWSER</span>
+                    </h1>
+                </div>
+
+                <div class="reveal-fade [transition-delay:1050ms] absolute left-[96px] right-[96px] top-[940px] h-[3px] bg-ink opacity-[0.15]"></div>
+                <p class="reveal-fade [transition-delay:1100ms] absolute left-[96px] top-[962px] font-body text-[15px] uppercase tracking-[2px] text-gray">Single-file HTML decks · No build step</p>
+                <p class="reveal-fade [transition-delay:1100ms] absolute right-[96px] top-[962px] font-body text-[15px] uppercase tracking-[2px] text-gray">01 / 10</p>
+            </section>
+
+            <!-- ============================================================
+                 Slide 2: The Problem — layout: list/hanging-numerals
+                 ============================================================ -->
+            <section class="slide bg-cream">
+                <p class="reveal-fade absolute left-[96px] top-[72px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">The Problem</p>
+                <p class="reveal-fade absolute right-[96px] top-[72px] font-body text-[15px] uppercase tracking-[2px] text-gray">02 / 10</p>
+
+                <h2 class="reveal [transition-delay:100ms] absolute left-[96px] top-[118px] font-display text-[84px] leading-[1.02] tracking-[2px] text-ink">SLIDES SHOULDN'T BE THIS HARD</h2>
+
+                <!-- Item 01 -->
+                <div class="absolute left-0 top-[340px] w-full">
+                    <span class="reveal-fade [transition-delay:350ms] absolute left-[96px] top-0 font-display text-[190px] leading-[0.85] text-ink/[0.12]">01</span>
+                    <div class="reveal [transition-delay:550ms] absolute left-[400px] top-[18px]">
+                        <h3 class="font-display text-[42px] leading-[1.1] tracking-[1px] text-ink">SLIDEWARE FIGHTS YOU</h3>
+                        <p class="mt-[12px] max-w-[1100px] font-body text-[20px] leading-[1.5] text-gray">Ribbon menus, snapping boxes, theme roulette — an hour of formatting for every ten minutes of content.</p>
+                    </div>
+                </div>
+                <!-- Item 02 -->
+                <div class="absolute left-0 top-[560px] w-full">
+                    <span class="reveal-fade [transition-delay:530ms] absolute left-[96px] top-0 font-display text-[190px] leading-[0.85] text-ink/[0.12]">02</span>
+                    <div class="reveal [transition-delay:730ms] absolute left-[400px] top-[18px]">
+                        <h3 class="font-display text-[42px] leading-[1.1] tracking-[1px] text-ink">WEB DECKS WANT A TOOLCHAIN</h3>
+                        <p class="mt-[12px] max-w-[1100px] font-body text-[20px] leading-[1.5] text-gray">The frameworks are lovely — after npm install, a config file, and a deploy story your talk never asked for.</p>
+                    </div>
+                </div>
+                <!-- Item 03 -->
+                <div class="absolute left-0 top-[780px] w-full">
+                    <span class="reveal-fade [transition-delay:710ms] absolute left-[96px] top-0 font-display text-[190px] leading-[0.85] text-ink/[0.12]">03</span>
+                    <div class="reveal [transition-delay:910ms] absolute left-[400px] top-[18px]">
+                        <h3 class="font-display text-[42px] leading-[1.1] tracking-[1px] text-ink">AI DECKS LOOK LIKE AI DECKS</h3>
+                        <p class="mt-[12px] max-w-[1100px] font-body text-[20px] leading-[1.5] text-gray">Purple gradients, centered clichés, cookie-cutter card grids — on-distribution design nobody remembers.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 Slide 3: What It Is — layout: custom
+                 Coral composition: ink field left + coral panel right,
+                 hard edge at x:1160, hatch + wallpaper numeral + white card
+                 ============================================================ -->
+            <section class="slide bg-ink">
+                <!-- Left ink region -->
+                <div class="absolute left-[96px] top-[128px] w-[980px]">
+                    <p class="reveal-fade font-body text-[12px] font-bold uppercase tracking-[4px] text-coral">What It Is</p>
+                    <h2 class="reveal [transition-delay:120ms] mt-[36px] font-display text-[96px] leading-[1] tracking-[2px] text-cream">ONE FILE.<br>ZERO BUILD STEPS.</h2>
+                    <div class="reveal-wipe [transition-delay:450ms] mt-[40px] h-[4px] w-[80px] bg-coral"></div>
+                    <p class="reveal [transition-delay:560ms] mt-[40px] max-w-[860px] font-body text-[20px] leading-[1.7] text-cream/80">Describe your talk to Claude Code and get back a finished presentation: a fixed 1920&times;1080 stage, entrance choreography, keyboard and touch navigation — all in one self-contained HTML file. Tailwind arrives from a CDN, fonts from Google Fonts. Nothing to install, nothing to compile, nothing to host.</p>
+                    <div class="reveal [transition-delay:720ms] mt-[56px] flex items-center gap-[48px]">
+                        <span class="flex items-center gap-[14px]"><span class="h-[4px] w-[24px] bg-coral"></span><span class="font-body text-[11px] font-bold uppercase tracking-[3px] text-cream">Tailwind CDN</span></span>
+                        <span class="flex items-center gap-[14px]"><span class="h-[4px] w-[24px] bg-coral"></span><span class="font-body text-[11px] font-bold uppercase tracking-[3px] text-cream">Google Fonts</span></span>
+                        <span class="flex items-center gap-[14px]"><span class="h-[4px] w-[24px] bg-coral"></span><span class="font-body text-[11px] font-bold uppercase tracking-[3px] text-cream">Vanilla JS</span></span>
+                    </div>
+                </div>
+
+                <!-- Right coral region (hard edge, signature hatch, wallpaper numeral) -->
+                <div class="absolute left-[1160px] top-0 h-full w-[760px] bg-coral">
+                    <div class="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,rgba(0,0,0,0.06)_20px,rgba(0,0,0,0.06)_40px)]"></div>
+                    <span class="reveal-fade [transition-delay:300ms] absolute right-[56px] top-[48px] font-display text-[200px] leading-[1] text-black/[0.12]">1</span>
+
+                    <!-- The artifact: a column-card standing for the generated file -->
+                    <div class="reveal [transition-delay:500ms] absolute left-[140px] top-[330px] w-[480px] border-t-[5px] border-coral-dark bg-white p-[40px]">
+                        <div class="flex h-[48px] w-[48px] items-center justify-center bg-coral">
+                            <span class="font-display text-[24px] text-white">F</span>
+                        </div>
+                        <h3 class="mt-[28px] font-display text-[36px] leading-[1.1] tracking-[1px] text-ink">PITCH-DECK.HTML</h3>
+                        <p class="mt-[16px] font-body text-[15px] leading-[1.6] text-gray">Ten slides. Styles, fonts, and script inlined. Opens anywhere a browser exists — laptop, phone, projector.</p>
+                        <p class="mt-[28px] font-display text-[56px] leading-[1] text-coral">100%</p>
+                        <p class="mt-[10px] font-body text-[11px] font-semibold uppercase tracking-[3px] text-gray">Self-contained</p>
+                    </div>
+
+                    <p class="reveal-fade [transition-delay:800ms] absolute bottom-[64px] left-[140px] font-body text-[11px] font-bold uppercase tracking-[3px] text-ink">The whole deliverable &darr;</p>
+                </div>
+
+                <p class="reveal-fade absolute right-[810px] top-[72px] font-body text-[15px] uppercase tracking-[2px] text-cream/60">03 / 10</p>
+            </section>
+
+            <!-- ============================================================
+                 Slide 4: How It Works — layout: list/staircase
+                 4 ordered steps descending; final step takes the accent
+                 ============================================================ -->
+            <section class="slide bg-cream">
+                <p class="reveal-fade absolute left-[96px] top-[72px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">How It Works</p>
+                <p class="reveal-fade absolute right-[96px] top-[72px] font-body text-[15px] uppercase tracking-[2px] text-gray">04 / 10</p>
+
+                <h2 class="reveal [transition-delay:100ms] absolute left-[96px] top-[118px] font-display text-[84px] leading-[1.02] tracking-[2px] text-ink">FOUR STEPS TO A FINISHED DECK</h2>
+
+                <!-- Step 1 -->
+                <div class="reveal [transition-delay:400ms] absolute left-[96px] top-[340px]">
+                    <div class="flex items-baseline gap-[24px]">
+                        <span class="font-display text-[28px] tracking-[2px] text-coral">01</span>
+                        <h3 class="font-display text-[40px] leading-[1.1] tracking-[2px] text-ink">DESCRIBE</h3>
+                    </div>
+                    <p class="ml-[59px] mt-[10px] max-w-[560px] font-body text-[19px] leading-[1.5] text-gray">Tell Claude the topic, the length, and whether you'll talk over it or send it around.</p>
+                    <div class="reveal-wipe-y [transition-delay:700ms] ml-[10px] mt-[14px] h-[56px] w-[1px] bg-ink/[0.15]"></div>
+                </div>
+                <!-- Step 2 -->
+                <div class="reveal [transition-delay:580ms] absolute left-[316px] top-[500px]">
+                    <div class="flex items-baseline gap-[24px]">
+                        <span class="font-display text-[28px] tracking-[2px] text-coral">02</span>
+                        <h3 class="font-display text-[40px] leading-[1.1] tracking-[2px] text-ink">PICK A STYLE</h3>
+                    </div>
+                    <p class="ml-[59px] mt-[10px] max-w-[560px] font-body text-[19px] leading-[1.5] text-gray">Three real title slides render in front of you — taste by seeing, never by adjective.</p>
+                    <div class="reveal-wipe-y [transition-delay:880ms] ml-[10px] mt-[14px] h-[56px] w-[1px] bg-ink/[0.15]"></div>
+                </div>
+                <!-- Step 3 -->
+                <div class="reveal [transition-delay:760ms] absolute left-[536px] top-[660px]">
+                    <div class="flex items-baseline gap-[24px]">
+                        <span class="font-display text-[28px] tracking-[2px] text-coral">03</span>
+                        <h3 class="font-display text-[40px] leading-[1.1] tracking-[2px] text-ink">GENERATE</h3>
+                    </div>
+                    <p class="ml-[59px] mt-[10px] max-w-[560px] font-body text-[19px] leading-[1.5] text-gray">Every slide lands on a proven layout preset, skinned by your chosen design system.</p>
+                    <div class="reveal-wipe-y [transition-delay:1060ms] ml-[10px] mt-[14px] h-[56px] w-[1px] bg-ink/[0.15]"></div>
+                </div>
+                <!-- Step 4 (destination — carries the accent) -->
+                <div class="reveal [transition-delay:940ms] absolute left-[756px] top-[820px]">
+                    <div class="flex items-baseline gap-[24px]">
+                        <span class="font-display text-[28px] tracking-[2px] text-coral">04</span>
+                        <h3 class="font-display text-[40px] leading-[1.1] tracking-[2px] text-coral">PRESENT</h3>
+                    </div>
+                    <p class="ml-[59px] mt-[10px] max-w-[560px] font-body text-[19px] leading-[1.5] text-gray">Arrow keys, swipe, or print straight to PDF.</p>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 Slide 5: By the Numbers — layout: stats/stat-strip
+                 ============================================================ -->
+            <section class="slide bg-cream">
+                <p class="reveal-fade absolute left-[96px] top-[72px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">By the Numbers</p>
+                <p class="reveal-fade absolute right-[96px] top-[72px] font-body text-[15px] uppercase tracking-[2px] text-gray">05 / 10</p>
+
+                <h2 class="reveal [transition-delay:100ms] absolute left-[96px] top-[118px] max-w-[1200px] font-display text-[84px] leading-[1.02] tracking-[2px] text-ink">THE SYSTEM, MEASURED</h2>
+
+                <!-- Tile row -->
+                <div class="absolute left-[96px] right-[96px] top-[460px] grid grid-cols-3 gap-[64px]">
+                    <div>
+                        <div class="reveal-wipe [transition-delay:450ms] h-[1px] w-full bg-ink/[0.15]"></div>
+                        <p class="reveal [transition-delay:520ms] mt-[36px] font-display text-[136px] leading-[0.95] text-coral">88</p>
+                        <p class="reveal [transition-delay:600ms] mt-[24px] font-body text-[22px] leading-[1.4] text-gray">Layout presets fixing slide structure</p>
+                        <p class="reveal [transition-delay:680ms] mt-[20px] font-body text-[13px] uppercase tracking-[2px] text-gray/75">Across 23 slide slots</p>
+                    </div>
+                    <div>
+                        <div class="reveal-wipe [transition-delay:600ms] h-[1px] w-full bg-ink/[0.15]"></div>
+                        <p class="reveal [transition-delay:670ms] mt-[36px] font-display text-[136px] leading-[0.95] text-coral">34</p>
+                        <p class="reveal [transition-delay:750ms] mt-[24px] font-body text-[22px] leading-[1.4] text-gray">Bold template design systems</p>
+                        <p class="reveal [transition-delay:830ms] mt-[20px] font-body text-[13px] uppercase tracking-[2px] text-gray/75">Coral is one of them</p>
+                    </div>
+                    <div>
+                        <div class="reveal-wipe [transition-delay:750ms] h-[1px] w-full bg-ink/[0.15]"></div>
+                        <p class="reveal [transition-delay:820ms] mt-[36px] font-display text-[136px] leading-[0.95] text-coral">1</p>
+                        <p class="reveal [transition-delay:900ms] mt-[24px] font-body text-[22px] leading-[1.4] text-gray">HTML file per deck — nothing else</p>
+                        <p class="reveal [transition-delay:980ms] mt-[20px] font-body text-[13px] uppercase tracking-[2px] text-gray/75">Zero dependencies</p>
+                    </div>
+                </div>
+
+                <div class="reveal-fade [transition-delay:1100ms] absolute left-[96px] right-[96px] top-[962px] h-[1px] bg-ink/[0.15]"></div>
+                <p class="reveal-fade [transition-delay:1150ms] absolute left-[96px] top-[984px] font-body text-[14px] uppercase tracking-[2px] text-gray">Source / repository tree — Jul 2026</p>
+                <p class="reveal-fade [transition-delay:1150ms] absolute right-[96px] top-[984px] font-body text-[14px] uppercase tracking-[2px] text-gray">Frontend Slides</p>
+            </section>
+
+            <!-- ============================================================
+                 Slide 6: Layout Presets — layout: list/counter-cards
+                 Coral skin point: white card surface + 5px coral top border
+                 ============================================================ -->
+            <section class="slide bg-cream">
+                <p class="reveal-fade absolute left-[96px] top-[120px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">Layout Presets</p>
+
+                <h2 class="reveal [transition-delay:100ms] absolute left-[96px] top-[170px] max-w-[544px] font-display text-[96px] leading-[1] tracking-[2px] text-ink">STRUCTURE<br>COMES<br>SOLVED</h2>
+                <p class="reveal [transition-delay:450ms] absolute left-[96px] top-[520px] max-w-[460px] font-body text-[21px] leading-[1.6] text-gray">A preset fixes geometry, hierarchy, and choreography on the 1920&times;1080 stage. The design system only supplies the skin — no slide is ever improvised.</p>
+
+                <!-- 2×2 card grid -->
+                <div class="absolute left-[736px] right-[96px] top-[120px] bottom-[120px] grid grid-cols-2 grid-rows-2 gap-[24px]">
+                    <div class="reveal [transition-delay:400ms] border-t-[5px] border-coral bg-white p-[44px]">
+                        <p class="reveal-fade [transition-delay:550ms] font-display text-[64px] leading-[1] text-coral">01</p>
+                        <h3 class="mt-[28px] font-display text-[34px] leading-[1.15] tracking-[1px] text-ink">OPENINGS &middot; 13</h3>
+                        <p class="mt-[16px] font-body text-[19px] leading-[1.55] text-gray">Thirteen ways in — marquee, monolith, poster stack, dossier. The first slide is never a blank page.</p>
+                    </div>
+                    <div class="reveal [transition-delay:520ms] border-t-[5px] border-coral bg-white p-[44px]">
+                        <p class="reveal-fade [transition-delay:670ms] font-display text-[64px] leading-[1] text-coral">02</p>
+                        <h3 class="mt-[28px] font-display text-[34px] leading-[1.15] tracking-[1px] text-ink">EVIDENCE &middot; 24</h3>
+                        <p class="mt-[16px] font-body text-[19px] leading-[1.55] text-gray">Seventeen chart grammars plus seven stat layouts. Honest baselines, one accent, no gridlines.</p>
+                    </div>
+                    <div class="reveal [transition-delay:640ms] border-t-[5px] border-coral bg-white p-[44px]">
+                        <p class="reveal-fade [transition-delay:790ms] font-display text-[64px] leading-[1] text-coral">03</p>
+                        <h3 class="mt-[28px] font-display text-[34px] leading-[1.15] tracking-[1px] text-ink">STORYTELLING &middot; 38</h3>
+                        <p class="mt-[16px] font-body text-[19px] leading-[1.55] text-gray">Lists, sections, quotes, timelines, comparisons — the beats that carry the middle of an argument.</p>
+                    </div>
+                    <div class="reveal [transition-delay:760ms] border-t-[5px] border-coral bg-white p-[44px]">
+                        <p class="reveal-fade [transition-delay:910ms] font-display text-[64px] leading-[1] text-coral">04</p>
+                        <h3 class="mt-[28px] font-display text-[34px] leading-[1.15] tracking-[1px] text-ink">CLOSINGS &middot; 13</h3>
+                        <p class="mt-[16px] font-body text-[19px] leading-[1.55] text-gray">Thirteen endings, from credits roll to split curtain. Decks land — they don't just stop.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 Slide 7: Template Pack — layout: custom
+                 Coral panel left (hatch + wallpaper numeral) + cream right
+                 with sidebar-item tiles sampling the pack
+                 ============================================================ -->
+            <section class="slide bg-cream">
+                <!-- Left coral panel -->
+                <div class="absolute left-0 top-0 h-full w-[770px] bg-coral">
+                    <div class="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,rgba(0,0,0,0.06)_20px,rgba(0,0,0,0.06)_40px)]"></div>
+                    <span class="reveal-fade [transition-delay:250ms] absolute right-[48px] top-[40px] font-display text-[200px] leading-[1] text-black/[0.12]">34</span>
+                    <div class="absolute left-[96px] top-[300px]">
+                        <p class="reveal-fade font-body text-[12px] font-bold uppercase tracking-[4px] text-ink">Template Pack</p>
+                        <h2 class="reveal [transition-delay:120ms] mt-[32px] font-display text-[72px] leading-[1] tracking-[2px] text-ink">TASTE IS<br>DISCOVERED,<br>NOT<br>DESCRIBED</h2>
+                        <div class="reveal-wipe [transition-delay:450ms] mt-[36px] h-[4px] w-[80px] bg-ink"></div>
+                        <p class="reveal [transition-delay:560ms] mt-[36px] max-w-[500px] font-body text-[17px] leading-[1.7] text-ink">Claude renders three genuine title slides — a safe preset, a bold template, a wildcard — and you point at the one that feels right.</p>
+                    </div>
+                </div>
+
+                <!-- Right cream field: sampled systems as sidebar tiles -->
+                <p class="reveal-fade absolute right-[96px] top-[72px] font-body text-[15px] uppercase tracking-[2px] text-gray">07 / 10</p>
+                <p class="reveal-fade [transition-delay:200ms] absolute left-[850px] top-[160px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">Sampled From the Pack</p>
+
+                <div class="absolute left-[850px] right-[96px] top-[224px] grid grid-cols-2 gap-[20px]">
+                    <div class="reveal [transition-delay:350ms] border-l-[4px] border-coral bg-white px-[24px] py-[20px]">
+                        <p class="font-display text-[34px] leading-[1] tracking-[1px] text-ink">CORAL</p>
+                        <p class="mt-[10px] font-body text-[12px] uppercase tracking-[1px] text-coral">Magazine poster &middot; this deck</p>
+                    </div>
+                    <div class="reveal [transition-delay:440ms] border-l-[4px] border-coral bg-white px-[24px] py-[20px]">
+                        <p class="font-display text-[34px] leading-[1] tracking-[1px] text-ink">BROADSIDE</p>
+                        <p class="mt-[10px] font-body text-[12px] uppercase tracking-[1px] text-gray">Newsprint editorial</p>
+                    </div>
+                    <div class="reveal [transition-delay:530ms] border-l-[4px] border-coral bg-white px-[24px] py-[20px]">
+                        <p class="font-display text-[34px] leading-[1] tracking-[1px] text-ink">RETRO ZINE</p>
+                        <p class="mt-[10px] font-body text-[12px] uppercase tracking-[1px] text-gray">Photocopy punk</p>
+                    </div>
+                    <div class="reveal [transition-delay:620ms] border-l-[4px] border-coral bg-white px-[24px] py-[20px]">
+                        <p class="font-display text-[34px] leading-[1] tracking-[1px] text-ink">NEO GRID BOLD</p>
+                        <p class="mt-[10px] font-body text-[12px] uppercase tracking-[1px] text-gray">Hard grids, loud type</p>
+                    </div>
+                    <div class="reveal [transition-delay:710ms] border-l-[4px] border-coral bg-white px-[24px] py-[20px]">
+                        <p class="font-display text-[34px] leading-[1] tracking-[1px] text-ink">SAKURA CHROMA</p>
+                        <p class="mt-[10px] font-body text-[12px] uppercase tracking-[1px] text-gray">Soft color, high chroma</p>
+                    </div>
+                    <div class="reveal [transition-delay:800ms] border-l-[4px] border-coral bg-white px-[24px] py-[20px]">
+                        <p class="font-display text-[34px] leading-[1] tracking-[1px] text-ink">MONOCHROME</p>
+                        <p class="mt-[10px] font-body text-[12px] uppercase tracking-[1px] text-gray">One ink, all contrast</p>
+                    </div>
+                </div>
+
+                <p class="reveal-fade [transition-delay:950ms] absolute left-[850px] top-[900px] font-body text-[13px] uppercase tracking-[2px] text-gray">&hellip;and 28 more, each with its own full design system</p>
+            </section>
+
+            <!-- ============================================================
+                 Slide 8: Design Principle — layout: quote/testimony
+                 Coral skin: ink surface, coral glyph, Inter 300 voice break
+                 ============================================================ -->
+            <section class="slide bg-ink">
+                <p class="reveal-fade absolute left-[96px] top-[72px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">Design Principle</p>
+                <p class="reveal-fade absolute right-[96px] top-[72px] font-body text-[15px] uppercase tracking-[2px] text-cream/60">08 / 10</p>
+
+                <span class="reveal-drop [transition-delay:100ms] absolute left-[88px] top-[120px] font-display text-[200px] leading-[0.7] text-coral">&ldquo;</span>
+
+                <blockquote class="reveal [transition-delay:300ms] absolute left-[96px] top-[340px] max-w-[1360px] font-body text-[60px] font-light leading-[1.3] text-cream">Show, don't tell. People discover their aesthetic by <em class="not-italic font-normal text-coral">seeing options</em> — never by describing them.</blockquote>
+
+                <div class="absolute left-[96px] top-[860px]">
+                    <div class="reveal-wipe [transition-delay:850ms] h-[4px] w-[48px] bg-coral"></div>
+                    <p class="reveal [transition-delay:950ms] mt-[24px] font-display text-[28px] tracking-[2px] text-cream">CORE PRINCIPLE N&deg; 03</p>
+                    <p class="reveal [transition-delay:1020ms] mt-[10px] font-body text-[14px] uppercase tracking-[2px] text-cream/60">SKILL.md — Frontend Slides</p>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 Slide 9: Install — layout: list/rule-columns
+                 ============================================================ -->
+            <section class="slide bg-cream">
+                <p class="reveal-fade absolute left-[96px] top-[72px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">Get It Running</p>
+                <p class="reveal-fade absolute right-[96px] top-[72px] font-body text-[15px] uppercase tracking-[2px] text-gray">09 / 10</p>
+
+                <h2 class="reveal [transition-delay:100ms] absolute left-[96px] top-[118px] max-w-[1200px] font-display text-[84px] leading-[1.02] tracking-[2px] text-ink">INSTALLED IN A MINUTE</h2>
+
+                <div class="absolute left-[96px] right-[96px] top-[380px] grid grid-cols-3 gap-[96px]">
+                    <!-- Column 1 -->
+                    <div>
+                        <div class="reveal-wipe [transition-delay:400ms] h-[4px] w-[48px] bg-coral"></div>
+                        <p class="reveal-fade [transition-delay:500ms] mt-[20px] font-body text-[14px] font-bold uppercase tracking-[2px] text-gray">01</p>
+                        <h3 class="reveal [transition-delay:550ms] mt-[28px] font-display text-[36px] leading-[1.15] tracking-[2px] text-ink">CLONE THE SKILL</h3>
+                        <p class="reveal [transition-delay:620ms] mt-[18px] font-body text-[19px] leading-[1.6] text-gray">Drop the repository into your Claude Code skills folder and it's live in every project.</p>
+                        <p class="reveal [transition-delay:690ms] mt-[24px] border-l-[4px] border-coral bg-white px-[20px] py-[16px] font-body text-[15px] font-semibold leading-[1.6] text-ink">git clone github.com/ dreamid27/frontend-slides &rarr; ~/.claude/skills/</p>
+                    </div>
+                    <!-- Column 2 -->
+                    <div>
+                        <div class="reveal-wipe [transition-delay:550ms] h-[4px] w-[48px] bg-coral"></div>
+                        <p class="reveal-fade [transition-delay:650ms] mt-[20px] font-body text-[14px] font-bold uppercase tracking-[2px] text-gray">02</p>
+                        <h3 class="reveal [transition-delay:700ms] mt-[28px] font-display text-[36px] leading-[1.15] tracking-[2px] text-ink">ASK FOR A DECK</h3>
+                        <p class="reveal [transition-delay:770ms] mt-[18px] font-body text-[19px] leading-[1.6] text-gray">Say "build me a pitch deck." Four quick questions — purpose, length, content, density — then three live style previews to choose between.</p>
+                    </div>
+                    <!-- Column 3 -->
+                    <div>
+                        <div class="reveal-wipe [transition-delay:700ms] h-[4px] w-[48px] bg-coral"></div>
+                        <p class="reveal-fade [transition-delay:800ms] mt-[20px] font-body text-[14px] font-bold uppercase tracking-[2px] text-gray">03</p>
+                        <h3 class="reveal [transition-delay:850ms] mt-[28px] font-display text-[36px] leading-[1.15] tracking-[2px] text-ink">PRESENT ANYWHERE</h3>
+                        <p class="reveal [transition-delay:920ms] mt-[18px] font-body text-[19px] leading-[1.6] text-gray">The file runs from disk, a URL, or a borrowed laptop. Arrow keys and swipe to navigate; print to PDF or deploy with one script.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 Slide 10: Closing — layout: closing/split-curtain
+                 Cream upper field, ink curtain band, coral stitch on the seam
+                 ============================================================ -->
+            <section class="slide bg-cream">
+                <p class="reveal-fade absolute left-[96px] top-[96px] font-body text-[15px] font-bold uppercase tracking-[3px] text-coral">Before You Go</p>
+                <p class="reveal-fade absolute right-[96px] top-[96px] font-body text-[15px] uppercase tracking-[2px] text-gray">10 / 10</p>
+
+                <h2 class="absolute left-[96px] top-[210px] max-w-[1500px] font-display text-[168px] leading-[0.95] tracking-[4px] text-ink">
+                    <span class="reveal block">MAKE SLIDES</span>
+                    <span class="reveal [transition-delay:120ms] block text-coral">A JOY AGAIN.</span>
+                </h2>
+                <p class="reveal [transition-delay:500ms] absolute left-[96px] top-[566px] max-w-[720px] font-body text-[24px] leading-[1.5] text-gray">One prompt, one file, one deliberate slide at a time.</p>
+
+                <!-- Curtain band -->
+                <div class="reveal-rise [transition-delay:450ms] absolute left-0 top-[680px] h-[400px] w-full bg-ink">
+                    <div class="absolute left-[96px] right-[96px] top-[140px] grid grid-cols-3">
+                        <div class="reveal [transition-delay:850ms]">
+                            <p class="font-body text-[13px] font-bold uppercase tracking-[3px] text-coral">GitHub</p>
+                            <p class="mt-[16px] font-body text-[24px] text-cream">github.com/dreamid27/frontend-slides</p>
+                        </div>
+                        <div class="reveal [transition-delay:950ms] border-l border-cream/25 pl-[48px]">
+                            <p class="font-body text-[13px] font-bold uppercase tracking-[3px] text-coral">Runs On</p>
+                            <p class="mt-[16px] font-body text-[24px] text-cream">Claude Code + any browser</p>
+                        </div>
+                        <div class="reveal [transition-delay:1050ms] border-l border-cream/25 pl-[48px]">
+                            <p class="font-body text-[13px] font-bold uppercase tracking-[3px] text-coral">Format</p>
+                            <p class="mt-[16px] font-body text-[24px] text-cream">One self-contained HTML file</p>
+                        </div>
+                    </div>
+                    <!-- Footer credit -->
+                    <p class="reveal-fade [transition-delay:1200ms] absolute bottom-[24px] left-0 w-full text-center">
+                        <a href="https://github.com/dreamid27/frontend-slides" target="_blank" rel="noopener"
+                           class="font-body text-[13px] tracking-[1px] text-cream/50 transition-colors duration-300 hover:text-coral">Made with Frontend Slides — github.com/dreamid27/frontend-slides</a>
+                    </p>
+                </div>
+
+                <!-- Accent stitch overlapping the seam -->
+                <div class="reveal-wipe [transition-delay:700ms] absolute left-[96px] top-[676px] z-10 h-[8px] w-[160px] bg-coral"></div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- === DECK CONTROLS (chrome outside the stage) === -->
+    <nav class="deck-controls flex items-center gap-[20px]" aria-label="Slide navigation">
+        <button id="prevBtn" aria-label="Previous slide"
+                class="flex h-[44px] w-[44px] items-center justify-center rounded-full border-2 border-white/30 bg-white/10 text-[18px] text-cream transition-colors duration-300 hover:border-coral hover:bg-coral">&larr;</button>
+        <span id="pageCounter" class="font-display text-[20px] tracking-[2px] text-cream select-none">01 / 10</span>
+        <button id="nextBtn" aria-label="Next slide"
+                class="flex h-[44px] w-[44px] items-center justify-center rounded-full border-2 border-white/30 bg-white/10 text-[18px] text-cream transition-colors duration-300 hover:border-coral hover:bg-coral">&rarr;</button>
+    </nav>
+
+    <script>
+        /* === SLIDE PRESENTATION CONTROLLER === */
+        class SlidePresentation {
+            constructor() {
+                this.stage = document.getElementById('deckStage');
+                this.slides = document.querySelectorAll('.slide');
+                this.counter = document.getElementById('pageCounter');
+                this.currentSlide = 0;
+                this.setupStageScale();
+                this.setupKeyboardNav();
+                this.setupClickNav();
+                this.setupTouchNav();
+                this.assertStageInvariants();
+                this.showSlide(0);
+            }
+
+            assertStageInvariants() {
+                // Slides outside position:absolute fall into normal flow and
+                // get clipped below the 1080px stage — fail loudly, not blank.
+                this.slides.forEach((slide, i) => {
+                    const pos = getComputedStyle(slide).position;
+                    if (pos !== 'absolute') console.error(
+                        `Slide ${i + 1}: computed position is "${pos}" (must be absolute). ` +
+                        'Remove position utilities from the <section class="slide"> element.');
+                });
+            }
+
+            setupStageScale() {
+                const scale = () => {
+                    const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                    const x = (window.innerWidth - 1920 * factor) / 2;
+                    const y = (window.innerHeight - 1080 * factor) / 2;
+                    this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+                };
+                scale();
+                window.addEventListener('resize', scale);
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.isContentEditable) return;
+                    switch (e.key) {
+                        case 'ArrowRight':
+                        case 'ArrowDown':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.next();
+                            break;
+                        case 'ArrowLeft':
+                        case 'ArrowUp':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.prev();
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.showSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.showSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupClickNav() {
+                document.querySelector('.deck-viewport').addEventListener('click', (e) => {
+                    if (e.target.closest('a, button, [contenteditable="true"]')) return;
+                    if (window.deckEditor && window.deckEditor.isActive) return;
+                    this.next();
+                });
+                document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+                document.getElementById('nextBtn').addEventListener('click', () => this.next());
+            }
+
+            setupTouchNav() {
+                let startX = null;
+                document.addEventListener('touchstart', (e) => { startX = e.changedTouches[0].clientX; }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    if (startX === null) return;
+                    const dx = e.changedTouches[0].clientX - startX;
+                    if (Math.abs(dx) > 60) (dx < 0 ? this.next() : this.prev());
+                    startX = null;
+                }, { passive: true });
+            }
+
+            next() { this.showSlide(this.currentSlide + 1); }
+            prev() { this.showSlide(this.currentSlide - 1); }
+
+            showSlide(index) {
+                this.currentSlide = Math.max(0, Math.min(index, this.slides.length - 1));
+                this.slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === this.currentSlide);
+                    slide.classList.toggle('visible', i === this.currentSlide);
+                });
+                this.counter.textContent =
+                    `${String(this.currentSlide + 1).padStart(2, '0')} / ${String(this.slides.length).padStart(2, '0')}`;
+            }
+        }
+
+        /* === INLINE EDITOR (hover top-left corner or press E; Ctrl+S saves a copy) === */
+        class InlineEditor {
+            constructor() {
+                this.isActive = false;
+                this.storageKey = 'frontend-slides-coral-demo';
+                this.stage = document.getElementById('deckStage');
+                this.restore();
+            }
+
+            editableElements() {
+                return [...this.stage.querySelectorAll('h1, h2, h3, p, span, a, blockquote')]
+                    .filter((el) => el.childElementCount === 0 && el.textContent.trim().length > 0);
+            }
+
+            toggleEditMode() {
+                this.isActive = !this.isActive;
+                this.editableElements().forEach((el) => {
+                    el.setAttribute('contenteditable', this.isActive ? 'true' : 'false');
+                });
+                document.getElementById('editToggle').classList.toggle('active', this.isActive);
+            }
+
+            save() {
+                try { localStorage.setItem(this.storageKey, this.stage.innerHTML); } catch (e) { /* private mode */ }
+            }
+
+            restore() {
+                try {
+                    const saved = localStorage.getItem(this.storageKey);
+                    if (saved) this.stage.innerHTML = saved;
+                } catch (e) { /* private mode */ }
+            }
+
+            exportFile() {
+                const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                const blob = new Blob([html], { type: 'text/html' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'frontend-slides-coral.html';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+        }
+
+        const editor = new InlineEditor();
+        window.deckEditor = editor;
+        const deck = new SlidePresentation();
+
+        /* Edit-toggle interaction: JS hover with a 400ms grace timeout
+           (a pure CSS sibling-hover chain breaks — see html-template.md). */
+        const hotzone = document.querySelector('.edit-hotzone');
+        const editToggle = document.getElementById('editToggle');
+        let hideTimeout = null;
+        const scheduleHide = () => {
+            hideTimeout = setTimeout(() => {
+                if (!editor.isActive) editToggle.classList.remove('show');
+            }, 400);
+        };
+
+        editToggle.addEventListener('click', (e) => { e.stopPropagation(); editor.toggleEditMode(); });
+        hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
+        hotzone.addEventListener('mouseleave', scheduleHide);
+        editToggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+        editToggle.addEventListener('mouseleave', scheduleHide);
+        hotzone.addEventListener('click', (e) => { e.stopPropagation(); editor.toggleEditMode(); });
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'e' || e.key === 'E') && !e.target.isContentEditable && !e.ctrlKey && !e.metaKey) {
+                editor.toggleEditMode();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                editor.save();
+                editor.exportFile();
+            }
+        });
+        deck.stage.addEventListener('input', () => { if (editor.isActive) editor.save(); });
+    </script>
+</body>
+</html>

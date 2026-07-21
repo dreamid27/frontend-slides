@@ -1,6 +1,13 @@
 # Frontend Slides
 
+[![GitHub stars](https://img.shields.io/github/stars/dreamid27/frontend-slides?style=flat&color=e85d5d)](https://github.com/dreamid27/frontend-slides/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-1a1a1a.svg)](LICENSE)
+[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-skill%20%2B%20plugin-d97757)](https://github.com/dreamid27/frontend-slides#installation)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-f5f0e8.svg)](CONTRIBUTING.md)
+
 A coding-agent skill for creating stunning HTML presentations — from scratch or by converting PowerPoint files. It is packaged as a Claude Code plugin, and the core `SKILL.md` can also be read by other coding agents with filesystem and shell access.
+
+**🎬 [Live demo decks](https://dreamid27.github.io/frontend-slides/)** · **📺 [Video tutorial](https://www.youtube.com/watch?v=372Iksaz8b0)** · **⚡ [Install in 30 seconds](#installation)**
 
 > **🔀 Fork notice** — The original repository lives at [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides), and all credit for the original skill goes to [@zarazhangrui](https://github.com/zarazhangrui). This fork extends the skill with **50 layout presets** — fixed, proven slide compositions — so that models *other than Claude* can also generate beautiful presentations.
 
@@ -604,6 +611,15 @@ Uses [Playwright](https://playwright.dev) to screenshot each slide at 1920×1080
 - For PPT conversion: Python with `python-pptx` library
 - For URL deployment: Node.js + Vercel account (free)
 - For PDF export: Node.js (Playwright installs automatically)
+
+## Contributing & Support
+
+If this skill saved you from a night of fighting with slides, the two best ways to give back take under a minute:
+
+- **⭐ Star the repo** — stars are how other people discover this project.
+- **📣 Share a deck you made** — post it and tag the repo; real decks made by real users are the best gallery.
+
+Want to go further? New templates and layout presets are the most welcome contributions — see [CONTRIBUTING.md](CONTRIBUTING.md). Adding a template is a markdown-only change; no JavaScript required.
 
 ## Credits
 
