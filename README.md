@@ -9,7 +9,7 @@ A coding-agent skill for creating stunning HTML presentations — from scratch o
 
 **🎬 [Live demo decks](https://dreamid27.github.io/frontend-slides/)** · **📺 [Video tutorial](https://www.youtube.com/watch?v=372Iksaz8b0)** · **⚡ [Install in 30 seconds](#installation)**
 
-> **🔀 Fork notice** — The original repository lives at [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides), and all credit for the original skill goes to [@zarazhangrui](https://github.com/zarazhangrui). This fork extends the skill with **50 layout presets** — fixed, proven slide compositions — so that models *other than Claude* can also generate beautiful presentations.
+> **🔀 Fork notice** — The original repository lives at [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides), and all credit for the original skill goes to [@zarazhangrui](https://github.com/zarazhangrui). This fork extends the skill with **88 layout presets** — fixed, proven slide compositions — so that models *other than Claude* can also generate beautiful presentations.
 
 ## The Problem This Fork Solves
 
@@ -23,7 +23,7 @@ So you're stuck: the models you can afford can't design, and the model that can 
 
 **The fix: stop asking models to design. Ask them to fill in a design.**
 
-That is what [`layout-presets/`](layout-presets/) does. It's a pack of 50 style-agnostic **structural blueprints** — opening, section, list, stats, quote, comparison, timeline, image, video, and closing slides — where each preset fixes *where everything sits and how big it is* on the 1920×1080 stage, while the design system (colors, fonts, decoration) stays swappable. The model no longer improvises layout; it slots content into a composition that already works. Cheaper, non-Claude models suddenly produce decks that look deliberate — and Claude burns far fewer tokens getting there.
+That is what [`layout-presets/`](layout-presets/) does. It's a pack of 88 style-agnostic **structural blueprints** — opening, section, list, stats, quote, comparison, timeline, image, video, and closing slides — where each preset fixes *where everything sits and how big it is* on the 1920×1080 stage, while the design system (colors, fonts, decoration) stays swappable. The model no longer improvises layout; it slots content into a composition that already works. Cheaper, non-Claude models suddenly produce decks that look deliberate — and Claude burns far fewer tokens getting there.
 
 ## 📺 Watch the Walkthrough & Tutorial
 
@@ -51,7 +51,7 @@ https://github.com/user-attachments/assets/ef57333e-f879-432a-afb9-180388982478
 - **PPT Conversion** — Convert existing PowerPoint files to web, preserving all images and content.
 - **Anti-AI-Slop** — Curated distinctive styles that avoid generic AI aesthetics (bye-bye, purple gradients on white).
 - **Bold Template Pack** — Optional design-forward templates from `beautiful-html-templates`, loaded progressively so safe presets still work as the default fallback.
-- **Layout Presets (this fork)** — 50 style-agnostic structural blueprints that fix slide composition, so any model — not just Claude — can generate beautiful, consistent decks cheaply.
+- **Layout Presets (this fork)** — 88 style-agnostic structural blueprints that fix slide composition, so any model — not just Claude — can generate beautiful, consistent decks cheaply.
 - **Production Quality** — Accessible, fixed 16:9, well-commented code you can customize.
 
 ## Installation
@@ -551,7 +551,7 @@ This skill uses **progressive disclosure** — the main `SKILL.md` is a workflow
 | `bold-template-pack/selection-index.json` | Compact bold template metadata for candidate selection | Phase 2 (style selection) |
 | `bold-template-pack/templates/*/preview.md` | Tiny style cards for shortlisted bold previews | Phase 2 after shortlisting |
 | `bold-template-pack/templates/*/design.md` | Full design system for the selected bold template | Phase 3 after user selection |
-| `layout-presets/**/layout.md` | 50 style-agnostic slide composition blueprints | Phase 3 (generation, per slide) |
+| `layout-presets/**/layout.md` | 88 style-agnostic slide composition blueprints | Phase 3 (generation, per slide) |
 | `viewport-base.css`       | Mandatory stage-mechanics CSS (the only raw-CSS layer) | Phase 3 (generation) |
 | `html-template.md`        | HTML structure, Tailwind config pattern, JS features | Phase 3 (generation) |
 | `animation-patterns.md`   | Animation reference (Tailwind + choreography CSS) | Phase 3 (generation) |

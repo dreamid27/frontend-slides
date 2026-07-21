@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Brief History of Presentations</title>
+
+    <!-- === FONTS: Google Fonts CDN (Press Start 2P + VT323 — retro accents only) === -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <!-- === TAILWIND (CDN JIT — no build step) === -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- === DESIGN TOKENS: Retro Windows (Win9x system palette) === -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wgray:   'var(--w-gray)',    /* #c0c0c0 gray background     */
+                        wlight:  'var(--w-light)',   /* #d4d0c8 button face         */
+                        wdark:   'var(--w-dark)',    /* #808080 desktop fill        */
+                        ink:     'var(--w-ink)',     /* #222222 body text           */
+                        gray2:   'var(--w-gray2)',   /* #555555 secondary text      */
+                        navy:    'var(--w-navy)',    /* #000080 primary / headlines */
+                        nblue:   'var(--w-nblue)',   /* #0000a0 title bar grad end  */
+                        lblue:   'var(--w-lblue)',   /* #1084d0 tertiary data       */
+                        rgreen:  'var(--w-green)',   /* #008000 status OK           */
+                        rred:    'var(--w-red)',     /* #800000 status warning      */
+                        ryellow: 'var(--w-yellow)',  /* #808000 status moderate     */
+                        rcyan:   'var(--w-cyan)',    /* #008080 tertiary accent     */
+                        bshadow: 'var(--w-shadow)',  /* #404040 bevel shadow        */
+                    },
+                    fontFamily: {
+                        sys:   'var(--font-sys)',
+                        pixel: 'var(--font-pixel)',
+                        term:  'var(--font-term)',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* === 1. TOKEN DEFINITIONS (values only — utilities reference these) === */
+        :root {
+            --w-gray:   #c0c0c0;
+            --w-light:  #d4d0c8;
+            --w-dark:   #808080;
+            --w-ink:    #222222;
+            --w-gray2:  #555555;
+            --w-navy:   #000080;
+            --w-nblue:  #0000a0;
+            --w-lblue:  #1084d0;
+            --w-green:  #008000;
+            --w-red:    #800000;
+            --w-yellow: #808000;
+            --w-cyan:   #008080;
+            --w-shadow: #404040;
+            --font-sys:   'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-pixel: 'Press Start 2P', cursive;
+            --font-term:  'VT323', monospace;
+            --stage-bg: #404040;
+            --slide-bg: #808080;
+        }
+
+        /* === 2. STAGE MECHANICS (viewport-base.css, verbatim) === */
+        /* ===========================================
+           FIXED 16:9 STAGE: MANDATORY BASE STYLES
+           Include this ENTIRE file in every presentation
+           (the "stage mechanics" style block).
+           Slides are authored at 1920×1080 and scaled as a whole.
+
+           This is deliberately raw CSS, not Tailwind utilities:
+           the transform is set by JS, slide switching is state-
+           driven (.active/.visible), and print + reduced-motion
+           need media-query rules. Everything OUTSIDE this block
+           is styled with Tailwind utility classes.
+           =========================================== */
+
+        /* 1. Lock the browser viewport */
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+
+        /* 2. Full-window deck viewport */
+        .deck-viewport {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+
+        /* 3. Fixed 16:9 design canvas.
+           JavaScript sets transform: translate(...) scale(...). */
+        .deck-stage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            transform-origin: 0 0;
+            background: var(--slide-bg, #fff);
+        }
+
+        /* 4. Slides stack inside the fixed stage; author content at 1920×1080, never reflowed per device.
+           position needs !important: the Tailwind CDN injects utilities after this block, so a stray `relative` on a slide would win the cascade and blank every slide after the first. */
+        .slide {
+            position: absolute !important;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            background: var(--slide-bg, #fff);
+        }
+
+        .slide.active,
+        .slide.visible {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 1;
+        }
+
+        /* 5. Keep media inside authored slide bounds */
+        img,
+        video,
+        canvas,
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* 6. Presentation chrome stays outside the slide design system */
+        .deck-controls {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        /* 7. Print one fixed-size slide per page */
+        @media print {
+            html,
+            body {
+                width: 1920px;
+                height: auto;
+                overflow: visible;
+                background: #fff;
+            }
+
+            .deck-viewport {
+                position: static;
+                overflow: visible;
+                background: #fff;
+            }
+
+            .deck-stage {
+                position: static;
+                width: auto;
+                height: auto;
+                transform: none !important;
+                background: none;
+            }
+
+            .slide {
+                /* !important to beat the screen rule's hardened position */
+                position: relative !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                width: 1920px;
+                height: 1080px;
+                break-after: page;
+                page-break-after: always;
+            }
+
+            .slide:last-child {
+                break-after: auto;
+                page-break-after: auto;
+            }
+
+            .deck-controls {
+                display: none !important;
+            }
+        }
+
+        /* 8. Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+        }
+
+        /* === 3. CHOREOGRAPHY (state-scoped animation — can't be utilities) === */
+
+        /* Window "opens" fast and crisp — era-appropriate, no slow easing */
+        .winopen { opacity: 0; transform: scale(0.97); transition: opacity 0.25s ease-out, transform 0.25s ease-out; }
+        .slide.visible .winopen { opacity: 1; transform: scale(1); }
+
+        /* Staggered entrance — delays set inline via [transition-delay:...] utilities */
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.4s ease-out, transform 0.4s ease-out; }
+        .slide.visible .reveal { opacity: 1; transform: none; }
+
+        /* Rules / tracks draw themselves */
+        .draw-x   { transform: scaleX(0); transform-origin: left;   transition: transform 0.6s ease-out; }
+        .draw-x-r { transform: scaleX(0); transform-origin: right;  transition: transform 0.3s ease-out; }
+        .draw-y   { transform: scaleY(0); transform-origin: top;    transition: transform 0.3s ease-out; }
+        .draw-y-b { transform: scaleY(0); transform-origin: bottom; transition: transform 0.3s ease-out; }
+        .slide.visible :is(.draw-x, .draw-x-r, .draw-y, .draw-y-b) { transform: none; }
+
+        /* Nodes pop with a slight overshoot */
+        .pop { transform: scale(0); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .slide.visible .pop { transform: scale(1); }
+
+        /* Progress bars fill to their per-element --pw target */
+        .pbar-fill { width: 0; transition: width 0.9s ease-out 0.6s; }
+        .slide.visible .pbar-fill { width: var(--pw, 0%); }
+
+        /* Chart bars grow from the baseline */
+        .cbar { transform: scaleY(0); transform-origin: bottom; transition: transform 0.6s ease-out; }
+        .slide.visible .cbar { transform: none; }
+
+        /* Marquee — the Win9x <marquee>, re-implemented */
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        .marquee-run { animation: marquee 14s linear infinite; }
+
+        /* Terminal cursor blink */
+        @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+        .blink { animation: blink 1.06s step-end infinite; }
+
+        /* Deck chrome (outside the stage): beveled square nav dots + active state */
+        .navdot {
+            width: 16px; height: 16px; cursor: pointer; background: var(--w-gray);
+            border: 2px solid; border-color: #ffffff #000000 #000000 #ffffff; padding: 0;
+        }
+        .navdot.on { background: var(--w-navy); box-shadow: inset 0 0 0 4px var(--w-navy), inset 0 0 0 6px #ffffff; }
+    </style>
+</head>
+<body>
+    <div class="deck-viewport">
+        <main class="deck-stage" id="deckStage">
+
+            <!-- === Slide 1: Title — layout: opening/offset-marquee (modified: wrapped in win-window chrome; ghost numeral skinned as faint "95"; footer as Win9x status bar) === -->
+            <section class="slide active bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <!-- title bar -->
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">H</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">HISTORY.EXE</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <!-- window body -->
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden">
+                        <!-- ghost "95" cropped by the window edge (skin point: pixel-font era numeral) -->
+                        <div class="absolute right-[-40px] top-[30px] font-pixel text-[300px] leading-none text-navy opacity-[0.08] select-none">95</div>
+                        <!-- chrome row -->
+                        <div class="reveal absolute left-0 right-0 top-0 flex items-baseline justify-between">
+                            <span class="font-term text-[27px] text-navy">C:\DECKS&gt; RUN HISTORY.EXE</span>
+                            <span class="font-sys text-[18px] text-gray2 tracking-[1px] uppercase">VER 1.0 &mdash; JULY 2026</span>
+                        </div>
+                        <div class="reveal [transition-delay:0.1s] absolute left-0 right-0 top-[46px] h-[2px] bg-bshadow shadow-[0_2px_0_#ffffff]"></div>
+                        <!-- accent bar + display title (pixel-display splash moment) -->
+                        <div class="reveal [transition-delay:0.25s] absolute left-0 top-[270px] w-[108px] h-[12px] bg-navy"></div>
+                        <h1 class="absolute left-0 top-[320px] font-pixel text-navy text-[56px] leading-[1.55]">
+                            <span class="reveal [transition-delay:0.35s] block">A BRIEF HISTORY</span>
+                            <span class="reveal [transition-delay:0.47s] block">OF PRESENTATIONS</span>
+                        </h1>
+                        <p class="reveal [transition-delay:0.62s] absolute left-0 top-[540px] max-w-[1020px] font-sys text-[27px] leading-[1.6] text-gray2">
+                            From acetate transparencies to AI-generated decks &mdash; sixty years
+                            of trying to make the point stick.
+                        </p>
+                        <!-- marquee (splash-slide signature element) -->
+                        <div class="reveal [transition-delay:0.8s] absolute left-0 right-0 bottom-[64px] h-[46px] overflow-hidden flex items-center bg-white border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white">
+                            <div class="whitespace-nowrap flex">
+                                <span class="marquee-run inline-block font-term text-[30px] text-navy pr-[80px]">*** WELCOME TO HISTORY.EXE *** 60 YEARS OF SLIDES IN 10 SCREENS *** PRESS ANY ARROW KEY OR CLICK TO BEGIN *** NO BULLET POINTS WERE HARMED ***</span>
+                                <span class="marquee-run inline-block font-term text-[30px] text-navy pr-[80px]" aria-hidden="true">*** WELCOME TO HISTORY.EXE *** 60 YEARS OF SLIDES IN 10 SCREENS *** PRESS ANY ARROW KEY OR CLICK TO BEGIN *** NO BULLET POINTS WERE HARMED ***</span>
+                            </div>
+                        </div>
+                        <!-- status bar footer -->
+                        <div class="reveal [transition-delay:0.95s] absolute left-0 right-0 bottom-0 flex items-center gap-[8px]">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">A DEMO DECK FOR THE FRONTEND SLIDES SKILL</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">TEMPLATE: RETRO WINDOWS</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">READY</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 2: The eras — layout: timeline/meridian (modified: track and entries live inside a win-window body; nodes skinned as beveled squares) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">T</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">TIMELINE.PRJ</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden">
+                        <p class="reveal font-term text-[24px] text-navy">TIMELINE &mdash; 1965 -&gt; TODAY</p>
+                        <h2 class="reveal [transition-delay:0.1s] font-sys text-[45px] font-bold text-navy leading-[1.15] mt-[6px]">Sixty years in five stops</h2>
+
+                        <!-- track -->
+                        <div class="draw-x [transition-delay:0.35s] absolute left-[20px] right-[20px] top-[460px] h-[3px] bg-bshadow shadow-[0_2px_0_#ffffff]"></div>
+
+                        <!-- entry 1 (above) : node x 130 -->
+                        <div class="reveal [transition-delay:0.55s] absolute left-[-40px] top-[190px] w-[340px] h-[220px] flex flex-col justify-end items-center text-center gap-[6px]">
+                            <span class="font-term text-[27px] text-navy">1965</span>
+                            <span class="font-sys text-[28px] font-bold text-ink leading-[1.1]">Overhead era</span>
+                            <span class="font-sys text-[20px] text-gray2 leading-[1.4]">Acetate, markers, and a very hot lamp.</span>
+                        </div>
+                        <div class="draw-y-b [transition-delay:0.5s] absolute left-[128px] top-[412px] w-[3px] h-[46px] bg-bshadow"></div>
+                        <div class="pop [transition-delay:0.5s] absolute left-[120px] top-[451px] w-[20px] h-[20px] bg-wgray border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+
+                        <!-- entry 2 (below) : node x 490 -->
+                        <div class="draw-y [transition-delay:0.65s] absolute left-[488px] top-[465px] w-[3px] h-[46px] bg-bshadow"></div>
+                        <div class="pop [transition-delay:0.65s] absolute left-[480px] top-[451px] w-[20px] h-[20px] bg-wgray border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+                        <div class="reveal [transition-delay:0.7s] absolute left-[320px] top-[520px] w-[340px] flex flex-col items-center text-center gap-[6px]">
+                            <span class="font-term text-[27px] text-navy">1987</span>
+                            <span class="font-sys text-[28px] font-bold text-ink leading-[1.1]">PowerPoint 1.0</span>
+                            <span class="font-sys text-[20px] text-gray2 leading-[1.4]">Forethought ships Presenter for the Mac.</span>
+                        </div>
+
+                        <!-- entry 3 (above) : node x 850 -->
+                        <div class="reveal [transition-delay:0.85s] absolute left-[680px] top-[190px] w-[340px] h-[220px] flex flex-col justify-end items-center text-center gap-[6px]">
+                            <span class="font-term text-[27px] text-navy">2011</span>
+                            <span class="font-sys text-[28px] font-bold text-ink leading-[1.1]">The browser deck</span>
+                            <span class="font-sys text-[20px] text-gray2 leading-[1.4]">reveal.js makes HTML the stage.</span>
+                        </div>
+                        <div class="draw-y-b [transition-delay:0.8s] absolute left-[848px] top-[412px] w-[3px] h-[46px] bg-bshadow"></div>
+                        <div class="pop [transition-delay:0.8s] absolute left-[840px] top-[451px] w-[20px] h-[20px] bg-wgray border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+
+                        <!-- entry 4 (below) : node x 1210 -->
+                        <div class="draw-y [transition-delay:0.95s] absolute left-[1208px] top-[465px] w-[3px] h-[46px] bg-bshadow"></div>
+                        <div class="pop [transition-delay:0.95s] absolute left-[1200px] top-[451px] w-[20px] h-[20px] bg-wgray border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+                        <div class="reveal [transition-delay:1.0s] absolute left-[1040px] top-[520px] w-[340px] flex flex-col items-center text-center gap-[6px]">
+                            <span class="font-term text-[27px] text-navy">2023</span>
+                            <span class="font-sys text-[28px] font-bold text-ink leading-[1.1]">AI joins in</span>
+                            <span class="font-sys text-[20px] text-gray2 leading-[1.4]">One prompt drafts the whole deck.</span>
+                        </div>
+
+                        <!-- entry 5 (above, "today", accent node) : node x 1570 -->
+                        <div class="reveal [transition-delay:1.15s] absolute left-[1400px] top-[190px] w-[340px] h-[220px] flex flex-col justify-end items-center text-center gap-[6px]">
+                            <span class="font-term text-[27px] text-navy">TODAY</span>
+                            <span class="font-sys text-[28px] font-bold text-ink leading-[1.1]">Frontend Slides</span>
+                            <span class="font-sys text-[20px] text-gray2 leading-[1.4]">Single-file decks, styled by a skill.</span>
+                        </div>
+                        <div class="draw-y-b [transition-delay:1.1s] absolute left-[1568px] top-[412px] w-[3px] h-[46px] bg-bshadow"></div>
+                        <div class="pop [transition-delay:1.15s] absolute left-[1556px] top-[447px] w-[28px] h-[28px] bg-navy border-[2px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_0_0_0_5px_#000080,inset_0_0_0_7px_#ffffff]"></div>
+
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:1.3s] absolute left-0 right-0 bottom-0 flex items-center gap-[8px]">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">SOURCE: COMPUTER HISTORY MUSEUM</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">SPAN: 60 YEARS</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">5 STOPS LOADED</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 3: Overhead projector era — layout: custom (win-window dashboard: viewer panel + issue list + KPI group-box row) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">O</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">OVERHEAD.BMP</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden flex flex-col gap-[20px]">
+                        <div class="reveal shrink-0">
+                            <h2 class="font-sys text-[45px] font-bold text-navy leading-[1.1]">Era 01 &mdash; the overhead projector</h2>
+                            <p class="font-sys text-[24px] text-gray2 mt-[4px]">1960s&ndash;1990s: one lamp, one lens, and whatever you could draw on plastic.</p>
+                        </div>
+                        <div class="flex gap-[24px] flex-1 min-h-0">
+                            <!-- transparency viewer -->
+                            <div class="reveal [transition-delay:0.15s] relative flex-[11] border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[26px] px-[20px] pb-[16px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">TRANSPARENCY VIEWER</span>
+                                <div class="h-full bg-white border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white p-[20px] flex flex-col">
+                                    <p class="font-sys text-[24px] font-bold text-ink underline decoration-[2px]">Q3 REVENUE (drawn in marker)</p>
+                                    <div class="flex-1 flex items-end gap-[44px] px-[24px] pt-[16px] pb-[2px]">
+                                        <div class="cbar [transition-delay:0.4s] w-[90px] h-[34%] bg-navy"></div>
+                                        <div class="cbar [transition-delay:0.5s] w-[90px] h-[52%] bg-nblue"></div>
+                                        <div class="cbar [transition-delay:0.6s] w-[90px] h-[68%] bg-lblue"></div>
+                                        <div class="cbar [transition-delay:0.7s] w-[90px] h-[88%] bg-rgreen"></div>
+                                    </div>
+                                    <div class="h-[3px] bg-ink"></div>
+                                    <p class="font-sys text-[17px] text-gray2 mt-[10px]">FIG 1. A chart, drawn by hand, projected at 500 watts.</p>
+                                </div>
+                            </div>
+                            <!-- known issues -->
+                            <div class="reveal [transition-delay:0.3s] relative flex-[9] border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[30px] px-[24px] pb-[16px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">KNOWN ISSUES</span>
+                                <ul class="flex flex-col gap-[16px] font-sys text-[24px] text-ink">
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Lamp burns out mid-lecture</li>
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Transparencies stick together</li>
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Everything is handwritten</li>
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>The fan is louder than you</li>
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Undo requires a wet cloth</li>
+                                </ul>
+                                <p class="font-sys text-[18px] text-gray2 mt-[20px]">STATUS: <span class="text-rred font-bold">WONTFIX</span> &mdash; hardware retired</p>
+                            </div>
+                        </div>
+                        <!-- KPI row -->
+                        <div class="flex gap-[24px] shrink-0 h-[168px]">
+                            <div class="reveal [transition-delay:0.45s] relative flex-1 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[28px] px-[22px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">CLASSROOMS</span>
+                                <p class="font-sys text-[45px] font-bold text-navy leading-[1.05]">3M+</p>
+                                <p class="font-sys text-[20px] font-bold text-rgreen mt-[2px]">&#9650; UBIQUITOUS</p>
+                                <p class="font-sys text-[17px] text-gray2">by the mid-1980s</p>
+                            </div>
+                            <div class="reveal [transition-delay:0.55s] relative flex-1 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[28px] px-[22px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">LAMP POWER</span>
+                                <p class="font-sys text-[45px] font-bold text-navy leading-[1.05]">500W</p>
+                                <p class="font-sys text-[20px] font-bold text-rred mt-[2px]">&#9650; VERY HOT</p>
+                                <p class="font-sys text-[17px] text-gray2">do not touch the stage</p>
+                            </div>
+                            <div class="reveal [transition-delay:0.65s] relative flex-1 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[28px] px-[22px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">IDEAS PER SHEET</span>
+                                <p class="font-sys text-[45px] font-bold text-navy leading-[1.05]">1</p>
+                                <p class="font-sys text-[20px] font-bold text-ryellow mt-[2px]">&#9632; CONSTANT</p>
+                                <p class="font-sys text-[17px] text-gray2">an accidental best practice</p>
+                            </div>
+                        </div>
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:0.8s] flex items-center gap-[8px] shrink-0">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">SOURCE: LECTURE HALLS EVERYWHERE</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">ERA: 1960&ndash;1990</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rred border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">OBSOLETE</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 4: PowerPoint 1987 — layout: stats/stat-strip (modified: tiles skinned as group-box KPI cards inside a win-window; market-share progress bar added) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">P</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">POWERPNT.EXE</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden flex flex-col gap-[22px]">
+                        <div class="reveal shrink-0">
+                            <h2 class="font-sys text-[45px] font-bold text-navy leading-[1.1]">Era 02 &mdash; 1987: the deck goes digital</h2>
+                            <p class="font-sys text-[24px] text-gray2 mt-[4px]">Three numbers that turned slides into software.</p>
+                        </div>
+                        <!-- three equal stat tiles -->
+                        <div class="flex gap-[24px] flex-1 min-h-0">
+                            <div class="reveal [transition-delay:0.2s] relative flex-1 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[34px] px-[26px] flex flex-col">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">YEAR</span>
+                                <p class="font-sys text-[84px] font-bold text-navy leading-[1]">1987</p>
+                                <p class="font-sys text-[24px] text-ink leading-[1.4] mt-[14px]">Presenter 1.0 ships for the Macintosh</p>
+                                <p class="font-term text-[24px] text-gray2 mt-auto mb-[16px] uppercase">Renamed PowerPoint</p>
+                            </div>
+                            <div class="reveal [transition-delay:0.35s] relative flex-1 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[34px] px-[26px] flex flex-col">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">PRICE PAID</span>
+                                <p class="font-sys text-[84px] font-bold text-navy leading-[1]">$14M</p>
+                                <p class="font-sys text-[24px] text-ink leading-[1.4] mt-[14px]">Microsoft buys Forethought months later</p>
+                                <p class="font-term text-[24px] text-gray2 mt-auto mb-[16px] uppercase">First major MS acquisition</p>
+                            </div>
+                            <div class="reveal [transition-delay:0.5s] relative flex-1 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[34px] px-[26px] flex flex-col">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">DAILY DECKS</span>
+                                <p class="font-sys text-[84px] font-bold text-navy leading-[1]">30M</p>
+                                <p class="font-sys text-[24px] text-ink leading-[1.4] mt-[14px]">Presentations made every day by the 2010s</p>
+                                <p class="font-term text-[24px] text-gray2 mt-auto mb-[16px] uppercase">Give or take a keynote</p>
+                            </div>
+                        </div>
+                        <!-- market share progress -->
+                        <div class="reveal [transition-delay:0.65s] relative shrink-0 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[26px] px-[24px] pb-[18px]">
+                            <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">DESKTOP PRESENTATION MARKET</span>
+                            <div class="flex items-center gap-[20px]">
+                                <div class="flex-1 h-[36px] bg-white border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white p-[3px]">
+                                    <div class="pbar-fill [--pw:95%] h-full bg-navy"></div>
+                                </div>
+                                <span class="font-sys text-[27px] font-bold text-navy w-[80px] text-right">95%</span>
+                            </div>
+                            <p class="font-sys text-[18px] text-gray2 mt-[8px]">Peak share of installed presentation software, late 1990s.</p>
+                        </div>
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:0.8s] flex items-center gap-[8px] shrink-0">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">SOURCE: COMPUTER HISTORY MUSEUM</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">PERIOD: 1987&ndash;2010</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">INSTALLED</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 5: The backlash — layout: quote/testimony (modified: portrait plate replaced by a WARNING.EXE mini-window, per the multi-window rule; em phrase uses semantic warning red) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">T</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">TUFTE.DOC</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden">
+                        <p class="reveal font-term text-[24px] text-navy">THE BACKLASH &mdash; 2003</p>
+                        <!-- giant quote glyph -->
+                        <div class="reveal [transition-delay:0.1s] absolute left-[-8px] top-[54px] font-sys text-[210px] leading-[0.75] font-bold text-navy select-none">&ldquo;</div>
+                        <!-- the quotation -->
+                        <blockquote class="absolute left-0 top-[250px] max-w-[1040px] font-sys text-[54px] font-bold leading-[1.25] text-ink">
+                            <span class="reveal [transition-delay:0.25s] block">Power corrupts.</span>
+                            <span class="reveal [transition-delay:0.37s] block">PowerPoint <em class="not-italic text-rred">corrupts</em></span>
+                            <span class="reveal [transition-delay:0.49s] block"><em class="not-italic text-rred">absolutely.</em></span>
+                        </blockquote>
+                        <!-- attribution -->
+                        <div class="absolute left-0 bottom-[60px]">
+                            <div class="reveal [transition-delay:0.65s] w-[72px] h-[6px] bg-navy mb-[18px]"></div>
+                            <p class="reveal [transition-delay:0.72s] font-sys text-[33px] font-bold text-ink">Edward Tufte</p>
+                            <p class="reveal [transition-delay:0.78s] font-term text-[24px] text-gray2 uppercase mt-[4px]">"PowerPoint is Evil" &mdash; Wired, September 2003</p>
+                        </div>
+                        <!-- WARNING.EXE mini-window (inactive title bar — secondary window) -->
+                        <div class="reveal [transition-delay:0.55s] absolute right-0 top-[250px] w-[480px] bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                            <div class="flex items-center gap-[10px] h-[38px] px-[8px] bg-[linear-gradient(90deg,#808080,#a0a0a0)]">
+                                <span class="w-[24px] h-[24px] bg-white border border-black text-navy text-[14px] font-bold font-sys flex items-center justify-center shrink-0">W</span>
+                                <span class="font-sys text-white text-[18px] font-bold tracking-[0.75px] uppercase">WARNING.EXE</span>
+                                <span class="ml-auto w-[27px] h-[24px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">X</span>
+                            </div>
+                            <div class="p-[22px] flex flex-col gap-[18px]">
+                                <div class="flex items-center gap-[18px]">
+                                    <span class="font-sys text-[48px] text-ryellow leading-none">&#9888;</span>
+                                    <p class="font-sys text-[22px] text-ink leading-[1.45]">This presentation contains 47 bullet points and 12 slide transitions.</p>
+                                </div>
+                                <div class="flex justify-end gap-[12px]">
+                                    <span class="px-[30px] py-[7px] bg-wlight font-sys text-[20px] text-ink border-[3px] border-t-white border-l-white border-r-black border-b-black">OK</span>
+                                    <span class="px-[30px] py-[7px] bg-wlight font-sys text-[20px] text-ink border-[3px] border-t-white border-l-white border-r-black border-b-black">Rethink</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:0.9s] absolute left-0 right-0 bottom-0 flex items-center gap-[8px]">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">FILE: THE COGNITIVE STYLE OF POWERPOINT</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-ryellow border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">ON THE RECORD</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 6: The web era — layout: custom (win-window with Explorer tree view + rationale group box) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">E</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">EXPLORER.EXE &mdash; C:\WEB_DECKS</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden flex flex-col gap-[22px]">
+                        <div class="reveal shrink-0">
+                            <h2 class="font-sys text-[45px] font-bold text-navy leading-[1.1]">Era 03 &mdash; the deck escapes to the browser</h2>
+                            <p class="font-sys text-[24px] text-gray2 mt-[4px]">HTML stops being just for pages. Every talk gets a URL.</p>
+                        </div>
+                        <div class="flex gap-[24px] flex-1 min-h-0">
+                            <!-- explorer tree -->
+                            <div class="reveal [transition-delay:0.15s] flex-[11] bg-white border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white p-[22px] font-sys text-[24px] text-ink">
+                                <div class="flex items-center gap-[12px] font-bold"><span class="font-term text-[24px] text-gray2 w-[20px]">-</span><span>&#128193;</span><span>C:\WEB_DECKS</span></div>
+                                <div class="reveal [transition-delay:0.3s] flex items-center gap-[12px] mt-[16px] ml-[48px]"><span class="font-term text-[24px] text-gray2 w-[20px]">+</span><span>&#128196;</span><span class="font-bold">1997</span><span class="text-gray2">&mdash; lecture01.htm, hand-written; view source was the tutorial</span></div>
+                                <div class="reveal [transition-delay:0.42s] flex items-center gap-[12px] mt-[14px] ml-[48px]"><span class="font-term text-[24px] text-gray2 w-[20px]">+</span><span>&#128193;</span><span class="font-bold">2005_S5</span><span class="text-gray2">&mdash; Eric Meyer's standards-based slide show</span></div>
+                                <div class="reveal [transition-delay:0.54s] flex items-center gap-[12px] mt-[14px] ml-[48px]"><span class="font-term text-[24px] text-gray2 w-[20px]">+</span><span>&#128193;</span><span class="font-bold">2006_CLOUD</span><span class="text-gray2">&mdash; decks move into the browser tab for good</span></div>
+                                <div class="reveal [transition-delay:0.66s] flex items-center gap-[12px] mt-[14px] ml-[48px]"><span class="font-term text-[24px] text-gray2 w-[20px]">-</span><span>&#128193;</span><span class="font-bold">2011_REVEALJS</span><span class="text-gray2">&mdash; HTML decks go mainstream</span></div>
+                                <div class="reveal [transition-delay:0.78s] flex items-center gap-[12px] mt-[14px] ml-[96px]"><span class="font-term text-[24px] text-gray2 w-[20px]"></span><span>&#128196;</span><span>index.html</span><span class="text-gray2">&mdash; the whole talk, one file</span></div>
+                                <div class="reveal [transition-delay:0.9s] flex items-center gap-[12px] mt-[14px] ml-[48px]"><span class="font-term text-[24px] text-gray2 w-[20px]">+</span><span>&#128193;</span><span class="font-bold">2019_ONWARD</span><span class="text-gray2">&mdash; every conference talk gets a URL</span></div>
+                            </div>
+                            <!-- why the browser won -->
+                            <div class="reveal [transition-delay:0.35s] relative flex-[8] border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[30px] px-[24px] pb-[18px] flex flex-col">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">WHY THE BROWSER WON</span>
+                                <ul class="flex flex-col gap-[15px] font-sys text-[23px] text-ink">
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>A URL is the new attachment</li>
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>CSS is the animation engine</li>
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Version control loves plain text</li>
+                                    <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>No license key required</li>
+                                </ul>
+                                <div class="mt-auto flex flex-col gap-[10px]">
+                                    <div class="flex items-center gap-[12px] font-sys text-[21px] text-ink">
+                                        <span class="w-[24px] h-[24px] bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>
+                                        Open standard
+                                    </div>
+                                    <div class="flex items-center gap-[12px] font-sys text-[21px] text-ink">
+                                        <span class="w-[24px] h-[24px] bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>
+                                        Runs on anything with a screen
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:1.0s] flex items-center gap-[8px] shrink-0">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">PROTOCOL: HTTP/1.1</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">FORMAT: HTML + CSS</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">6 OBJECT(S)</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 7: AI-generated decks — layout: custom (win-window with DOS terminal panel + change list + benchmark progress bars) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">A</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">AI.LOG</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden flex flex-col gap-[22px]">
+                        <div class="reveal shrink-0">
+                            <h2 class="font-sys text-[45px] font-bold text-navy leading-[1.1]">Era 04 &mdash; the deck writes itself</h2>
+                            <p class="font-sys text-[24px] text-gray2 mt-[4px]">2023 onward: describe the talk, review the slides.</p>
+                        </div>
+                        <div class="flex gap-[24px] flex-1 min-h-0">
+                            <!-- DOS terminal -->
+                            <div class="reveal [transition-delay:0.15s] flex-[11] bg-black border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white p-[26px] font-term text-[30px] leading-[1.4] text-rgreen overflow-hidden">
+                                <p class="reveal [transition-delay:0.3s] text-white">C:\&gt; claude "make me a deck about our Q3 results"</p>
+                                <p class="reveal [transition-delay:0.5s] mt-[14px]">PARSING INTENT .............. OK</p>
+                                <p class="reveal [transition-delay:0.65s]">PICKING A TEMPLATE .......... RETRO-WINDOWS</p>
+                                <p class="reveal [transition-delay:0.8s]">RESISTING AI SLOP ........... OK</p>
+                                <p class="reveal [transition-delay:0.95s]">WRITING 10 SLIDES ........... DONE</p>
+                                <p class="reveal [transition-delay:1.1s]">CHECKING TEXT OVERFLOW ...... 0 ERRORS</p>
+                                <p class="reveal [transition-delay:1.25s] mt-[14px] text-white">DECK.HTML SAVED &mdash; 1 FILE, 0 DEPENDENCIES</p>
+                                <p class="reveal [transition-delay:1.4s] mt-[14px] text-white">C:\&gt; <span class="blink inline-block w-[16px] h-[30px] bg-rgreen align-middle"></span></p>
+                            </div>
+                            <!-- right column -->
+                            <div class="flex-[8] flex flex-col gap-[24px] min-h-0">
+                                <div class="reveal [transition-delay:0.35s] relative border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[30px] px-[24px] pb-[18px]">
+                                    <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">WHAT CHANGED</span>
+                                    <ul class="flex flex-col gap-[14px] font-sys text-[23px] text-ink">
+                                        <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Outline to deck in minutes</li>
+                                        <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Design systems on tap</li>
+                                        <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>The bottleneck is taste, not tools</li>
+                                        <li class="flex gap-[14px]"><span class="text-navy font-bold">&gt;</span>Humans still own the story</li>
+                                    </ul>
+                                </div>
+                                <div class="reveal [transition-delay:0.55s] relative flex-1 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[30px] px-[24px] pb-[18px] flex flex-col justify-center gap-[20px]">
+                                    <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">BENCHMARKS</span>
+                                    <div>
+                                        <div class="flex justify-between font-sys text-[19px] text-ink mb-[6px]"><span>DRAFTING TIME SAVED</span><span class="font-bold text-rgreen">92%</span></div>
+                                        <div class="h-[28px] bg-white border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white p-[3px]">
+                                            <div class="pbar-fill [--pw:92%] h-full bg-navy"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between font-sys text-[19px] text-ink mb-[6px]"><span>TASTE STILL REQUIRED</span><span class="font-bold text-navy">100%</span></div>
+                                        <div class="h-[28px] bg-white border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white p-[3px]">
+                                            <div class="pbar-fill [--pw:100%] h-full bg-navy"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:1.5s] flex items-center gap-[8px] shrink-0">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">INPUT: ONE PROMPT</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">OUTPUT: DECK.HTML</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">GENERATING</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 8: The modern deck loop — layout: process/circuit (modified: loop drawn inside a win-window body; edges use the bevel-rule vocabulary) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">L</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">LOOP.INI</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden">
+                        <p class="reveal font-term text-[24px] text-navy">HOW DECKS GET MADE NOW</p>
+
+                        <!-- loop rectangle: x 360->1310, y 240->640 (body-relative) -->
+                        <div class="draw-x   [transition-delay:0.35s] absolute left-[360px] top-[240px] w-[950px] h-[3px] bg-bshadow shadow-[0_2px_0_#ffffff]"></div>
+                        <div class="draw-y   [transition-delay:0.63s] absolute left-[1307px] top-[240px] w-[3px] h-[400px] bg-bshadow shadow-[2px_0_0_#ffffff]"></div>
+                        <div class="draw-x-r [transition-delay:0.91s] absolute left-[360px] top-[637px] w-[950px] h-[3px] bg-bshadow shadow-[0_2px_0_#ffffff]"></div>
+                        <div class="draw-y-b [transition-delay:1.19s] absolute left-[360px]  top-[240px] w-[3px] h-[400px] bg-bshadow shadow-[2px_0_0_#ffffff]"></div>
+
+                        <!-- direction ticks (clockwise) -->
+                        <div class="reveal [transition-delay:1.5s] absolute left-[820px] top-[204px] font-sys text-[27px] text-gray2">&#9656;</div>
+                        <div class="reveal [transition-delay:1.5s] absolute left-[1322px] top-[420px] font-sys text-[27px] text-gray2">&#9662;</div>
+                        <div class="reveal [transition-delay:1.5s] absolute left-[820px] top-[646px] font-sys text-[27px] text-gray2">&#9666;</div>
+                        <div class="reveal [transition-delay:1.5s] absolute left-[310px] top-[420px] font-sys text-[27px] text-gray2">&#9652;</div>
+
+                        <!-- corner nodes (01 accent, enlarged; pops clockwise 02→03→04→01) -->
+                        <div class="pop [transition-delay:1.42s] absolute left-[346px]  top-[226px] w-[30px] h-[30px] bg-navy border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+                        <div class="pop [transition-delay:0.58s] absolute left-[1297px] top-[230px] w-[22px] h-[22px] bg-wgray border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+                        <div class="pop [transition-delay:0.86s] absolute left-[1297px] top-[627px] w-[22px] h-[22px] bg-wgray border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+                        <div class="pop [transition-delay:1.14s] absolute left-[350px]  top-[627px] w-[22px] h-[22px] bg-wgray border-[2px] border-t-white border-l-white border-r-black border-b-black"></div>
+
+                        <!-- center title -->
+                        <div class="reveal [transition-delay:0.15s] absolute left-[460px] top-[380px] w-[750px] text-center">
+                            <p class="font-sys text-[48px] font-bold text-navy leading-[1.1]">The modern deck loop</p>
+                            <p class="font-sys text-[21px] text-gray2 mt-[8px]">v2.0 &mdash; runs continuously</p>
+                        </div>
+
+                        <!-- station labels: clockwise from top-left -->
+                        <div class="reveal [transition-delay:1.45s] absolute left-[360px] top-[130px] w-[420px]">
+                            <p class="font-sys text-[33px] font-bold text-ink"><span class="font-term text-[30px] text-navy mr-[12px]">01</span>Prompt</p>
+                            <p class="font-sys text-[20px] text-gray2 mt-[2px]">Describe the talk you owe</p>
+                        </div>
+                        <div class="reveal [transition-delay:0.62s] absolute right-[400px] top-[130px] w-[420px] text-right">
+                            <p class="font-sys text-[33px] font-bold text-ink"><span class="font-term text-[30px] text-navy mr-[12px]">02</span>Generate</p>
+                            <p class="font-sys text-[20px] text-gray2 mt-[2px]">AI drafts slides and styling</p>
+                        </div>
+                        <div class="reveal [transition-delay:0.9s] absolute right-[400px] top-[670px] w-[420px] text-right">
+                            <p class="font-sys text-[33px] font-bold text-ink"><span class="font-term text-[30px] text-navy mr-[12px]">03</span>Present</p>
+                            <p class="font-sys text-[20px] text-gray2 mt-[2px]">Ship the deck to the room</p>
+                        </div>
+                        <div class="reveal [transition-delay:1.18s] absolute left-[360px] top-[670px] w-[420px]">
+                            <p class="font-sys text-[33px] font-bold text-ink"><span class="font-term text-[30px] text-navy mr-[12px]">04</span>Refine</p>
+                            <p class="font-sys text-[20px] text-gray2 mt-[2px]">Feedback tunes the next prompt</p>
+                        </div>
+
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:1.6s] absolute left-0 right-0 bottom-0 flex items-center gap-[8px]">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">CADENCE: EVERY TALK</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">STATION 04 FEEDS STATION 01</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">LOOPING</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 9: Frontend Slides — layout: custom (win-window feature dashboard: 2×2 group boxes + button strip + progress bar) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">F</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">FRONTEND.EXE</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden flex flex-col gap-[20px]">
+                        <div class="reveal shrink-0">
+                            <h2 class="font-sys text-[45px] font-bold text-navy leading-[1.1]">Now &mdash; Frontend Slides</h2>
+                            <p class="font-sys text-[24px] text-gray2 mt-[4px]">Presentations as software, on purpose this time.</p>
+                        </div>
+                        <!-- 2×2 feature group boxes -->
+                        <div class="grid grid-cols-2 grid-rows-2 gap-x-[24px] gap-y-[26px] flex-1 min-h-0">
+                            <div class="reveal [transition-delay:0.15s] relative border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[28px] px-[24px] pb-[14px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">SINGLE FILE</span>
+                                <div class="flex flex-col gap-[12px] font-sys text-[23px] text-ink">
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>One .html &mdash; zero build steps</div>
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>Tailwind and fonts via CDN</div>
+                                </div>
+                            </div>
+                            <div class="reveal [transition-delay:0.25s] relative border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[28px] px-[24px] pb-[14px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">FIXED STAGE</span>
+                                <div class="flex flex-col gap-[12px] font-sys text-[23px] text-ink">
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>Authored at 1920 &times; 1080</div>
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>Scales whole to any screen</div>
+                                </div>
+                            </div>
+                            <div class="reveal [transition-delay:0.35s] relative border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[28px] px-[24px] pb-[14px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">MOTION</span>
+                                <div class="flex flex-col gap-[12px] font-sys text-[23px] text-ink">
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>CSS-only choreography</div>
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>Staggered entrance reveals</div>
+                                </div>
+                            </div>
+                            <div class="reveal [transition-delay:0.45s] relative border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white pt-[28px] px-[24px] pb-[14px]">
+                                <span class="absolute -top-[13px] left-[16px] bg-wlight px-[10px] font-sys text-[20px] font-bold text-ink">STYLE SYSTEM</span>
+                                <div class="flex flex-col gap-[12px] font-sys text-[23px] text-ink">
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>12 presets + bold templates</div>
+                                    <div class="flex items-center gap-[14px]"><span class="w-[24px] h-[24px] shrink-0 bg-white border-[2px] border-t-black border-l-black border-r-white border-b-white flex items-center justify-center text-[17px] leading-none">x</span>This one: <span class="font-bold text-navy">RETRO WINDOWS</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- button strip + slop meter -->
+                        <div class="reveal [transition-delay:0.6s] flex items-center gap-[16px] shrink-0">
+                            <span class="px-[36px] py-[9px] bg-wlight font-sys text-[21px] text-ink border-[3px] border-t-white border-l-white border-r-black border-b-black">Generate</span>
+                            <span class="px-[36px] py-[9px] bg-wlight font-sys text-[21px] text-ink border-[3px] border-t-white border-l-white border-r-black border-b-black">Present</span>
+                            <span class="px-[36px] py-[9px] bg-wlight font-sys text-[21px] text-ink border-[3px] border-t-white border-l-white border-r-black border-b-black">Export PDF</span>
+                            <span class="px-[36px] py-[9px] bg-wlight font-sys text-[21px] text-ink border-[3px] border-t-white border-l-white border-r-black border-b-black">Deploy</span>
+                            <div class="ml-auto flex items-center gap-[14px] w-[560px]">
+                                <span class="font-sys text-[19px] text-ink whitespace-nowrap">AI SLOP RESISTANCE</span>
+                                <div class="flex-1 h-[28px] bg-white border-[3px] border-t-bshadow border-l-bshadow border-r-white border-b-white p-[3px]">
+                                    <div class="pbar-fill [--pw:100%] h-full bg-navy"></div>
+                                </div>
+                                <span class="font-sys text-[19px] font-bold text-rgreen">MAX</span>
+                            </div>
+                        </div>
+                        <!-- status footer -->
+                        <div class="reveal [transition-delay:0.75s] flex items-center gap-[8px] shrink-0">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">ENGINE: CLAUDE CODE SKILL</div>
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">OUTPUT: ONE FILE</div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">LIVE</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- === Slide 10: Closing — layout: closing/terminal-frame (modified: the win-window IS the inset frame; statement in pixel display as the deck's second splash moment; ghost echo "END"; contact strip + credit link) === -->
+            <section class="slide bg-wdark">
+                <div class="winopen absolute left-[48px] right-[48px] top-[36px] bottom-[66px] flex flex-col bg-wlight border-[3px] border-t-white border-l-white border-r-black border-b-black shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#404040]">
+                    <div class="flex items-center gap-[12px] h-[44px] px-[10px] shrink-0 bg-[linear-gradient(90deg,#000080,#0000a0)]">
+                        <span class="w-[27px] h-[27px] bg-white border border-black text-navy text-[16px] font-bold font-sys flex items-center justify-center shrink-0">S</span>
+                        <span class="font-sys text-white text-[21px] font-bold tracking-[0.75px] uppercase">SHUTDOWN.EXE</span>
+                        <span class="ml-auto flex gap-[4px]">
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none pt-[8px]">_</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[13px] font-bold leading-none">[]</span>
+                            <span class="w-[30px] h-[27px] bg-wlight border-[2px] border-t-white border-l-white border-r-black border-b-black flex items-center justify-center font-sys text-[14px] font-bold leading-none">X</span>
+                        </span>
+                    </div>
+                    <div class="relative flex-1 px-[36px] py-[24px] overflow-hidden">
+                        <!-- ghost echo word, cropped by the window edge -->
+                        <div class="absolute right-[-70px] top-[110px] font-pixel text-[240px] leading-none text-navy opacity-[0.07] select-none">END</div>
+                        <!-- kicker / counter -->
+                        <div class="reveal absolute left-0 right-0 top-0 flex items-baseline justify-between">
+                            <span class="font-term text-[27px] text-navy">C:\DECKS&gt; SHUTDOWN /DECK /T 0</span>
+                            <span class="font-sys text-[18px] text-gray2 tracking-[1px] uppercase">SCREEN 10 / 10</span>
+                        </div>
+                        <div class="reveal [transition-delay:0.1s] absolute left-0 right-0 top-[46px] h-[2px] bg-bshadow shadow-[0_2px_0_#ffffff]"></div>
+                        <!-- closing statement (pixel display — final splash moment) -->
+                        <h2 class="absolute left-0 top-[190px] font-pixel text-navy text-[48px] leading-[1.7]">
+                            <span class="reveal [transition-delay:0.25s] block">IT'S NOW SAFE</span>
+                            <span class="reveal [transition-delay:0.37s] block">TO TURN OFF</span>
+                            <span class="reveal [transition-delay:0.49s] block">YOUR PROJECTOR.</span>
+                        </h2>
+                        <p class="reveal [transition-delay:0.65s] absolute left-0 top-[500px] max-w-[980px] font-sys text-[24px] leading-[1.6] text-gray2">
+                            Sixty years, four eras, one lesson: the tool keeps changing,
+                            the point still has to stick. Thanks for watching.
+                        </p>
+                        <!-- contact strip: 3 cells over a beveled rule -->
+                        <div class="reveal [transition-delay:0.8s] absolute left-0 right-0 bottom-[86px]">
+                            <div class="h-[2px] bg-bshadow shadow-[0_2px_0_#ffffff] mb-[22px]"></div>
+                            <div class="flex items-stretch">
+                                <div class="flex-1">
+                                    <p class="font-term text-[22px] text-gray2 uppercase">Repo</p>
+                                    <p class="font-sys text-[24px] text-ink mt-[4px]"><a href="https://github.com/dreamid27/frontend-slides" class="text-navy underline">github.com/dreamid27/frontend-slides</a></p>
+                                </div>
+                                <div class="w-[3px] bg-bshadow shadow-[1px_0_0_#ffffff] mx-[24px]"></div>
+                                <div class="flex-1 pl-[24px]">
+                                    <p class="font-term text-[22px] text-gray2 uppercase">Format</p>
+                                    <p class="font-sys text-[24px] text-ink mt-[4px]">One self-contained .html file</p>
+                                </div>
+                                <div class="w-[3px] bg-bshadow shadow-[1px_0_0_#ffffff] mx-[24px]"></div>
+                                <div class="flex-1 pl-[24px]">
+                                    <p class="font-term text-[22px] text-gray2 uppercase">Template</p>
+                                    <p class="font-sys text-[24px] text-ink mt-[4px]">Retro Windows</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- footer credit (required) -->
+                        <div class="reveal [transition-delay:0.95s] absolute left-0 right-0 bottom-0 flex items-center gap-[8px]">
+                            <div class="px-[16px] py-[4px] font-sys text-[18px] text-gray2 border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">
+                                Made with <a href="https://github.com/dreamid27/frontend-slides" class="text-navy underline font-bold">Frontend Slides &mdash; github.com/dreamid27/frontend-slides</a>
+                            </div>
+                            <div class="ml-auto px-[16px] py-[4px] font-sys text-[18px] font-bold text-rgreen border-[2px] border-t-bshadow border-l-bshadow border-r-white border-b-white">GOODBYE</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- === CRT SCANLINE OVERLAY (above everything, pointer-events off) === -->
+    <div class="fixed inset-0 z-[9999] pointer-events-none bg-[repeating-linear-gradient(0deg,rgba(0,0,0,0.03)_0px,rgba(0,0,0,0.03)_1px,transparent_1px,transparent_3px)]"></div>
+
+    <!-- === DECK CHROME (outside the stage) === -->
+    <div class="deck-controls flex gap-[10px]" id="navDots" aria-label="Slide navigation"></div>
+    <div class="print:hidden fixed left-[20px] bottom-[16px] z-[1000] font-term text-[18px] text-[#c0c0c0] select-none">&lt;-- ARROW KEYS OR CLICK to navigate --&gt;</div>
+    <div class="print:hidden fixed right-[20px] bottom-[16px] z-[1000] font-sys text-[14px] text-[#222222] bg-[#d4d0c8] px-[12px] py-[3px] border-[2px] border-t-[#404040] border-l-[#404040] border-r-white border-b-white select-none" id="slideCounter">01 / 10</div>
+
+    <script>
+        /* === SLIDE PRESENTATION CONTROLLER === */
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.stage = document.getElementById('deckStage');
+                this.counter = document.getElementById('slideCounter');
+                this.dotsHost = document.getElementById('navDots');
+                this.buildDots();
+                this.setupStageScale();
+                this.setupKeyboardNav();
+                this.setupClickNav();
+                this.setupTouchNav();
+                this.assertStageInvariants();
+                this.showSlide(0);
+            }
+
+            assertStageInvariants() {
+                /* Slides outside position:absolute fall into normal flow and
+                   get clipped below the 1080px stage — fail loudly, not blank. */
+                this.slides.forEach((slide, i) => {
+                    const pos = getComputedStyle(slide).position;
+                    if (pos !== 'absolute') console.error(
+                        `Slide ${i + 1}: computed position is "${pos}" (must be absolute). ` +
+                        'Remove position utilities from the <section class="slide"> element.');
+                });
+            }
+
+            /* Uniform scale of the whole 1920×1080 stage — letterbox, never reflow */
+            setupStageScale() {
+                const scale = () => {
+                    const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                    const x = (window.innerWidth - 1920 * factor) / 2;
+                    const y = (window.innerHeight - 1080 * factor) / 2;
+                    this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+                };
+                scale();
+                window.addEventListener('resize', scale);
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    switch (e.key) {
+                        case 'ArrowRight':
+                        case 'ArrowDown':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.showSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowLeft':
+                        case 'ArrowUp':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.showSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.showSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.showSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            /* Click right 2/3 of the screen → next; left 1/3 → previous.
+               Links, buttons, and nav dots keep their own behavior. */
+            setupClickNav() {
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('a, button, .navdot')) return;
+                    if (e.clientX < window.innerWidth / 3) this.showSlide(this.currentSlide - 1);
+                    else this.showSlide(this.currentSlide + 1);
+                });
+            }
+
+            /* Basic horizontal swipe */
+            setupTouchNav() {
+                let startX = null;
+                document.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    if (startX === null) return;
+                    const dx = e.changedTouches[0].clientX - startX;
+                    if (Math.abs(dx) > 50) this.showSlide(this.currentSlide + (dx < 0 ? 1 : -1));
+                    startX = null;
+                });
+            }
+
+            buildDots() {
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'navdot';
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.showSlide(i));
+                    this.dotsHost.appendChild(dot);
+                });
+            }
+
+            showSlide(index) {
+                this.currentSlide = Math.max(0, Math.min(index, this.slides.length - 1));
+                this.slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === this.currentSlide);
+                    slide.classList.toggle('visible', i === this.currentSlide);
+                });
+                this.dotsHost.querySelectorAll('.navdot').forEach((dot, i) => {
+                    dot.classList.toggle('on', i === this.currentSlide);
+                });
+                const n = String(this.currentSlide + 1).padStart(2, '0');
+                this.counter.textContent = `${n} / ${String(this.slides.length).padStart(2, '0')}`;
+            }
+        }
+
+        new SlidePresentation();
+    </script>
+</body>
+</html>
